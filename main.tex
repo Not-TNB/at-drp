@@ -1,0 +1,367 @@
+\documentclass[a4paper,11pt]{article}
+
+% =====================================================================
+%  DOCUMENT DETAILS
+% =====================================================================
+\newcommand{\moduletitle}{Algebraic Topology}
+\newcommand{\modulecode}{Directed Reading Programme \textbullet{} Homology}
+\newcommand{\coursename}{Imperial DRP \textbullet{} Year 2}
+\newcommand{\termname}{Autumn Term 2026--27}
+\newcommand{\lecturer}{S.\ Pereira \textbullet{} Texts: L\"oh, Hatcher, Friedl}
+\newcommand{\institution}{Imperial College London \textbullet{} Department of Mathematics}
+\newcommand{\notesauthor}{Tristan Basri}
+
+% =====================================================================
+%  PACKAGES
+% =====================================================================
+% --- Fonts & text ---
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+\usepackage{parskip}
+
+% --- Layout ---
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+% --- Maths ---
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{bm}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd}      % \shortrightarrow, \llbracket, ...
+\usepackage{nicematrix}    % boundary matrices, block matrices
+
+% --- Colour, graphics, diagrams ---
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{capt-of}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{calc,backgrounds,fit,positioning,arrows.meta,
+                decorations.markings,decorations.pathreplacing,
+                shapes.geometric,patterns,3d}
+% \usepackage{animate}     % homotopy animations (Acrobat / Okular only)
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+
+% --- Boxes ---
+\usepackage[most]{tcolorbox}
+
+% --- Cross-references (load last) ---
+\usepackage[hidelinks]{hyperref}
+
+% =====================================================================
+%  PAGE SETUP
+% =====================================================================
+\newlength{\pagemargin}
+\setlength{\pagemargin}{1cm}
+\geometry{margin=\pagemargin, footskip=0.5cm}
+\pagestyle{plain}
+\graphicspath{{img/}{./}}
+
+\setlength{\emergencystretch}{3em}
+\tolerance=1500
+\hbadness=2000
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\raggedbottom
+\allowdisplaybreaks[4]
+
+% =====================================================================
+%  COLOURS
+% =====================================================================
+% Palette 12: ocean mist / gunmetal / bright red, dust-grey neutrals
+\definecolor{paper}{HTML}{FFFFFF}
+\definecolor{ink}{HTML}{1B1E20}            % dark gunmetal (text, banners, borders)
+\definecolor{accentA}{HTML}{44BBA4}        % ocean mist (title-page rule)
+\definecolor{accentB}{HTML}{D3D0CB}        % dust grey (secondary text on dark)
+\definecolor{tint}{HTML}{E7E5DF}           % alabaster tint
+
+% Box colours
+\definecolor{theoremCol}{HTML}{17565E}     % deep teal (theorem = proposition)
+\definecolor{lemmaCol}{HTML}{2F947E}       % ocean mist, deepened
+\definecolor{corollaryCol}{HTML}{328FAE}   % blue-teal
+\definecolor{definitionCol}{HTML}{EB4D48}  % bright red
+\definecolor{proofCol}{HTML}{1B1E20}       % dark gunmetal (solid header)
+\definecolor{exerciseCol}{HTML}{3A4044}    % mid gunmetal (dashed outline)
+\definecolor{gapCol}{HTML}{EB4D48}         % bright red (dashed outline)
+\definecolor{exampleCol}{HTML}{D3D0CB}     % dust grey (examples, remarks)
+\definecolor{sectionbg}{HTML}{1B1E20}
+\definecolor{tableHead}{HTML}{E7E5DF}
+\definecolor{tableRule}{HTML}{D3D0CB}
+
+% Page and text colour (comment out the next line for a white page when printing)
+\pagecolor{paper}
+\color{ink}
+
+% =====================================================================
+%  HEADINGS
+% =====================================================================
+% The banner is full-bleed left/right, and also fills the top margin (sections start a new page).
+\newcommand{\sectionbanner}[2]{%
+  {\setlength{\fboxsep}{0pt}%
+  \noindent\makebox[\linewidth][l]{%
+  \tikz[remember picture,overlay]{\coordinate (sbpos) at (0,0.3em);
+    \fill[sectionbg] (current page.north west) rectangle (current page.north east |- sbpos);}%
+  \hspace*{-\pagemargin}%
+  \colorbox{sectionbg}{%
+    \parbox[c][1.9em]{\dimexpr\linewidth+2\pagemargin\relax}{%
+      \hspace*{\pagemargin}#1#2}}}}}
+\titleformat{\section}[block]
+  {\sffamily\Large\bfseries\color{paper}}{}{0pt}
+  {\sectionbanner{\thesection\quad}}
+\titleformat{name=\section,numberless}[block]
+  {\sffamily\Large\bfseries\color{paper}}{}{0pt}
+  {\sectionbanner{}}
+\titlespacing*{\section}{0pt}{1.2em}{0.8em}
+% every section starts on a new page, so its banner sits flush with the top of the page
+\let\oldsection\section
+\renewcommand{\section}{\clearpage\oldsection}
+
+\titleformat*{\subsection}{\sffamily\large\bfseries}
+\titleformat*{\subsubsection}{\sffamily\normalsize\bfseries}
+\titleformat*{\paragraph}{\sffamily\bfseries}
+
+\setcounter{tocdepth}{2}
+
+% =====================================================================
+%  THEOREM BOXES  (one shared counter, numbered within section)
+% =====================================================================
+\tcbset{
+  mythmstyle/.style={
+    breakable, enhanced, boxrule=1pt, sharp corners,
+    colback=#1!9!paper, colframe=#1, colbacktitle=#1!85!ink,
+    coltitle=paper, coltext=ink,
+    fonttitle=\sffamily\bfseries, fontupper=\sffamily,
+    toptitle=4pt, bottomtitle=4pt,
+    before skip=10pt, after skip=10pt,
+    separator sign={~},
+    description delimiters={\hfill\normalfont\sffamily\bfseries}{},
+  }
+}
+
+% Soft variant (lemma, corollary): tinted title bar with coloured text, so theorem and definition stand out
+\tcbset{
+  softthmstyle/.style={
+    mythmstyle=#1,
+    colbacktitle=#1!18!paper, coltitle=#1!85!ink,
+    colback=#1!5!paper,
+  }
+}
+
+% Light style for examples and remarks: grey side rule, inline bold label, no title bar
+\tcbset{
+  lightstyle/.style={
+    breakable, enhanced, frame hidden, boxrule=0pt, sharp corners,
+    colback=#1!18!paper, coltext=ink,
+    borderline west={2.5pt}{0pt}{#1},
+    left=9pt, right=6pt, top=3pt, bottom=3pt,
+    before skip=7pt, after skip=7pt,
+    fontupper=\sffamily\small,
+    attach title to upper={\ },
+    fonttitle=\sffamily\bfseries\small\color{ink!75!paper},
+    separator sign={.},
+    description delimiters={(}{)},
+  }
+}
+
+% Outlined style (no filled title bar): #1 = colour, #2 = line pattern (solid or dashed)
+\tcbset{
+  outlinestyle/.style 2 args={
+    breakable, enhanced, sharp corners, frame hidden, boxrule=0pt,
+    colback=paper, coltext=ink, colbacktitle=paper, coltitle=#1,
+    fonttitle=\sffamily\bfseries, fontupper=\sffamily,
+    toptitle=4pt, bottomtitle=2pt,
+    before skip=10pt, after skip=10pt,
+    separator sign={~},
+    description delimiters={\hfill\normalfont\sffamily\bfseries}{},
+    overlay={\draw[draw=#1,line width=1.2pt,#2]
+      ([shift={(0.6pt,0.6pt)}]frame.south west) rectangle ([shift={(-0.6pt,-0.6pt)}]frame.north east);},
+  }
+}
+
+\newtcbtheorem[number within=section]{theorem}{Theorem}{mythmstyle=theoremCol}{th}
+\NewEnvironmentCopy{proposition}{theorem}   % proposition = theorem (one box type)
+\newtcbtheorem[use counter from=theorem]{definition}{Definition}{mythmstyle=definitionCol}{def}
+\newtcbtheorem[use counter from=theorem]{lemma}{Lemma}{softthmstyle=lemmaCol}{lem}
+\newtcbtheorem[use counter from=theorem]{corollary}{Corollary}{softthmstyle=corollaryCol}{cor}
+\newtcbtheorem[use counter from=theorem]{example}{Example}{lightstyle=exampleCol}{ex}
+\newtcbtheorem[use counter from=theorem]{remark}{Remark}{lightstyle=exampleCol}{rem}
+% Hatcher exercise:  \begin{exercise}{Hatcher 2.1.5}{ex:label} ... \end{exercise}
+\newtcbtheorem[use counter from=theorem]{exercise}{Exercise}{outlinestyle={exerciseCol}{dashed}}{exc}
+
+% Proof box:  \begin{proof} ... \end{proof}
+%         or  \begin{proof}[\proofof{th:label}] ... \end{proof}
+\renewenvironment{proof}[1][\proofname]{%
+  \begin{tcolorbox}[mythmstyle=proofCol, title={#1}]%
+}{%
+  \qed\end{tcolorbox}%
+}
+\newcommand{\proofof}[1]{Proof (\nameref{#1})}
+
+% Gap box: a step the source skips, filled in by me.
+%   \begin{gap}[optional title] ... \end{gap}
+\newtcolorbox{gap}[1][Gap filled]{%
+  outlinestyle={gapCol}{dashed}, before skip=8pt, after skip=8pt,
+  title={#1}}
+
+% =====================================================================
+%  FIGURE BOX
+% =====================================================================
+\newenvironment{figureBox}{%
+  \begin{tcolorbox}[breakable,boxrule=1pt,sharp corners,colback=ink!6!paper,colframe=ink,boxsep=0.3em]\centering
+  \begin{adjustbox}{scale=1.1,max width=\linewidth,max totalheight=0.85\textheight}%
+}{%
+  \end{adjustbox}%
+  \end{tcolorbox}%
+  \vspace{-6pt}%
+}
+
+% =====================================================================
+%  MATHS MACROS
+% =====================================================================
+% --- Number systems & fields ---
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\F}{\mathbb{F}}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+
+% --- Operators ---
+\DeclareMathOperator{\Ima}{Im}
+\DeclareMathOperator{\coker}{coker}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Homeo}{Homeo}
+\DeclareMathOperator{\Ext}{Ext}
+\DeclareMathOperator{\Tor}{Tor}
+\DeclareMathOperator{\colim}{colim}
+\DeclareMathOperator{\Sing}{Sing}
+\DeclareMathOperator{\Cone}{Cone}
+\DeclareMathOperator{\Cyl}{Cyl}
+\DeclareMathOperator{\sd}{sd}              % barycentric subdivision
+\DeclareMathOperator{\supp}{supp}
+
+% --- Delimiters ---
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\gen}{\langle}{\rangle}     % \gen{a,b}  generated group
+
+% --- Categories (Loh: Top, Group; here sans-serif) ---
+\newcommand{\cat}[1]{\mathsf{#1}}
+\newcommand{\Set}{\cat{Set}}
+\newcommand{\Grp}{\cat{Grp}}
+\newcommand{\Ab}{\cat{Ab}}
+\newcommand{\Top}{\cat{Top}}
+\newcommand{\Toppt}{\cat{Top}_*}                    % pointed spaces
+\newcommand{\Toppair}{\cat{Top}^{2}}                % pairs of spaces
+\newcommand{\hTop}{\cat{hTop}}
+\newcommand{\Ch}{\cat{Ch}}
+\newcommand{\sSet}{\cat{sSet}}
+\newcommand{\Vect}{\cat{Vect}}
+\newcommand{\Ring}{\cat{Ring}}
+\newcommand{\Mod}{\cat{Mod}}
+\newcommand{\CW}{\cat{CW}}
+\newcommand{\op}{^{\mathrm{op}}}
+\newcommand{\mor}[3]{#1(#2,#3)}                     % C(X,Y) hom-set, Riehl style
+\newcommand{\hcl}[2]{[#1,#2]}                       % homotopy classes [X,Y]
+\newcommand{\hclp}[2]{[#1,#2]_*}                    % pointed homotopy classes
+
+% --- Spaces ---
+\newcommand{\Sph}[1]{S^{#1}}                        % sphere
+\newcommand{\Disk}[1]{D^{#1}}                       % disc
+\newcommand{\Ball}[1]{B^{#1}}                       % open ball
+\newcommand{\Simp}[1]{\Delta^{#1}}                  % standard simplex
+\newcommand{\RP}[1]{\mathbb{RP}^{#1}}
+\newcommand{\CP}[1]{\mathbb{CP}^{#1}}
+\newcommand{\Torus}{T^2}
+\newcommand{\sk}[2]{#2^{(#1)}}                      % n-skeleton  \sk{n}{X}
+\newcommand{\pt}{\mathrm{pt}}
+\newcommand{\Sus}{\Sigma}                           % suspension
+\newcommand{\Loops}{\Omega}                         % loop space
+\newcommand{\wdg}{\vee}                             % wedge sum
+\newcommand{\smsh}{\wedge}                          % smash product
+
+% --- Homotopy & homology ---
+\newcommand{\htpy}{\simeq}
+\newcommand{\iso}{\cong}
+\newcommand{\pig}[2]{\pi_{#1}(#2)}                  % \pig{1}{X,x_0}
+\newcommand{\Hn}[2]{H_{#1}(#2)}                     % \Hn{n}{X}
+\newcommand{\rHn}[2]{\tilde{H}_{#1}(#2)}            % reduced
+\newcommand{\Hp}[3]{H_{#1}(#2,#3)}                  % relative: \Hp{n}{X}{A}
+\newcommand{\Hg}[3]{H_{#1}(#2;#3)}                  % coefficients: \Hg{n}{X}{G}
+\newcommand{\Hcoh}[2]{H^{#1}(#2)}                   % cohomology
+\newcommand{\Hstar}[1]{H_{*}(#1)}
+\newcommand{\Cn}[2]{C_{#1}(#2)}                     % chains
+\newcommand{\Zn}[2]{Z_{#1}(#2)}                     % cycles
+\newcommand{\Bn}[2]{B_{#1}(#2)}                     % boundaries
+\newcommand{\bdry}{\partial}                        % boundary map
+\newcommand{\chiX}[1]{\chi(#1)}                     % Euler characteristic
+\newcommand{\restr}[2]{\mathopen{}\left.#1\right|_{#2}\mathclose{}}
+
+% --- Arrows ---
+\newcommand{\xto}[1]{\xrightarrow{#1}}
+\newcommand{\longto}{\longrightarrow}
+\newcommand{\inj}{\hookrightarrow}
+\newcommand{\surj}{\twoheadrightarrow}
+\newcommand{\mapstoo}{\longmapsto}
+
+% --- Matrices ---
+\newcommand{\pmat}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newcommand{\bmat}[1]{\begin{bmatrix}#1\end{bmatrix}}
+\newcommand{\spmat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
+\newcommand{\T}{^{\mathsf{T}}}
+\newcommand{\inv}{^{-1}}
+
+% =====================================================================
+%  DOCUMENT
+% =====================================================================
+\begin{document}
+
+% ---------- COVER (full-bleed image) ----------
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture, overlay]
+  \node[anchor=north west, inner sep=0] at (current page.north west)
+    {\includegraphics[width=\paperwidth, height=\paperheight]{"at cover.png"}};
+\end{tikzpicture}
+\end{titlepage}
+\newpage
+
+% ---------- CONTENTS ----------
+\tableofcontents
+\newpage
+
+\setcounter{section}{-1}
+\section{Preliminaries}
+
+\section{Introduction Algebraic Topology?}
+
+\subsection{Topological Building Blocks}
+
+\subsection{Homotopy and Homotopy Invariance}
+
+\newpage
+\section{Fundamental Group and Covering Theory}
+
+\newpage
+\section{Axiomatic Homology Theory}
+
+\newpage
+\section{Singular Homology}
+
+\newpage
+\section{Cellular Homology}
+
+\end{document}
