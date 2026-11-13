@@ -1,0 +1,78 @@
+% Pushouts in Top: spheres from two discs, Mobius strip from a square (cf. Loh Fig. 1.4)
+\providecolor{diagA}{HTML}{E8472A}   % orange-red
+\providecolor{diagB}{HTML}{2B6A9B}   % blue
+\providecolor{diagC}{HTML}{8B1A63}   % purple
+\input{mobius_band.tex}
+\begin{figureBox}
+\begin{tabular}{c@{\hspace{1.4cm}}c}
+% ---------- row 1: S^n = D^n u_{S^{n-1}} D^n ----------
+\begin{tikzcd}[ampersand replacement=\&, column sep=2.4cm, row sep=1.6cm]
+  \Sph{n-1} \arrow[r, "\text{incl.}"] \arrow[d, "\text{incl.}"'] \& \Disk{n} \arrow[d, "\text{upper hemisphere}"] \\
+  \Disk{n} \arrow[r, "\text{lower hemisphere}"'] \& \Sph{n}
+\end{tikzcd}
+&
+\begin{tikzpicture}[baseline=(current bounding box.center), ar/.style={-{Stealth[length=4pt]}, ink!70!paper}]
+  % S^1
+  \draw[diagA, thick] (0,0) ellipse (0.6 and 0.18);
+  % upper hemisphere
+  \begin{scope}[xshift=2.8cm]
+    \draw[diagB, thick, fill=diagB!18!paper] (-0.6,-0.05) arc (180:0:0.6) arc (0:-180:0.6 and 0.18);
+    \draw[diagA, thick] (0,-0.05) ellipse (0.6 and 0.18);
+  \end{scope}
+  % lower hemisphere
+  \begin{scope}[yshift=-2.3cm]
+    \draw[diagC, thick, fill=diagC!18!paper] (-0.6,0.05) arc (180:360:0.6) arc (0:180:0.6 and 0.18);
+    \draw[diagA, thick] (0,0.05) ellipse (0.6 and 0.18);
+  \end{scope}
+  % sphere
+  \begin{scope}[xshift=2.8cm, yshift=-2.3cm]
+    \fill[diagB!18!paper] (-0.6,0) arc (180:0:0.6) -- cycle;
+    \fill[diagC!18!paper] (-0.6,0) arc (180:360:0.6) -- cycle;
+    \draw[diagB, thick] (-0.6,0) arc (180:0:0.6);
+    \draw[diagC, thick] (-0.6,0) arc (180:360:0.6);
+    \draw[diagA, thick] (-0.6,0) arc (180:360:0.6 and 0.18);
+    \draw[diagA, thick, dashed] (0.6,0) arc (0:180:0.6 and 0.18);
+  \end{scope}
+  \draw[ar] (0.85,0) -- (1.95,0);
+  \draw[ar] (0,-0.35) -- (0,-1.95);
+  \draw[ar] (2.8,-0.4) -- (2.8,-1.55);
+  \draw[ar] (0.85,-2.3) -- (1.95,-2.3);
+\end{tikzpicture}
+\\[60pt]
+% ---------- row 2: Mobius strip ----------
+\begin{tikzcd}[ampersand replacement=\&, column sep=2.4cm, row sep=1.6cm]
+  \{0,1\}\times[0,1] \arrow[r, "\text{incl.}"] \arrow[d, "{\begin{smallmatrix}(0,t)\,\mapsto\,(0,t)\\ (1,t)\,\mapsto\,(1,1-t)\end{smallmatrix}}"'] \& {[0,1]\times[0,1]} \arrow[d] \\
+  {[0,1]\times[0,1]} \arrow[r] \& M
+\end{tikzcd}
+&
+\begin{tikzpicture}[baseline=(current bounding box.center), ar/.style={-{Stealth[length=4pt]}, ink!70!paper},
+    up/.style={-{Stealth[length=5pt]}, line width=1.4pt}]
+  % {0,1} x [0,1]
+  \draw[up, diagB] (-0.45,-0.5) -- (-0.45,0.5);
+  \draw[up, diagA] (0.45,-0.5) -- (0.45,0.5);
+  % square, untwisted
+  \begin{scope}[xshift=2.8cm]
+    \fill[ink!10!paper] (-0.5,-0.5) rectangle (0.5,0.5);
+    \draw[ink!60!paper] (-0.5,0.5) -- (0.5,0.5) (-0.5,-0.5) -- (0.5,-0.5);
+    \draw[up, diagB] (-0.5,-0.5) -- (-0.5,0.5);
+    \draw[up, diagA] (0.5,-0.5) -- (0.5,0.5);
+  \end{scope}
+  % square, twisted
+  \begin{scope}[yshift=-2.3cm]
+    \fill[ink!10!paper] (-0.5,-0.5) rectangle (0.5,0.5);
+    \draw[ink!60!paper] (-0.5,0.5) -- (0.5,0.5) (-0.5,-0.5) -- (0.5,-0.5);
+    \draw[up, diagB] (-0.5,-0.5) -- (-0.5,0.5);
+    \draw[up, diagA] (0.5,0.5) -- (0.5,-0.5);
+  \end{scope}
+  % Mobius strip (purple = glued edge)
+  \begin{scope}[xshift=2.8cm, yshift=-2.3cm, scale=0.95]
+    \mobiusband
+  \end{scope}
+  \draw[ar] (0.85,0) -- (1.95,0);
+  \draw[ar] (0,-0.75) -- (0,-1.55);
+  \draw[ar] (2.8,-0.75) -- (2.8,-1.65);
+  \draw[ar] (0.85,-2.3) -- (1.85,-2.3);
+\end{tikzpicture}
+\end{tabular}
+\end{figureBox}
+\captionof{figure}{Pushouts in $\Top$. Top: $\Sph{n}=\Disk{n}\cup_{\Sph{n-1}}\Disk{n}$. Bottom: the Möbius strip $M$.}\label{fig:pushouts}

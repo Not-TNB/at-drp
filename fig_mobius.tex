@@ -1,0 +1,28 @@
+% Mobius strip as quotient space (cf. Loh Fig. 1.3)
+\providecolor{diagA}{HTML}{E8472A}   % orange-red
+\providecolor{diagB}{HTML}{2B6A9B}   % blue
+\providecolor{diagC}{HTML}{8B1A63}   % purple
+\input{mobius_band.tex}
+\begin{figureBox}
+\begin{tikzpicture}[lab/.style={font=\sffamily\small, inner sep=1.5pt}, up/.style={-{Stealth[length=5pt]}, line width=1.4pt}]
+  % square
+  \fill[ink!10!paper] (0,0) rectangle (2,2);
+  \draw[ink!60!paper] (0,0) -- (2,0) (0,2) -- (2,2);
+  \draw[up, diagB] (0,0) -- (0,2);
+  \draw[up, diagA] (2,2) -- (2,0);
+  % identified points
+  \draw[diagC, densely dotted, thick] (0,0.55) -- (2,1.45);
+  \fill[diagB] (0,0.55) circle (2pt);
+  \fill[diagA] (2,1.45) circle (2pt);
+  \node[lab, text=diagB, anchor=east] at (-0.1,0.55) {$(0,t)$};
+  \node[lab, text=diagA, anchor=west] at (2.1,1.45) {$(1,1-t)$};
+  \node[lab, text=diagC] at (1.0,0.72) {$\sim$};
+  % arrow
+  \node[ink!70!paper, scale=1.6] at (4.1,1) {$\rightsquigarrow$};
+  % band
+  \begin{scope}[xshift=6.4cm, yshift=1cm, scale=1.35]
+    \mobiusband
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The Möbius strip as a quotient of the square: the blue edge is glued to the orange edge with a half twist.}\label{fig:mobius}
