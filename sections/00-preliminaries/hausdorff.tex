@@ -1,0 +1,19 @@
+\subsection{Hausdorff Spaces}
+
+\begin{definition}{Hausdorff Space}{}
+    $(X,T_X)\in\Top$ is Hausdorff if every two points can be separated by open sets i.e. \[
+    \forall_{x\neq y\in X} \ \exists_{U,V\subset_{\text{op}}X}:x\in U,y\in V,U\cap V=\emptyset
+    \]
+\end{definition}
+
+\begin{theorem}{Metric Spaces are Hausdorff}{}
+    Let $(X,d)\in\cat{Met}$. Then the metric topology on $X$ is Hausdorff.
+\end{theorem}
+
+\begin{corollary}{}{}
+    If $X\in\Set$ with $\# X\geq 2$ then the trivial topology on $X$ is \textbf{NOT} induced by a metric on $X$.
+\end{corollary}
+
+\begin{theorem}{Hausdorff is Homeomorphically Invariant}{}
+    If $A\iso_{\Top}B$ then $A$ is Hausdorff iff $B$ is.
+\end{theorem}

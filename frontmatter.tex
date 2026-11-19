@@ -1,0 +1,14 @@
+% ---------- COVER (full-bleed image) ----------
+\begin{titlepage}
+\thispagestyle{empty}
+\noexternal
+\begin{tikzpicture}[remember picture, overlay]
+  \node[anchor=north west, inner sep=0] at (current page.north west)
+    {\includegraphics[width=\paperwidth, height=\paperheight]{cover}};
+\end{tikzpicture}
+\end{titlepage}
+\newpage
+
+% ---------- CONTENTS ----------
+\tableofcontents
+\newpage

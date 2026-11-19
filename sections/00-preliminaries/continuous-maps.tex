@@ -1,0 +1,82 @@
+\subsection{Continuous Maps}
+
+\begin{definition}{Continuous Maps}{}
+    Let $(X,T_X),(Y,T_Y)\in\Top$. A map $f:X\to Y$ is continuous if \[
+    \forall U\in T_Y:f\inv(U)\in T_X
+    \]
+    i.e. if preimages of open sets are also open. These are precisely the morphisms in $\Top$.
+\end{definition}
+
+In metric spaces, continuity wrt. the topology induced by the metric coincides with the usual $\epsilon$-$\delta$ notion.
+
+\begin{example}{Continuous Maps}{}
+    \begin{itemize}
+        \item If $X\in\Set$ and $T,T'$ are topologies on $X$, then the identity $\id_X:X\to X$ is continuous as a map $(X,T)\to (X,T')$ iff. $T'\subset T$ i.e. $T'$ is coarser than $T$.
+        \item The arithmetic operators $+,\cdot,-:\R^2\to \R$ and $/:\R\times (\R\setminus\{0\})\to \R$ are continuous wrt. the standard topology.
+        \item If $(X,T)\in\Top$ and $Y\subset X$ then $Y\xhookrightarrow{}X$ is continuous wrt. the subspace topology on $Y$. 
+    \end{itemize}
+\end{example}
+
+\begin{theorem}{Inheritance Properties of Continuous Maps}{}
+    Let $(X,T_X),(Y,T_Y),(Z,T_Z)\in\Top$ and $(f:X\to Y),(g:Y\to Z)$ be maps. Then \begin{itemize}
+        \item If $f,g$ are continuous then $g\circ f:X\to Z$ is continuous.
+        \item If $f$ is continuous and $A\subset X$, then $\restr{f}{A}:A\to Y$ is continuous wrt. the subspace topology on $A$.
+        \item The map $f:X\to Y$ is continuous iff. $f:X\to f(X)$ is continuous wrt. the subspace topology on $f(X)$.
+    \end{itemize}
+\end{theorem}
+
+\begin{theorem}{Glueing Principle for Continuous Maps}{}
+    Let $(X,T_X),(Y,T_Y)\in\Top$, let $A,B\subset_{\text{cl}} X$ with $A\cup B=X$ and let $(f:A\to Y),(g:B\to Y)$ be continuous maps (wrt. the subspace topologies) with $\restr{f}{A\cap B}=\restr{g}{A\cap B}$. Then the following is well-defined and continuous. \[
+    f\cup_{A\cap B}g:X\to Y \qquad x\mapsto \begin{cases}
+        f(x) & x\in A\\g(x) & x\in B
+    \end{cases}
+    \]
+\end{theorem}
+
+% Glueing principle: X = A u B (closed), f on A, g on B agreeing on A n B
+\begin{figureBox}
+\begin{tikzpicture}[scale=1, every node/.append style={transform shape},
+    lab/.style={font=\sffamily\small, inner sep=1.5pt}]
+  % ---------- X = A u B ----------
+  \fill[diagB!14!paper] (-5.2,-1.2) rectangle (-2.4,1.2);
+  \fill[diagA!14!paper] (-3.6,-1.2) rectangle (-0.8,1.2);
+  \fill[diagC!22!paper] (-3.6,-1.2) rectangle (-2.4,1.2);
+  \draw[draw=ink!45!paper, thick] (-5.2,-1.2) rectangle (-0.8,1.2);
+  \draw[diagB, very thick] (-3.6,-1.2) -- (-3.6,1.2);
+  \draw[diagA, very thick] (-2.4,-1.2) -- (-2.4,1.2);
+  \node[lab, anchor=north west] at (-5.15,1.15) {$X$};
+  \node[lab, text=diagB] at (-4.4,0) {$A$};
+  \node[lab, text=diagA] at (-1.6,0) {$B$};
+  \node[lab, text=diagC] at (-3.0,0) {$A\cap B$};
+
+  % ---------- Y ----------
+  \draw[draw=ink!45!paper, thick, fill=paper] (1.6,-1.2) rectangle (5.2,1.2);
+  \node[lab, anchor=north east] at (5.15,1.15) {$Y$};
+  \fill[diagB!14!paper] (2.85,0) ellipse (1.05 and 0.75);
+  \fill[diagA!14!paper] (3.95,0) ellipse (1.05 and 0.75);
+  \begin{scope}
+    \clip (2.85,0) ellipse (1.05 and 0.75);
+    \fill[diagC!22!paper] (3.95,0) ellipse (1.05 and 0.75);
+  \end{scope}
+  \draw[diagB, thick] (2.85,0) ellipse (1.05 and 0.75);
+  \draw[diagA, thick] (3.95,0) ellipse (1.05 and 0.75);
+  \node[lab, text=diagB] at (2.3,0) {$f(A)$};
+  \node[lab, text=diagA] at (4.5,0) {$g(B)$};
+
+  % ---------- maps ----------
+  \draw[diagB, thick, -{Stealth[length=5pt]}] (-4.4,1.25) to[bend left=14]
+    node[lab, above, text=diagB] {$f$} (2.6,0.8);
+  \draw[diagA, thick, -{Stealth[length=5pt]}] (-0.75,0.45) to[bend left=8]
+    node[lab, above, text=diagA] {$g$} (3.0,0.4);
+  \draw[diagC, thick, dashed, -{Stealth[length=5pt]}] (-3.0,-1.25) to[bend right=18]
+    node[lab, below, text=diagC] {$f\cup_{A\cap B}g$} (3.4,-0.8);
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Glueing. $f$ and $g$ agree on the overlap $A\cap B$, so they glue to a continuous map on $X$.}
+
+\begin{definition}{Homeomorphisms}{}
+    Let $(X,T_X),(Y,T_Y)\in\Top$. A continuous map $f:X\to Y$ is a homeomorphism if there is another continuous map $g:Y\to X$ such that \[g\circ f=\id_X\quad\land\quad f\circ g=\id_Y\] If one exists then $X$ and $Y$ are homeomorphic; $X\iso_{\Top}Y$ (these are the isomorphisms in $\Top$).
+\end{definition}
+Intuitively this corresponds to the idea of deforming a shape into another without tearing or glueing. Note that not every bijective continuous map is a homeomorphism. 
+
+\newpage

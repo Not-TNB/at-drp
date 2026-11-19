@@ -1,0 +1,19 @@
+# LaTeX build artefacts
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.auxlock
+*.figlist
+*.makefile
+*.dep
+*.dpth
+*.md5
+main.pdf
+
+# TikZ externalisation cache
+figures/cache/*
+!figures/cache/.gitkeep

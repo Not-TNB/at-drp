@@ -1,0 +1,147 @@
+\subsection{Topological Spaces}
+\begin{definition}{Basic Notions (Topological Space, Topology, Open, Closed)}{topspace}
+A topological space $(X,T)\in \cat{Top}$ is a pair consisting of a set $X$ and a topology $T$ on $X$ i.e. $T\subseteq P(X)$ satisfying: \begin{enumerate}
+    \item $\emptyset,X\in T$,
+    \item $U\subset T \implies \bigcup U \in T$ (closed under unions),
+    \item $U\subset_{\text{finite}}T\implies \bigcap U\in T$ (closed under finite intersection)
+\end{enumerate}
+The elements of $T$ are called open sets. If $A\subset X,X\setminus A\in T$ then $A$ is closed.
+\end{definition}
+
+As usual we say $X$ to mean $(X,T)$ if $T$ is clear from context.
+
+\begin{theorem}{Topology induced by a Metric}{mettop}
+    Let $(X,d)\in \cat{Met}$. Then \[
+    T\coloneqq \{U\subset X\mid \forall x\in U,\exists \epsilon\in \R_{>0}:U(x,\epsilon)\subset U\}
+    \]
+    is the metric topology induced by $d$, where $U(x,\epsilon)=\{y\in X\mid d(y,x)<\epsilon\}$ is the open $\epsilon$-ball around $x$.
+\end{theorem}
+
+\begin{example}{Standard \& Extremal Topologies}{}
+    \begin{itemize}
+        \item The topology induced by the Euclidean metric on $\R^n$ is called the \textbf{standard topology}.
+        \item Let $X$ be a set. Then there are two extremal topologies on $X$: \begin{enumerate}
+            \item $P(X)$; the \textbf{discrete topology}.
+            \item $\{\emptyset,X\}$; the \textbf{trivial topology}.
+        \end{enumerate}
+    \end{itemize}
+\end{example}
+
+We note that not every topological space is metrisable. Also, in AT we tend to work with less exotic and more ``nicer'' topological spaces unlike those seen in AG (e.g. the Zariski topology on $\operatorname{Spec} \Z$).
+
+\begin{definition}{Open Neighbourhood}{}
+    Let $(X,T)\in\Top$ and $x\in X$. \begin{itemize}
+        \item A subset $U\subset X$ is an \textbf{open neighbourhood} of $x$ if $U$ is open and $x\in U$.
+        \item $U$ is a neighbourhood of $x$ if there is an open neighbourhood $V\subset X$ of $x$ with $V\subset U$.
+    \end{itemize}
+\end{definition}
+
+\begin{definition}{Closure, Interior, Boundary}{}
+    Let $(X,T)\in\Top$ and $Y\subset X$. \begin{itemize}
+        \item The \textbf{interior} of $Y$ is $Y^\circ$, the largest open subset of $X$ contained in $Y$: \[
+        Y^\circ=\bigcup\{U\mid U\in T \land U\subset Y\}
+        \]
+        \item The \textbf{closure} of $Y$ is $\overline{Y}$, the smallest closed subset of $X$ containing $Y$: \[
+        \overline{Y}=\bigcap \{A\mid X\setminus A \in T \land Y\subset A\}
+        \]
+        \item The \textbf{boundary} of $Y$ is $\bdry Y=\overline Y \cap \overline{X\setminus Y}$
+    \end{itemize}
+\end{definition}
+
+\newpage
+
+% Parts of a topological space  (X,T) with a subset Y
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    ball/.style={dashed, thick}]
+  % ambient space X
+  \draw[draw=ink!45!paper, thick, fill=paper] (-5.2,-3.4) rectangle (5.2,3.1);
+  \node[lab, anchor=north west] at (-5.0,3.0) {$X$};
+
+  % subset Y: interior shaded blue, boundary orange
+  \draw[draw=diagA, line width=1.8pt, fill=diagB!16!paper]
+    plot[smooth cycle, tension=0.9] coordinates
+    {(-2.7,0.2) (-1.9,1.9) (0,2.2) (1.9,1.8) (2.6,0) (1.7,-1.7) (0,-1.2) (-1.8,-1.6)};
+
+  % epsilon-balls and points
+  \node[ball, draw=diagB, circle, minimum size=1.35cm] at (-1.1,0.45) {};
+  \node[ball, draw=diagA, circle, minimum size=1.35cm] at (2.6,0) {};
+  \node[ball, draw=diagC, circle, minimum size=1.35cm] at (3.9,-1.9) {};
+  \fill[diagB] (-1.1,0.45) circle (1.8pt);
+  \fill[diagA] (2.6,0) circle (1.8pt);
+  \fill[diagC] (3.9,-1.9) circle (1.8pt);
+
+  % point labels
+  \node[lab, text=diagB, anchor=south] at (-1.1,1.15) {interior point $x$};
+  \node[lab, text=diagA, anchor=south, align=center] at (3.9,0.8) {boundary\\point $b$};
+  \node[lab, text=diagC, anchor=north] at (3.9,-2.6) {exterior point $z$};
+
+  % area labels
+  \node[lab, text=diagB, align=center] at (0.5,0.5) {interior\\$Y^\circ$};
+  \node[lab, text=diagC, align=center] at (-3.8,-1.8) {exterior\\$X\setminus\overline{Y}$};
+  \node[lab, text=diagA] (dY) at (0.2,3.7) {boundary $\partial Y$};
+  \draw[diagA, -{Stealth[length=5pt]}, thick] (dY.south) -- (0.1,2.25);
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{A subset $Y\subset X$: interior, boundary and exterior points, each with a dashed $\epsilon$-ball $U(\cdot,\epsilon)$; $\overline{Y}=Y^\circ\cup\partial Y$.}
+
+We now consider the elementary topological constructions of subspaces and products.
+
+\begin{definition}{Subspace Topology}{}
+    Let $(X,T)\in\Top$ and $Y\subset X$. Then \[
+    \{U\cap Y\mid U\in T\}
+    \]
+    is the \textbf{subspace} topology on $Y$. If $T$ on $X$ is induced by a metric $d$ then the subspace topology on $Y$ is induced by the restriction $\restr{d}{Y}$.
+\end{definition}
+
+\begin{definition}{Product Topology}{}
+    Let $(X,T_X),(Y,T_Y)\in\Top$. Then \[
+    \{U\subset X\times Y\mid \forall_{(x,y)\in U} \ \exists_{U_X\in T_X} \ \exists_{U_Y\in T_Y}:(x,y)\in U_X\times U_Y\subset U\}
+    \]
+    is the \textbf{product} topology on $X\times Y$. This satisfies the universal property of the product in $\Top$.\\
+
+    More generally let $(X_i,T_i)_{i\in I}\in \Top$. The product topology on $X=\prod_{i\in I}X_i$ is the coarsest topology which makes the canonical projections $(X\to X_i)_{i\in I}$ continuous.
+    \begin{itemize}
+        \item A subset $U\subset X$ is open iff. \[\forall_{x\in U} \ \exists_{J\subset_{\text{finite}}I} \ \exists_{(U_j\subset_{\text{op}}X_j)_{j\in J}}:x\in \prod_{j\in J}U_j \times \prod_{i\in I\setminus J}X_i\subset U\]
+    \end{itemize}
+\end{definition}
+
+% Subspace topology (left) and product topology (right)
+\begin{figureBox}
+\begin{tikzpicture}[scale=1.2, every node/.append style={transform shape},
+    lab/.style={font=\sffamily\small, inner sep=1.5pt}]
+  % ---------- subspace ----------
+  \draw[draw=ink!45!paper, thick, fill=paper] (-5.4,-1.5) rectangle (-0.6,1.5);
+  \node[lab, anchor=north west] at (-5.3,1.45) {$X$};
+  \def\ypath{plot[smooth cycle, tension=0.9] coordinates
+    {(-4.8,0.05) (-4.2,0.95) (-3.0,1.05) (-2.0,0.65) (-1.9,-0.3) (-2.8,-0.95) (-4.1,-0.85)}}
+  \begin{scope}
+    \clip \ypath;
+    \fill[diagC!85!paper] (-1.85,0.2) circle (0.8);
+  \end{scope}
+  \draw[diagB, thick] \ypath;
+  \draw[diagA, thick] (-1.85,0.2) circle (0.8);
+  \node[lab, text=diagB] at (-3.7,0.05) {$Y$};
+  \node[lab, text=diagA, anchor=south west] at (-1.4,0.85) {$U$};
+  \node[lab, text=diagC, anchor=south east] (uy) at (-0.75,-1.45) {$U\cap Y$};
+  \draw[diagC, -{Stealth[length=4pt]}, thick, shorten >=4pt] (uy.north west) -- (-2.0,-0.55);
+
+  % ---------- product ----------
+  \draw[draw=ink!45!paper, thick, fill=paper] (1.0,-1.5) rectangle (5.4,1.5);
+  \node[lab, anchor=north east] at (5.3,1.45) {$X\times Y$};
+  \draw[diagC, thick, fill=diagC!10!paper] (3.45,0.07) circle (1.15);
+  \node[lab, text=diagC, anchor=west] at (4.62,0.07) {$U$};
+  \draw[diagC, dashed, thick, fill=diagC!25!paper] (2.75,-0.4) rectangle (4.15,0.55);
+  \node[font=\sffamily\scriptsize, text=diagC, inner sep=0] at (3.45,0.075) {$U_X\times U_Y$};
+  \draw[dashed, diagB, thick] (2.75,-0.4) -- (2.75,-1.5) (4.15,-0.4) -- (4.15,-1.5);
+  \draw[dashed, diagA, thick] (2.75,-0.4) -- (1.0,-0.4) (2.75,0.55) -- (1.0,0.55);
+  \draw[diagB, line width=2.2pt] (2.75,-1.5) -- (4.15,-1.5);
+  \draw[diagA, line width=2.2pt] (1.0,-0.4) -- (1.0,0.55);
+  \node[lab, text=diagB, anchor=north] at (3.45,-1.6) {$U_X$};
+  \node[lab, text=diagA, anchor=east] at (1.0,0.075) {$U_Y$};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Subspace \& Product Topology}
+
+\newpage

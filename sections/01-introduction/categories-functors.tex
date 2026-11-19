@@ -1,0 +1,156 @@
+\subsection{Categories \& Functors}
+
+We assume the basic language of category theory (categories, functors, natural transformations, the Yoneda lemma) as in Riehl, \emph{Category Theory in Context}, Ch.~1. We only record the categories and functors specific to algebraic topology.
+
+% ======================================================================
+%  1.2 Categories and Functors  (Loh 1.2, compressed; 1.2.1 = prerequisites, written separately)
+% ======================================================================
+
+\subsubsection{The Categories of Algebraic Topology}
+
+\begin{example}{Topological Categories}{topcats}
+    \begin{itemize}
+        \item $\Top$: topological spaces and continuous maps.
+        \item $\Toppt$: \textbf{pointed spaces} $(X,x_0)$ with $x_0\in X$; morphisms $(X,x_0)\to(Y,y_0)$ are continuous $f:X\to Y$ with $f(x_0)=y_0$. This is the home of $\pi_1$.
+        \item $\Toppair$: \textbf{pairs of spaces} $(X,A)$ with $A\subset X$; morphisms $(X,A)\to(Y,B)$ are continuous $f:X\to Y$ with $f(A)\subset B$. This is the home of relative homology. We regard $\Top\subset\Toppair$ via $X\mapsto(X,\emptyset)$.
+        \item $\hTop$: spaces and \emph{homotopy classes} of maps $[X,Y]$.
+    \end{itemize}
+\end{example}
+
+\begin{definition}{Simplex Category}{simpcat}
+    The \textbf{simplex category} $\Delta$ has objects $[n]\coloneqq\{0,1,\dots,n\}$ for $n\in\N$, and morphisms $[n]\to[m]$ the monotone (order-preserving) maps. Distinguished morphisms are the
+    \begin{itemize}
+        \item \textbf{coface maps} $\delta^i:[n-1]\to[n]$, the injection skipping $i$;
+        \item \textbf{codegeneracy maps} $\sigma^i:[n+1]\to[n]$, the surjection hitting $i$ twice.
+    \end{itemize}
+    Every morphism in $\Delta$ is a composite of these.
+\end{definition}
+
+\begin{example}{Algebraic Categories}{algcats}
+    $\Set$, $\Grp$, $\Ab$, $\Mod_R$, $\Vect_K$, and $\Ch$: chain complexes $(C_\bullet,\bdry)$ of abelian groups with $\bdry\circ\bdry=0$, and chain maps $f_\bullet$ with $\bdry\circ f=f\circ\bdry$. Homology will be a functor $H_n:\Ch\to\Ab$.
+\end{example}
+
+\subsubsection{Functors as Invariants}
+
+\begin{proposition}{Functors Preserve Isomorphisms}{funciso}
+    Let $F:\cat{C}\to\cat{D}$ be a functor and $f:X\to Y$ an isomorphism in $\cat{C}$. Then $F(f)$ is an isomorphism in $\cat{D}$. In particular, $X\iso_{\cat{C}}Y\implies F(X)\iso_{\cat{D}}F(Y)$.
+\end{proposition}
+\begin{proof}[\proofof{th:funciso}]
+    If $g\circ f=\id_X$ and $f\circ g=\id_Y$, then $F(g)\circ F(f)=F(g\circ f)=F(\id_X)=\id_{F(X)}$, and symmetrically.
+\end{proof}
+
+\begin{corollary}{Functorial Invariants}{funcinv}
+    Let $F:\Top\to\cat{D}$ be a functor. If $F(X)\not\iso_{\cat{D}}F(Y)$, then $X\not\iso_{\Top}Y$.
+\end{corollary}
+
+\begin{remark}{Converse Fails}{}
+    $F(X)\iso F(Y)$ says nothing about $X$ and $Y$: the forgetful functor $U:\Top\to\Set$ gives $U(\R)\iso_{\Set}U(\R^2)$, yet $\R\not\iso_{\Top}\R^2$ (below). A good invariant is fine enough to distinguish the spaces we care about, yet computable.
+\end{remark}
+
+\begin{example}{Basic Functors}{basicfun}
+    \begin{itemize}
+        \item The \textbf{forgetful functor} $U:\Top\to\Set$; it is represented by the point, $U\iso\Top(\pt,-)$.
+        \item The \textbf{standard simplices} assemble to a functor $\Delta^\bullet:\Delta\to\Top$, $[n]\mapsto\Simp{n}$, sending monotone $f:[n]\to[m]$ to the affine map \[
+        \Simp{n}\to\Simp{m},\qquad \textstyle\sum_{i}t_ie_i\mapsto\sum_i t_ie_{f(i)}.
+        \]
+        In particular $\delta^i$ gives the inclusion of the $i$-th face $\Simp{n-1}\inj\Simp{n}$.
+    \end{itemize}
+\end{example}
+
+\begin{definition}{Path Components}{pi0}
+    For $X\in\Top$, write $x\sim y$ if there is a path from $x$ to $y$ (an equivalence relation: constant, reversed and concatenated paths). The set of \textbf{path components} is $\pi_0(X)\coloneqq X/{\sim}$. A continuous $f:X\to Y$ induces $\pi_0(f):[x]\mapsto[f(x)]$, well defined since $f\circ\gamma$ is a path. This gives a functor $\pi_0:\Top\to\Set$; $X$ is path-connected iff.\ $\#\pi_0(X)=1$.
+\end{definition}
+
+\begin{proposition}{$\R$ is Not Homeomorphic to $\R^n$}{rrn}
+    For all $n\geq2$ we have $\R\not\iso_{\Top}\R^n$.
+\end{proposition}
+\begin{proof}[\proofof{th:rrn}]
+    Suppose $h:\R\to\R^n$ is a homeomorphism. Then $h$ restricts to a homeomorphism $\R\setminus\{0\}\to\R^n\setminus\{h(0)\}$ (with inverse the restriction of $h\inv$; restrictions of continuous maps are continuous). By Proposition \ref{th:funciso}, $\pi_0$ yields a bijection between
+    \begin{itemize}
+        \item $\pi_0(\R\setminus\{0\})$, which has \textbf{two} elements: $(-\infty,0)$ and $(0,\infty)$ are path-connected, and no path joins $-1$ to $1$ in $\R\setminus\{0\}$ by the IVT;
+        \item $\pi_0(\R^n\setminus\{p\})$, which has \textbf{one} element: any two points can be joined by a straight line, or, if that line passes through $p$, by two straight lines via a point off it (possible as $n\geq2$).
+    \end{itemize}
+    Contradiction.
+\end{proof}
+
+\subsubsection{Natural Transformations in Algebraic Topology}
+
+Many constructions in this course are natural transformations, i.e.\ compatible with all maps of spaces. Some examples:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\aboverulesep}{0pt}\setlength{\belowrulesep}{0pt}
+\begin{tabular}{ll}
+\toprule
+\rowcolor{tableHead}\textbf{Natural transformation} & \textbf{Between functors} \\
+\midrule
+Hurewicz map $\pi_1(X,x_0)\to H_1(X)$ & $\Toppt\to\Grp$ \\
+Connecting map $\bdry:H_n(X,A)\to H_{n-1}(A)$ & $\Toppair\to\Ab$ \\
+Suspension iso $\tilde H_n(X)\iso\tilde H_{n+1}(\Sus X)$ & $\Top\to\Ab$ (natural iso) \\
+Counit $\abs{\Sing X}\to X$ of $\abs{\cdot}\dashv\Sing$ & $\Top\to\Top$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{remark}{Homotopy Invariance, Preview}{}
+    A functor $F:\Top\to\cat{D}$ is \textbf{homotopy invariant} if homotopic maps $f\htpy g$ satisfy $F(f)=F(g)$; equivalently, $F$ factors through the quotient $\Top\to\hTop$. Then homotopy equivalent spaces have isomorphic invariants, which is what makes $\pi_1$ and $H_*$ computable.
+\end{remark}
+
+\newpage
+
+\subsubsection{Abelian Categories}
+
+These will prove to be vital to algebraic topology and homological algebra due to their well-behavedness.
+
+\begin{definition}{Zero Morphism}{zeromor}
+    A \textbf{zero object} $0\in\cat{C}$ is both initial and terminal. For $X,Y\in\cat{C}$, the \textbf{zero morphism} $0_{X,Y}:X\to Y$ is the composite $X\to0\to Y$. Composing with a zero morphism on either side gives a zero morphism.
+\end{definition}
+
+\begin{definition}{Kernel and Cokernel}{kercoker}
+    Let $\cat{C}$ have a zero object and let $f:X\to Y$.
+    \begin{itemize}
+        \item A \textbf{kernel} of $f$ is a morphism $k:K\to X$ with $f\circ k=0$, such that every $g:T\to X$ with $f\circ g=0$ factors as $g=k\circ u$ for a unique $u:T\to K$.
+        \item A \textbf{cokernel} of $f$ is a morphism $c:Y\to C$ with $c\circ f=0$, such that every $g:Y\to T$ with $g\circ f=0$ factors as $g=u\circ c$ for a unique $u:C\to T$.
+    \end{itemize}
+    \[
+    \begin{tikzcd}
+    T \arrow[dr,"g"] \arrow[d,dashed,"\exists!\,u"'] & & \\
+    K \arrow[r,"k"'] & X \arrow[r,"f"'] & Y
+    \end{tikzcd}
+    \qquad
+    \begin{tikzcd}
+    X \arrow[r,"f"] & Y \arrow[r,"c"] \arrow[dr,"g"'] & C \arrow[d,dashed,"\exists!\,u"] \\
+    & & T
+    \end{tikzcd}
+    \]
+    Being universal, they are unique up to unique isomorphism, so we write $\ker f$ and $\coker f$. Kernels are monomorphisms and cokernels are epimorphisms.
+\end{definition}
+
+\begin{example}{Kernels and Cokernels}{kerex}
+    In $\Ab$ (and $\Mod_R$): $\ker f=\{x:f(x)=0\}\inj X$ and $\coker f=Y/\Ima f$ with the quotient map $Y\surj Y/\Ima f$. In $\Grp$ kernels are inclusions of \emph{normal} subgroups, so an injective homomorphism with non-normal image is a mono which is not a kernel.
+\end{example}
+
+\begin{remark}{Kernels and Cokernels as (Co)limits}{kerlim}
+    $\ker f$ is the limit of the diagram $X\rightrightarrows Y$ given by $f$ and $0_{X,Y}$, i.e.\ the equalizer of $f$ and $0$; equivalently, the pullback $X\times_Y0$ of $f$ along $0\to Y$. Dually, $\coker f$ is the coequalizer of $f$ and $0$, i.e.\ the pushout $Y\sqcup_X0$. In an additive category the equalizer of $f,g$ is $\ker(f-g)$ (and likewise for coequalizers), so an additive category with all kernels and cokernels has all finite limits and colimits.
+\end{remark}
+
+\begin{definition}{Normal and Conormal Morphisms}{normal}
+    A monomorphism is \textbf{normal} if it is the kernel of some morphism. An epimorphism is \textbf{conormal} if it is the cokernel of some morphism.
+\end{definition}
+
+\begin{remark}{Normal Morphisms in $\Grp$}{}
+    In $\Grp$ the normal monomorphisms are exactly the inclusions of normal subgroups, and every epimorphism is conormal (surjective homomorphisms are quotients by their kernels). So $\Grp$ fails only the condition on monomorphisms.
+\end{remark}
+
+\begin{definition}{Abelian Category}{abcat}
+    A category $\cat{A}$ is \textbf{abelian} if
+    \begin{itemize}
+        \item it is \textbf{additive}: each $\mor{\cat{A}}{X}{Y}$ is an abelian group, composition is bilinear, and $\cat{A}$ has a zero object and $\cat{A}$ has all finite biproducts;
+        \item every morphism has a kernel and a cokernel;
+        \item every monomorphism is normal and every epimorphism is conormal; equivalently, the canonical map $\coker(\ker f)\to\ker(\coker f)$ is an isomorphism for every $f$.
+    \end{itemize}
+\end{definition}
+
+\begin{example}{Abelian and Non-Abelian Categories}{abex}
+    $\Ab$, $\Mod_R$ and $\Vect_K$ are abelian, and if $\cat{A}$ is abelian then so is $\Ch(\cat{A})$, with kernels and cokernels computed degreewise. $\Grp$, $\Top$ and $\Set$ are not (hom-sets carry no natural group structure, and $\Grp$ has non-normal subgroups).
+\end{example}

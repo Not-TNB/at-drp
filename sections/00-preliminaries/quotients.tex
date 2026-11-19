@@ -1,0 +1,42 @@
+\subsection{Quotients \& Disjoint Unions}
+
+Subspaces and products build maps \emph{into} spaces. To \emph{glue} spaces we need the dual constructions, which are characterised by maps \emph{out of} them.
+
+\begin{definition}{Quotient Topology}{quot}
+    Let $(X,T_X)\in\Top$, $Y\in\Set$ and $p:X\to Y$ surjective. The \textbf{quotient topology} on $Y$ induced by $p$ is \[
+    \{U\subset Y\mid p\inv(U)\in T_X\}.
+    \]
+    Usually $Y=X/{\sim}$ for an equivalence relation $\sim$ on $X$, and $p:x\mapsto[x]$ is the canonical projection.
+\end{definition}
+
+\begin{remark}{Quotient Maps Need Not Be Open}{}
+    $p$ is continuous by construction, but it need not send open sets to open sets. For $p:[0,1]\to[0,1]/(0\sim1)$, the set $U=[0,\tfrac12)$ is open in $[0,1]$, but $p\inv(p(U))=[0,\tfrac12)\cup\{1\}$ is not, so $p(U)$ is not open.
+\end{remark}
+
+\begin{example}{Collapsing a Subspace}{collapse}
+    Let $X\in\Top$ and $A\subset X$. Then $X/A\coloneqq X/{\sim}$, where $a\sim b$ for all $a,b\in A$ (and $x\sim x$ for all $x$), i.e.\ $A$ is crushed to a single point. For instance $[0,1]/\{0,1\}$ is the circle.
+\end{example}
+
+\begin{theorem}{Universal Property of Quotients}{upquot}
+    Let $(X,T_X)\in\Top$, $p:X\to Y$ surjective with $Y$ carrying the quotient topology, and $Z\in\Top$. A map $g:Y\to Z$ is continuous iff.\ $g\circ p:X\to Z$ is continuous. Equivalently, every continuous $f:X\to Z$ which is constant on the fibres of $p$ (i.e.\ $x\sim x'\implies f(x)=f(x')$) factors uniquely through a continuous $\bar f:Y\to Z$.
+    \[\begin{tikzcd}
+        X \arrow[r, "p"] \arrow[rd, "f"'] & Y \arrow[d, dashed, "\exists!\,\bar f"] \\
+        & Z
+    \end{tikzcd}\]
+\end{theorem}
+\begin{proof}[\proofof{th:upquot}]
+    If $g$ is continuous then so is $g\circ p$. Conversely, if $g\circ p$ is continuous and $U\subset_{\text{op}}Z$, then $p\inv(g\inv(U))=(g\circ p)\inv(U)$ is open in $X$, so $g\inv(U)$ is open in $Y$ by definition of the quotient topology.
+\end{proof}
+
+\begin{definition}{Disjoint Union Topology}{dunion}
+    Let $(X_i)_{i\in I}$ be a family in $\Top$ with canonical inclusions $\iota_j:X_j\to\bigsqcup_{i\in I}X_i$. The \textbf{disjoint union topology} is \[
+    \Big\{U\subset\bigsqcup_{i\in I}X_i \ \Big|\ \forall j\in I:\iota_j\inv(U)\subset_{\text{op}}X_j\Big\}.
+    \]
+    We usually view each $X_j$ as a subset of $\bigsqcup_{i}X_i$.
+\end{definition}
+
+\begin{theorem}{Universal Property of Disjoint Unions}{updunion}
+    For every $Z\in\Top$ and family of continuous maps $(f_i:X_i\to Z)_{i\in I}$ there is exactly one continuous $f:\bigsqcup_{i}X_i\to Z$ with $f\circ\iota_i=f_i$ for all $i$. That is, $\bigsqcup_i X_i$ is the \textbf{coproduct} in $\Top$.
+\end{theorem}
+
+Quotients and disjoint unions are both colimits in $\Top$.

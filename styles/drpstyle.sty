@@ -1,0 +1,286 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{styles/drpstyle}[2026/11/19 DRP notes: shared look and general maths macros]
+
+% =====================================================================
+%  PACKAGES
+% =====================================================================
+% --- Fonts & text ---
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+\RequirePackage{microtype}
+\RequirePackage{parskip}
+
+% --- Layout ---
+\RequirePackage{geometry}
+\RequirePackage{titlesec}
+\RequirePackage{enumitem}
+
+% --- Maths ---
+\RequirePackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\RequirePackage{bm}
+\RequirePackage{mathrsfs}
+\RequirePackage{stmaryrd}      % \shortrightarrow, \llbracket, ...
+\RequirePackage{nicematrix}    % boundary matrices, block matrices
+
+% --- Colour, graphics ---
+\RequirePackage[dvipsnames]{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{adjustbox}
+\RequirePackage{capt-of}
+% \RequirePackage{animate}     % homotopy animations (Acrobat / Okular only)
+
+% --- Tables ---
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{colortbl}
+
+% --- Boxes ---
+\RequirePackage[most]{tcolorbox}
+
+% =====================================================================
+%  PAGE SETUP
+% =====================================================================
+\newlength{\pagemargin}
+\setlength{\pagemargin}{1cm}
+\geometry{margin=\pagemargin, footskip=0.5cm}
+\pagestyle{plain}
+\graphicspath{{figures/img/}}
+
+\setlength{\emergencystretch}{3em}
+\tolerance=1500
+\hbadness=2000
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\raggedbottom
+\allowdisplaybreaks[4]
+
+% =====================================================================
+%  COLOURS
+% =====================================================================
+% Palette 12: ocean mist / gunmetal / bright red, dust-grey neutrals
+\definecolor{paper}{HTML}{FFFFFF}
+\definecolor{ink}{HTML}{1B1E20}            % dark gunmetal (text, banners, borders)
+\definecolor{accentA}{HTML}{44BBA4}        % ocean mist (title-page rule)
+\definecolor{accentB}{HTML}{D3D0CB}        % dust grey (secondary text on dark)
+\definecolor{tint}{HTML}{E7E5DF}           % alabaster tint
+
+% Box colours
+\definecolor{theoremCol}{HTML}{17565E}     % deep teal (theorem = proposition)
+\definecolor{lemmaCol}{HTML}{2F947E}       % ocean mist, deepened
+\definecolor{corollaryCol}{HTML}{328FAE}   % blue-teal
+\definecolor{definitionCol}{HTML}{EB4D48}  % bright red
+\definecolor{proofCol}{HTML}{1B1E20}       % dark gunmetal (solid header)
+\definecolor{exerciseCol}{HTML}{3A4044}    % mid gunmetal (dashed outline)
+\definecolor{gapCol}{HTML}{EB4D48}         % bright red (dashed outline)
+\definecolor{exampleCol}{HTML}{D3D0CB}     % dust grey (examples, remarks)
+\definecolor{sectionbg}{HTML}{1B1E20}
+\definecolor{tableHead}{HTML}{E7E5DF}
+\definecolor{tableRule}{HTML}{D3D0CB}
+% Page and text colour (comment out the next line for a white page when printing)
+\pagecolor{paper}
+\color{ink}
+
+% =====================================================================
+%  HEADINGS
+% =====================================================================
+% TikZ externalisation hook: no-op unless styles/tikzstyle redefines it.
+% Put it immediately before every `remember picture, overlay' picture.
+\newcommand{\noexternal}{}
+
+% The banner is full-bleed left/right, and also fills the top margin (sections start a new page).
+\newcommand{\sectionbanner}[2]{%
+  {\setlength{\fboxsep}{0pt}%
+  \noindent\makebox[\linewidth][l]{%
+  \noexternal\tikz[remember picture,overlay]{\coordinate (sbpos) at (0,0.3em);
+    \fill[sectionbg] (current page.north west) rectangle (current page.north east |- sbpos);}%
+  \hspace*{-\pagemargin}%
+  \colorbox{sectionbg}{%
+    \parbox[c][1.9em]{\dimexpr\linewidth+2\pagemargin\relax}{%
+      \hspace*{\pagemargin}#1#2}}}}}
+\titleformat{\section}[block]
+  {\sffamily\Large\bfseries\color{paper}}{}{0pt}
+  {\sectionbanner{\thesection\quad}}
+\titleformat{name=\section,numberless}[block]
+  {\sffamily\Large\bfseries\color{paper}}{}{0pt}
+  {\sectionbanner{}}
+\titlespacing*{\section}{0pt}{1.2em}{0.8em}
+% every section starts on a new page, so its banner sits flush with the top of the page
+\let\oldsection\section
+\renewcommand{\section}{\clearpage\oldsection}
+
+% Full-page section divider image:  \sectionpage{section0}  (file in figures/img/; put directly before \section)
+\newcommand{\sectionpage}[1]{%
+  \clearpage\thispagestyle{empty}%
+  \noexternal
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north west, inner sep=0] at (current page.north west)
+      {\includegraphics[width=\paperwidth, height=\paperheight]{#1}};
+  \end{tikzpicture}%
+  \null\clearpage}
+
+
+\titleformat*{\subsection}{\sffamily\large\bfseries}
+\titleformat*{\subsubsection}{\sffamily\normalsize\bfseries}
+\titleformat*{\paragraph}{\sffamily\bfseries}
+
+\setcounter{tocdepth}{2}
+
+% =====================================================================
+%  THEOREM BOXES  (one shared counter, numbered within section)
+% =====================================================================
+\tcbset{
+  mythmstyle/.style={
+    breakable, enhanced, boxrule=1pt, sharp corners,
+    colback=#1!9!paper, colframe=#1, colbacktitle=#1!85!ink,
+    coltitle=paper, coltext=ink,
+    fonttitle=\sffamily\bfseries, fontupper=\sffamily,
+    toptitle=4pt, bottomtitle=4pt,
+    before skip=10pt, after skip=10pt,
+    separator sign={~},
+    description delimiters={\hfill\normalfont\sffamily\bfseries}{},
+  }
+}
+
+% Soft variant (lemma, corollary): tinted title bar with coloured text, so theorem and definition stand out
+\tcbset{
+  softthmstyle/.style={
+    mythmstyle=#1,
+    colbacktitle=#1!18!paper, coltitle=#1!85!ink,
+    colback=#1!5!paper,
+  }
+}
+
+% Light style for examples and remarks: grey side rule, inline bold label, no title bar
+\tcbset{
+  lightstyle/.style={
+    breakable, enhanced, frame hidden, boxrule=0pt, sharp corners,
+    colback=#1!18!paper, coltext=ink,
+    borderline west={2.5pt}{0pt}{#1},
+    left=9pt, right=6pt, top=3pt, bottom=3pt,
+    before skip=7pt, after skip=7pt,
+    fontupper=\sffamily\small,
+    attach title to upper={\ },
+    fonttitle=\sffamily\bfseries\small\color{ink!75!paper},
+    separator sign={.},
+    description delimiters={(}{)},
+  }
+}
+
+% Outlined style (no filled title bar): #1 = colour, #2 = line pattern (solid or dashed)
+\tcbset{
+  outlinestyle/.style 2 args={
+    breakable, enhanced, sharp corners, frame hidden, boxrule=0pt,
+    colback=paper, coltext=ink, colbacktitle=paper, coltitle=#1,
+    fonttitle=\sffamily\bfseries, fontupper=\sffamily,
+    toptitle=4pt, bottomtitle=2pt,
+    before skip=10pt, after skip=10pt,
+    separator sign={~},
+    description delimiters={\hfill\normalfont\sffamily\bfseries}{},
+    overlay={\draw[draw=#1,line width=1.2pt,#2]
+      ([shift={(0.6pt,0.6pt)}]frame.south west) rectangle ([shift={(-0.6pt,-0.6pt)}]frame.north east);},
+  }
+}
+
+\newtcbtheorem[number within=section]{theorem}{Theorem}{mythmstyle=theoremCol}{th}
+\NewEnvironmentCopy{proposition}{theorem}   % proposition = theorem (one box type)
+\newtcbtheorem[use counter from=theorem]{definition}{Definition}{mythmstyle=definitionCol}{def}
+\newtcbtheorem[use counter from=theorem]{lemma}{Lemma}{softthmstyle=lemmaCol}{lem}
+\newtcbtheorem[use counter from=theorem]{corollary}{Corollary}{softthmstyle=corollaryCol}{cor}
+\newtcbtheorem[use counter from=theorem]{example}{Example}{lightstyle=exampleCol}{ex}
+\newtcbtheorem[use counter from=theorem]{remark}{Remark}{lightstyle=exampleCol}{rem}
+% Hatcher exercise:  \begin{exercise}{Hatcher 2.1.5}{ex:label} ... \end{exercise}
+\newtcbtheorem[use counter from=theorem]{exercise}{Exercise}{outlinestyle={exerciseCol}{dashed}}{exc}
+
+% Proof box:  \begin{proof} ... \end{proof}
+%         or  \begin{proof}[\proofof{th:label}] ... \end{proof}
+\renewenvironment{proof}[1][\proofname]{%
+  \begin{tcolorbox}[mythmstyle=proofCol, title={#1}]%
+}{%
+  \qed\end{tcolorbox}%
+}
+\newcommand{\proofof}[1]{Proof (\nameref{#1})}
+
+% Gap box: a step the source skips, filled in by me.
+%   \begin{gap}[optional title] ... \end{gap}
+\newtcolorbox{gap}[1][Gap filled]{%
+  outlinestyle={gapCol}{dashed}, before skip=8pt, after skip=8pt,
+  title={#1}}
+
+% =====================================================================
+%  FIGURE BOX
+% =====================================================================
+\newenvironment{figureBox}{%
+  \begin{tcolorbox}[breakable,boxrule=1pt,sharp corners,colback=ink!3!paper,colframe=ink,boxsep=0.3em]\centering
+  \begin{adjustbox}{scale=1.1,max width=\linewidth,max totalheight=0.85\textheight}%
+}{%
+  \end{adjustbox}%
+  \end{tcolorbox}%
+  \vspace{-6pt}%
+}
+
+% =====================================================================
+%  MATHS MACROS
+% =====================================================================
+% --- Number systems & fields ---
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\F}{\mathbb{F}}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+
+% --- Operators ---
+\DeclareMathOperator{\Ima}{Im}
+\DeclareMathOperator{\coker}{coker}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Ext}{Ext}
+\DeclareMathOperator{\Tor}{Tor}
+\DeclareMathOperator{\colim}{colim}
+
+% --- Delimiters ---
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\gen}{\langle}{\rangle}     % \gen{a,b}  generated group
+
+% --- Categories (Loh: Top, Group; here sans-serif) ---
+\newcommand{\cat}[1]{\bm{\mathsf{#1}}}
+\newcommand{\Set}{\cat{Set}}
+\newcommand{\Grp}{\cat{Grp}}
+\newcommand{\Ab}{\cat{Ab}}
+\newcommand{\Top}{\cat{Top}}
+\newcommand{\Ch}{\cat{Ch}}
+\newcommand{\sSet}{\cat{sSet}}
+\newcommand{\Vect}{\cat{Vect}}
+\newcommand{\Ring}{\cat{Ring}}
+\newcommand{\Mod}{\cat{Mod}}
+\newcommand{\op}{^{\mathrm{op}}}
+\newcommand{\mor}[3]{#1(#2,#3)}                     % C(X,Y) hom-set, Riehl style
+
+% --- Isomorphism & restriction ---
+\newcommand{\iso}{\cong}
+\newcommand{\restr}[2]{\mathopen{}\left.#1\right|_{#2}\mathclose{}}
+
+% --- Arrows ---
+\newcommand{\xto}[1]{\xrightarrow{#1}}
+\newcommand{\longto}{\longrightarrow}
+\newcommand{\inj}{\hookrightarrow}
+\newcommand{\surj}{\twoheadrightarrow}
+\newcommand{\mapstoo}{\longmapsto}
+
+% --- Matrices ---
+\newcommand{\pmat}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newcommand{\bmat}[1]{\begin{bmatrix}#1\end{bmatrix}}
+\newcommand{\spmat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
+\newcommand{\T}{^{\mathsf{T}}}
+\newcommand{\inv}{^{-1}}
+
+% --- Cross-references (load last) ---
+\RequirePackage[hidelinks]{hyperref}
+
+\endinput

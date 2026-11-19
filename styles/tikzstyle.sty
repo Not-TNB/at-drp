@@ -1,0 +1,31 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{styles/tikzstyle}[2026/11/19 DRP notes: TikZ setup and externalisation]
+
+\RequirePackage{tikz}
+\RequirePackage{tikz-cd}
+\usetikzlibrary{calc,backgrounds,fit,positioning,arrows.meta,
+                decorations.markings,decorations.pathreplacing,
+                shapes.geometric,patterns,3d}
+
+% --- Diagram colours ---
+\definecolor{diagA}{HTML}{E8472A}   % orange-red
+\definecolor{diagB}{HTML}{2B6A9B}   % blue
+\definecolor{diagC}{HTML}{8B1A63}   % purple
+
+% =====================================================================
+%  EXTERNALISATION  (needs -shell-escape; see .latexmkrc)
+% =====================================================================
+\usetikzlibrary{external}
+\tikzexternalize[prefix=figures/cache/]
+% externalised figures must not paint \pagecolor, or they hide the figureBox tint
+\tikzifexternalizing{\AtBeginDocument{\nopagecolor}}{}
+% per-section figure names so \includeonly doesn't renumber/rebuild the cache
+\AddToHook{include/before}{\edef\drp@fig{sec\the\numexpr\value{section}+1\relax-figure}%
+  \expandafter\tikzsetfigurename\expandafter{\drp@fig}}
+% \noexternal (no-op in drpstyle): don't externalise the next picture.
+% Must come BEFORE remember-picture/overlay pictures; a key inside the picture is applied too late.
+\renewcommand{\noexternal}{\tikzset{external/export next=false}}
+\tcbset{shield externalize}   % tcolorbox frames are TikZ; never externalise them
+\AddToHook{env/tikzcd/begin}{\tikzexternaldisable}   % externalize can't scan tikzcd bodies
+
+\endinput

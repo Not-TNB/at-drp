@@ -1,0 +1,132 @@
+\subsection{Compactness}
+
+\begin{definition}{Compactness}{}
+    $(X,T)\in\Top$ is compact if every open cover of $X$ contains a finite subcover. In other words \[
+    \forall {(U_i)_{i\in I}} :X=\bigcup_{i\in I}U_i \implies \left[ \exists {J\subset_{\text{finite}}I} : X=\bigcup_{i\in J}U_i \right]
+    \]
+\end{definition}
+
+% Compactness: finite subcover of [0,1] vs. the cover (1/n,1] of (0,1] with no finite subcover
+\begin{figureBox}
+\begin{tikzpicture}[lab/.style={font=\sffamily\small, inner sep=1.5pt}]
+  % ---------- [0,1] : finite subcover ----------
+  \draw[ink, thick] (0,0) -- (9,0);
+  \fill[ink] (0,0) circle (1.8pt) (9,0) circle (1.8pt);
+  \node[lab, anchor=north] at (0,-0.05) {$0$};
+  \node[lab, anchor=north] at (9,-0.05) {$1$};
+  \draw[diagB, line width=1.6pt] (-0.72,0.28) -- (2.88,0.28);
+  \draw[diagB, fill=diagB!10!paper, thick] (-0.72,0.28) circle (1.6pt) (2.88,0.28) circle (1.6pt);
+  \draw[diagB, line width=1.6pt] (1.98,0.48) -- (5.22,0.48);
+  \draw[diagB, fill=diagB!10!paper, thick] (1.98,0.48) circle (1.6pt) (5.22,0.48) circle (1.6pt);
+  \draw[diagB, line width=1.6pt] (4.32,0.28) -- (7.47,0.28);
+  \draw[diagB, fill=diagB!10!paper, thick] (4.32,0.28) circle (1.6pt) (7.47,0.28) circle (1.6pt);
+  \draw[diagB, line width=1.6pt] (6.66,0.48) -- (9.72,0.48);
+  \draw[diagB, fill=diagB!10!paper, thick] (6.66,0.48) circle (1.6pt) (9.72,0.48) circle (1.6pt);
+  \node[lab, text=diagB, anchor=west] at (10.0,0.25) {$[0,1]$: four sets suffice};
+
+  % ---------- (0,1] : no finite subcover ----------
+  \draw[ink, thick] (0,-2.2) -- (9,-2.2);
+  \draw[ink, fill=paper, thick] (0,-2.2) circle (1.8pt);
+  \fill[ink] (9,-2.2) circle (1.8pt);
+  \node[lab, anchor=north] at (0,-2.25) {$0$};
+  \node[lab, anchor=north] at (9,-2.25) {$1$};
+  \draw[diagA, line width=1.2pt] (4.500,-2.00) -- (9.0,-2.00);
+  \draw[diagA, fill=paper, thick] (4.500,-2.000) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (3.000,-1.91) -- (9.0,-1.91);
+  \draw[diagA, fill=paper, thick] (3.000,-1.910) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (2.250,-1.82) -- (9.0,-1.82);
+  \draw[diagA, fill=paper, thick] (2.250,-1.820) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (1.800,-1.73) -- (9.0,-1.73);
+  \draw[diagA, fill=paper, thick] (1.800,-1.730) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (1.500,-1.64) -- (9.0,-1.64);
+  \draw[diagA, fill=paper, thick] (1.500,-1.640) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (1.286,-1.55) -- (9.0,-1.55);
+  \draw[diagA, fill=paper, thick] (1.286,-1.550) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (1.125,-1.46) -- (9.0,-1.46);
+  \draw[diagA, fill=paper, thick] (1.125,-1.460) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (1.000,-1.37) -- (9.0,-1.37);
+  \draw[diagA, fill=paper, thick] (1.000,-1.370) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (0.900,-1.28) -- (9.0,-1.28);
+  \draw[diagA, fill=paper, thick] (0.900,-1.280) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (0.818,-1.19) -- (9.0,-1.19);
+  \draw[diagA, fill=paper, thick] (0.818,-1.190) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (0.750,-1.10) -- (9.0,-1.10);
+  \draw[diagA, fill=paper, thick] (0.750,-1.100) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (0.692,-1.01) -- (9.0,-1.01);
+  \draw[diagA, fill=paper, thick] (0.692,-1.010) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (0.643,-0.92) -- (9.0,-0.92);
+  \draw[diagA, fill=paper, thick] (0.643,-0.920) circle (1.2pt);
+  \draw[diagA, line width=1.2pt] (0.600,-0.83) -- (9.0,-0.83);
+  \draw[diagA, fill=paper, thick] (0.600,-0.830) circle (1.2pt);
+  \node[lab, text=diagA, anchor=west, align=left] at (10.0,-1.40)
+    {$(0,1]$: the sets $\left(\tfrac1n,1\right]$\\never reach $0$ finitely};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Compactness via open covers: $[0,1]$ is compact, while $(0,1]=\bigcup_{n\ge2}\left(\tfrac1n,1\right]$ has no finite subcover.}
+
+\begin{example}{}{}
+    Let $X\in\Set$. \begin{itemize}
+        \item $X$ is compact wrt. the trivial topology.
+        \item $X$ is compact wrt. the discrete topology iff. $X$ is finite.
+    \end{itemize}
+\end{example}
+
+Intuitively this is understood as a finiteness property of topological spaces.
+We see that $[0,1]$ is compact wrt. the standard topology, meaning that every continuous map $[0,1]\to \R$ attains a minimum and maximum. More generally:
+
+\begin{theorem}{Generalised Maximum Principle}{gmp}
+    Let $(X,T_X),(Y,T_Y)\in\Top$. \begin{itemize}
+        \item Let $f:X\to Y$ be continuous. If $X$ is compact then so is $f(X)$.
+        \item Compactness is homeomorphism invariant.
+    \end{itemize}
+\end{theorem}
+
+\newpage
+
+The Heine-Borel theorem gives us a simple characterisation of compact sets in $\R^n$. 
+
+\begin{theorem}{Heine-Borel Theorem}{}
+    Let $n\in\N$ and $A\subset \R^n$ endowed with the subspace topology of the standard topology on $\R^n$. The following are equivalent:\begin{enumerate}
+        \item $A$ is compact.
+        \item $A$ is closed and bounded wrt. the Euclidean metric on $\R^n$.
+        \item $A$ is sequentially compact wrt. the Euclidean metric (i.e. every sequence in $A$ has a subsequence converging to a limit in $A$). (This is deduced from Bolzano-Weierstrass)
+    \end{enumerate}
+\end{theorem}
+
+Every compact subspace of a metric space is closed and bounded, but the converse is not true. An example is infinite sets -- these are closed and bounded wrt. the discrete metric but they are obviously not compact. A more general relationship between closedness and compactness yields a useful sufficient homeomorphism criterion:
+
+\begin{theorem}{Closed vs. Compact}{cvc}
+    Let $(X,T)\in\Top$ and let $Y\subset X$. \begin{itemize}
+        \item If $X$ is compact and $Y\subset_{\text{cl}}X$ then $Y$ is also compact.
+        \item If $X$ is Hausdorff and $Y$ is compact then $Y\subset_{\text{cl}}X$.
+    \end{itemize}
+\end{theorem}
+
+\begin{corollary}{Compact-Hausdorff Trick}{cht}
+    Let $(X,T_X)\in\Top$ be compact and $(Y,T_Y)\in\Top$ be Hausdorff, and let $f:X\to Y$ be continuous and bijective. Then $f$ is a homeomorphism.
+\end{corollary}
+\begin{proof}[\proofof{cor:cht}]
+    $f$ is bijective so it admits an inverse in $\Set$, say $g:Y\to X$. It suffices to show that $g$ is continuous, and equivalently it suffices to show that $f$-images of closed subsets of $X$ are also closed in $Y$.\\
+
+    So we take an arbitrary closed subset of $X$ and observe the following: \begin{align*}
+        A\subset_{\text{cl}}X &\implies A  \text{ compact} \tag{Theorem \ref{th:cvc}, since $X$ compact}\\
+        &\implies f(A) \text{ compact} \tag{Theorem \ref{th:gmp}, since $f$ continuous}\\
+        &\implies f(A)\subset_{\text{cl}}Y \tag{Theorem \ref{th:cvc}, since $Y$ Hausdorff}
+    \end{align*}
+\end{proof}
+
+Compactness becomes fiddly under taking products.
+
+\begin{theorem}{Product of Two Compact Spaces}{}
+    Let $(X,T_X),(Y,T_Y)\in\Top$ be compact. Then $X\times Y$ is also compact wrt. the product topology.
+\end{theorem}
+
+\begin{theorem}{Tychonoff's Theorem}{}
+    Let $(X_i)_{i\in I}$ be a family of compact spaces. Then $\prod_{i\in I}X_i$ is also compact.
+\end{theorem}
+
+\begin{remark}{}{}
+    Tychonoff's theorem is foundational to general topology, and is equivalent to the AoC (and hence to Zorn's Lemmas and the Well Ordering Theorem).
+\end{remark}
+
+\newpage

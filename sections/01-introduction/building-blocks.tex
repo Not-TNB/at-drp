@@ -1,0 +1,341 @@
+\subsection{Topological Building Blocks}
+
+\subsubsection{Construction via Subspaces}
+
+\begin{definition}{Balls, Spheres \& Simplices}{}
+    Let $n\in\N$. We define \begin{align*}
+        \Disk{n} &\coloneq \{x\in\R^n\mid\norm{x}_2 \leq 1\} \subset \R^n \tag{$n$-dimensional ball} \\
+        \Sph{n} &\coloneq \{x\in\R^{n+1}\mid\norm{x}_2=1\} \subset \R^{n+1} \tag{$n$-dimensional sphere} \\
+        \Simp{n} & \coloneqq \left\{x\in\R^{n+1} \mid x_1,\cdots,x_{n+1}\geq 0 \land \sum_{j=1}^{n+1}x_j=1\right\} \subset \R^{n+1} \tag{$n$-dimensional simplex}
+    \end{align*}
+    each of which is endowed with the subspace topology of the standard topology on $\R^n$.
+\end{definition}
+
+We also view $\Simp{n}$ as the convex hull of standard basis $\{e_1,e_2,\cdots,e_{n+1}\}$ of $\R^{n+1}$.
+
+% Model spaces: standard simplices, balls, spheres  (column n: Delta^n, D^n, S^{n-1} = boundary of D^n)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    ax/.style={ink!30!paper, line width=0.4pt},
+    dot/.style={circle, inner sep=1.7pt}]
+  \def\r{0.8}
+  % ===================== row 1: simplices =====================
+  % Delta^0 in R^1
+  \draw[ax] (-0.6,0) -- (1.0,0);
+  \node[dot, fill=diagB] at (0.8,0) {};
+  \node[tick, anchor=north] at (0,-0.12) {$0$};
+  \node[tick, anchor=north] at (0.8,-0.12) {$1$};
+  \node[lab] at (0.2,-1.3) {$\Delta^0$};
+  % Delta^1 in R^2
+  \begin{scope}[xshift=3.6cm]
+    \draw[ax] (-0.7,-0.0) -- (1.1,0);  \draw[ax] (-0.3,-0.4) -- (-0.3,1.0);
+    \draw[diagB, line width=1.6pt] (0.5,0) -- (-0.3,0.8);
+    \node[tick, anchor=north] at (0.5,-0.02) {$(1,0)$};
+    \node[tick, anchor=east] at (-0.32,0.8) {$(0,1)$};
+    \node[lab] at (0.2,-1.3) {$\Delta^1$};
+  \end{scope}
+  % Delta^2 in R^3
+  \begin{scope}[xshift=7.2cm]
+    \draw[ax] (0,0) -- (1.1,0);  \draw[ax] (0,0) -- (0,1.05);  \draw[ax] (0,0) -- (-0.75,-0.6);
+    \draw[diagB, thick, fill=diagB!14!paper] (-0.55,-0.45) -- (0.85,0) -- (0,0.85) -- cycle;
+    \node[lab] at (0.2,-1.3) {$\Delta^2$};
+  \end{scope}
+  % Delta^3 (tetrahedron)
+  \begin{scope}[xshift=10.8cm]
+    \fill[diagB!14!paper] (-0.55,-0.5) -- (0.9,-0.1) -- (0,0.85) -- (-0.6,0.25) -- cycle;
+    \draw[diagB, thick] (-0.55,-0.5) -- (0.9,-0.1) -- (0,0.85) -- (-0.6,0.25) -- cycle;
+    \draw[diagB, thick] (-0.55,-0.5) -- (0,0.85);
+    \draw[diagB, thick, dashed] (-0.6,0.25) -- (0.9,-0.1);
+    \node[lab] at (0.2,-1.3) {$\Delta^3$};
+  \end{scope}
+
+  % ===================== row 2: balls =====================
+  \begin{scope}[yshift=-2.9cm]
+    \node[dot, fill=diagC] at (0.2,0) {};
+    \node[lab] at (0.2,-1.3) {$D^0$};
+    \begin{scope}[xshift=3.6cm]
+      \draw[ax] (-0.9,0) -- (1.3,0);
+      \draw[diagC, line width=1.6pt] (0.2-\r,0) -- (0.2+\r,0);
+      \node[tick, anchor=north] at (0.2-\r,-0.05) {$-1$};
+      \node[tick, anchor=north] at (0.2+\r,-0.05) {$1$};
+      \node[lab] at (0.2,-1.3) {$D^1$};
+    \end{scope}
+    \begin{scope}[xshift=7.2cm]
+      \draw[ax] (-0.9,0) -- (1.3,0);  \draw[ax] (0.2,-0.92) -- (0.2,0.92);
+      \draw[diagC, thick, fill=diagC!12!paper, fill opacity=0.85] (0.2,0) circle (\r);
+      \node[lab] at (0.2,-1.3) {$D^2$};
+    \end{scope}
+    \begin{scope}[xshift=10.8cm]
+      \draw[diagC, thick, fill=diagC!12!paper] (0.2,0) circle (\r);
+      \draw[diagC, thick, dashed] (0.2+\r,0) arc (0:180:\r cm and 0.25cm);
+      \draw[diagC, thick] (0.2-\r,0) arc (180:360:\r cm and 0.25cm);
+      \node[lab] at (0.2,-1.3) {$D^3$};
+    \end{scope}
+  \end{scope}
+
+  % ===================== row 3: spheres  S^{n-1} = boundary D^n =====================
+  \begin{scope}[yshift=-5.8cm]
+    \node[lab, text=diagA] at (0.2,0) {$\emptyset$};
+    \node[lab] at (0.2,-1.3) {$S^{-1}$};
+    \begin{scope}[xshift=3.6cm]
+      \draw[ax] (-0.9,0) -- (1.3,0);
+      \node[dot, fill=diagA] at (0.2-\r,0) {};
+      \node[dot, fill=diagA] at (0.2+\r,0) {};
+      \node[tick, anchor=north] at (0.2-\r,-0.12) {$-1$};
+      \node[tick, anchor=north] at (0.2+\r,-0.12) {$1$};
+      \node[lab] at (0.2,-1.3) {$S^0$};
+    \end{scope}
+    \begin{scope}[xshift=7.2cm]
+      \draw[ax] (-0.9,0) -- (1.3,0);  \draw[ax] (0.2,-0.92) -- (0.2,0.92);
+      \draw[diagA, thick] (0.2,0) circle (\r);
+      \node[lab] at (0.2,-1.3) {$S^1$};
+    \end{scope}
+    \begin{scope}[xshift=10.8cm]
+      \draw[diagA, thick] (0.2,0) circle (\r);
+      \draw[diagA, thick, dashed] (0.2+\r,0) arc (0:180:\r cm and 0.25cm);
+      \draw[diagA, thick] (0.2-\r,0) arc (180:360:\r cm and 0.25cm);
+      \node[lab] at (0.2,-1.3) {$S^2$};
+    \end{scope}
+  \end{scope}
+
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Standard simplices $\Delta^n\subset\R^{n+1}$, balls $D^n\subset\R^n$ and spheres $S^{n-1}=\partial D^n$, for $n=0,\dots,3$.}
+
+\begin{remark}{}{}
+    $\Disk{n}\iso_{\Top}\Simp{n}$. However we typically prefer to work with simplices since their combinatorial structures makes them more convenient to study.
+\end{remark}
+
+\newpage
+
+\subsubsection{Construction via Products}
+
+\begin{definition}{$n$-dimensional Torus}{}
+    Let $n\in\N$. The $n$-dimensional torus is the $n$-fold cartesian product $(S^1)^n$ endowed with the product topology.
+\end{definition}
+
+% n-dimensional tori  T^n = (S^1)^n = [0,1]^n / (opposite faces identified)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    a1/.style={decoration={markings, mark=at position 0.58 with {\arrow{Stealth[length=5pt]}}}, postaction={decorate}},
+    a2/.style={decoration={markings, mark=at position 0.5 with {\arrow{Stealth[length=5pt]}},
+                                     mark=at position 0.64 with {\arrow{Stealth[length=5pt]}}}, postaction={decorate}}]
+
+  % ---------- T^1 = S^1 ----------
+  \draw[diagA, thick] (0,0) circle (0.9);
+  \node[lab] at (0,-1.95) {$T^1=S^1$};
+
+  % ---------- T^2 = S^1 x S^1 (surface) ----------
+  \begin{scope}[xshift=3.9cm]
+    \draw[ink, thick, fill=diagC!8!paper] (0,0) ellipse (1.75 and 1.0);
+    \draw[ink, thick] (-0.75,0.08) .. controls (-0.35,-0.25) and (0.35,-0.25) .. (0.75,0.08);
+    \draw[ink, thick] (-0.6,-0.04) .. controls (-0.3,0.18) and (0.3,0.18) .. (0.6,-0.04);
+    % longitude (orange)
+    \draw[diagA, thick] (0,-0.05) ellipse (1.27 and 0.62);
+    % meridian (blue): front solid, back dashed
+    \draw[diagB, thick] (0,-0.18) arc (90:270:0.2 and 0.41);
+    \draw[diagB, thick, dashed] (0,-1.0) arc (-90:90:0.2 and 0.41);
+    \node[lab] at (0,-1.95) {$T^2=S^1\times S^1$};
+  \end{scope}
+
+  % ---------- X x [0,1] as a timeline ----------
+  \begin{scope}[xshift=7.8cm]
+    \def\L{5.0}
+    % time axis
+    \draw[ink!45!paper, -{Stealth[length=4pt]}] (-0.3,-1.15) -- (\L+0.6,-1.15) node[lab, text=ink!60!paper, anchor=west] {$t$};
+    \foreach \t/\lbl in {0/0, 0.5/\tfrac12, 1/1}
+      \draw[ink!45!paper] (\t*\L,-1.08) -- (\t*\L,-1.22) node[lab, text=ink!60!paper, anchor=north] {$\lbl$};
+    % cylinder walls
+    \fill[diagC!8!paper] (0,-0.85) rectangle (\L,0.85);
+    \draw[diagC, thick] (0,0.85) -- (\L,0.85);
+    \draw[diagC, thick] (0,-0.85) -- (\L,-0.85);
+    % slices X x {t}
+    \draw[diagC, thick, fill=diagC!16!paper] (0,0) ellipse (0.32 and 0.85);
+    \draw[diagC, dashed] (0.5*\L,0) ellipse (0.32 and 0.85);
+    \draw[diagC, thick, fill=diagC!16!paper] (\L,0) ellipse (0.32 and 0.85);
+    % a point x moving through time
+    \draw[diagA, thick] (0.08,0.3) -- (\L+0.08,0.3);
+    \foreach \t in {0,0.5,1} \fill[diagA] (\t*\L+0.08,0.3) circle (1.6pt);
+    \node[lab, font=\sffamily\footnotesize, text=diagA, anchor=north] at (1.25,0.24) {$\{x\}\times[0,1]$};
+    % labels
+    \node[lab, text=diagC, anchor=south] at (0,0.88) {$X\times\{0\}$};
+    \node[lab, text=diagC, anchor=south] at (\L,0.88) {$X\times\{1\}$};
+    \node[lab] at (0.5*\L,-1.95) {$X\times[0,1]$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Left: tori $T^1=S^1$ and $T^2=S^1\times S^1$. Right: the cylinder $X\times[0,1]$.}
+
+If $X$ is a topological space, then the product $X\times I,I=[0,1]$ allows us to model the ``timeline`` of points in $X$ through the ``time`` interval $I$; this will be useful in defining deformation concepts like homotopy.\\
+
+\begin{remark}{Universal Property of Products in $\Top$}{upprod}
+    Let $X_1,X_2\in\Top$ and let $p_k:X_1\times X_2\to X_k$ be the projections, which are continuous for the product topology. Then for every $Y\in\Top$ and all continuous $f_1:Y\to X_1$, $f_2:Y\to X_2$ there is exactly one continuous $f:Y\to X_1\times X_2$ with $p_1\circ f=f_1$ and $p_2\circ f=f_2$:
+    \[\begin{tikzcd}[column sep=large, row sep=large]
+        & Y \arrow[ld, "f_1"'] \arrow[d, dashed, "\exists!\,f"] \arrow[rd, "f_2"] & \\
+        X_1 & X_1\times X_2 \arrow[l, "p_1"] \arrow[r, "p_2"'] & X_2
+    \end{tikzcd}\]
+    Specifically we have $f=(f_1,f_2)$. For continuity it suffices to check basic open sets: $f\inv(U_1\times U_2)=f_1\inv(U_1)\cap f_2\inv(U_2)$ is open. Hence $(X_1\times X_2,p_1,p_2)$ is the categorical product in $\Top$, and the product topology is the coarsest topology on $X_1\times X_2$ making both projections continuous. The same holds for arbitrary families $(X_i)_{i\in I}$ with $\prod_{i\in I}X_i$.
+\end{remark}
+
+\subsubsection{Construction via Quotients}
+
+Many spaces are describable by \textbf{glueing}, where we begin with a space and declare which sets of points are to be collapsed together. We saw formally that for $X\in\Top$ and an equivalence relation $\sim$ on $X$, we give $X/{\sim}$ the quotient topology (Definition \ref{def:quot}), i.e. the finest topology making the projection $p:X\to X/{\sim}$ continuous.
+
+\begin{example}{Möbius Strip}{mobius}
+    The \textbf{Möbius strip} is $M\coloneqq\big([0,1]\times[0,1]\big)/{\sim}$, where $[0,1]^2$ carries the product topology and for $x,y\in[0,1]^2$: \[
+    x\sim y\iff x=y\ \lor\ \big(x_1\in\{0,1\}\land y_1=1-x_1\land y_2=1-x_2\big),
+    \]
+    i.e.\ the two vertical edges are glued with a half twist, $(0,t)\sim(1,1-t)$ (Figure \ref{fig:mobius}). We could also describe $M$ as a subspace of $\R^3$, but the glueing description is simpler and topologically more illuminating.
+\end{example}
+
+\input{figures/tikz/mobius}
+
+\begin{example}{Real Projective Space}{rpn}
+    Let $n\in\N$. The \textbf{real projective space} is $\RP{n}\coloneqq\Sph{n}/{\sim}$, where $\sim$ is generated by $x\sim -x$ for all $x\in\Sph{n}$; equivalently, the space of lines through $0$ in $\R^{n+1}$. Note $\RP{1}\iso_{\Top}\Sph{1}$, but $\RP{2}$ does not embed in $\R^3$.
+\end{example}
+
+\newpage
+A special case is collapsing a subspace $A\subset X$ to a point, $X/A$. Another one is collapsing the boundary of an $n$-ball:
+
+\begin{proposition}{Collapsing the Boundary of a Ball}{dnsn}
+    For all $n\in\N_{>0}$ we have $\Disk{n}/\Sph{n-1}\iso_{\Top}\Sph{n}$.
+\end{proposition}
+\begin{proof}[\proofof{th:dnsn}]
+    Define $f:\Disk{n}\to\Sph{n}\subset\R^n\times\R$ by \[
+    f(x)\coloneqq\Big(\sin(\pi\norm{x})\,\frac{x}{\norm{x}},\ \cos(\pi\norm{x})\Big)\quad (x\neq0),\qquad f(0)\coloneqq(0,1).
+    \]
+    It is continuous (at $0$: $\norm{\sin(\pi\norm{x})\,x/\norm{x}}\leq\pi\norm{x}\to0$), maps the radius-$r$ sphere onto the latitude at height $\cos(\pi r)$, and sends all of $\Sph{n-1}$ to the south pole $(0,-1)$. Hence $f$ is constant on $\Sph{n-1}$ and injective on $\Disk{n}\setminus\Sph{n-1}$, and surjective. By Theorem \ref{th:upquot} it induces a continuous bijection \[
+    \bar f:\Disk{n}/\Sph{n-1}\to\Sph{n}.
+    \]
+    $\Disk{n}/\Sph{n-1}$ is compact (continuous image of the compact $\Disk{n}$) and $\Sph{n}$ is Hausdorff, so $\bar f$ is a homeomorphism by Corollary \ref{cor:cht}.
+\end{proof}
+
+% D^n / S^{n-1} = S^n  (n = 2): radius-r circles go to latitudes at height cos(pi r); the boundary collapses to the south pole
+\begin{figureBox}
+\begin{tikzpicture}[lab/.style={font=\sffamily\small, inner sep=1.5pt}]
+  % ---------- D^2 ----------
+  \fill[ink!6!paper] (0,0) circle (1.15);
+  \draw[diagB, thick] (0,0) circle (0.287);
+  \draw[diagC, thick] (0,0) circle (0.575);
+  \draw[theoremCol, thick] (0,0) circle (0.862);
+  \draw[diagA, very thick] (0,0) circle (1.15);
+  \fill[ink] (0,0) circle (1.7pt);
+  \node[lab, anchor=north] at (0,-1.3) {$D^2$};
+  \node[lab, text=diagA, anchor=west] at (0.85,1.0) {$S^1=\partial D^2$};
+  % ---------- map ----------
+  \draw[-{Stealth[length=5pt]}, thick, ink!70!paper] (1.9,0) -- (3.6,0) node[midway, lab, above] {$f$};
+  \node[lab, text=ink!60!paper, align=center, font=\sffamily\scriptsize] at (2.75,-0.45) {$\partial D^2\mapsto$ south pole};
+  % ---------- S^2 ----------
+  \begin{scope}[xshift=5.4cm]
+    \fill[ink!6!paper] (0,0) circle (1.15);
+    \draw[ink!70!paper, thick] (0,0) circle (1.15);
+    \draw[diagB, thick] (-0.813,0.813) arc (180:360:0.813 and 0.179);
+    \draw[diagB, thick, dashed] (0.813,0.813) arc (0:180:0.813 and 0.179);
+    \draw[diagC, thick] (-1.150,0.000) arc (180:360:1.150 and 0.253);
+    \draw[diagC, thick, dashed] (1.150,0.000) arc (0:180:1.150 and 0.253);
+    \draw[theoremCol, thick] (-0.813,-0.813) arc (180:360:0.813 and 0.179);
+    \draw[theoremCol, thick, dashed] (0.813,-0.813) arc (0:180:0.813 and 0.179);
+    \fill[ink] (0,1.15) circle (1.7pt);
+    \fill[diagA] (0,-1.15) circle (2.4pt);
+    \node[lab, anchor=south] at (0,1.15+0.05) {$f(0)$};
+    \node[lab, text=diagA, anchor=north] at (0,-1.15-0.08) {$f(\partial D^2)$};
+    \node[lab, anchor=west] at (1.25,0.8) {$S^2$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The map $f:D^2\to S^2$ from Theorem \ref{th:dnsn}: the circle of radius $r$ is wrapped onto the latitude at height $\cos(\pi r)$ (radius $\tfrac12$ goes to the equator), and the whole boundary $S^1$ is sent to the south pole. Collapsing $S^1$ to a point therefore gives $D^2/S^1\cong S^2$.}
+
+\subsubsection{Construction via Pushouts}
+
+Glueing several spaces along common pieces combines disjoint unions and quotients:
+
+\begin{definition}{Pushout of Topological Spaces}{pushout}
+    Let $X_0,X_1,X_2\in\Top$ and $i_1:X_0\to X_1$, $i_2:X_0\to X_2$ continuous. The \textbf{pushout} of
+    \[\begin{tikzcd}
+        X_0 \arrow[r, "i_2"] \arrow[d, "i_1"'] & X_2 \\
+        X_1 &
+    \end{tikzcd}\]
+    is $X_1\cup_{X_0}X_2\coloneqq(X_1\sqcup X_2)/{\sim}$, with $\sim$ generated by $i_1(x)\sim i_2(x)$ for all $x\in X_0$, carrying the quotient topology of the disjoint union topology.
+\end{definition}
+
+\newpage
+
+\begin{proposition}{Universal Property of Pushouts in $\cat{Top}$}{uppush}
+    Let $j_1:X_1\to X_1\cup_{X_0}X_2$ and $j_2:X_2\to X_1\cup_{X_0}X_2$ be induced by the inclusions into $X_1\sqcup X_2$. Then $j_1\circ i_1=j_2\circ i_2$, and for all $Z\in\Top$ and continuous $f_1:X_1\to Z$, $f_2:X_2\to Z$ with $f_1\circ i_1=f_2\circ i_2$ there is a unique continuous $f:X_1\cup_{X_0}X_2\to Z$ with $f\circ j_1=f_1$ and $f\circ j_2=f_2$.
+    \[\begin{tikzcd}
+        X_0 \arrow[r, "i_2"] \arrow[d, "i_1"'] & X_2 \arrow[d, "j_2"] \arrow[ddr, bend left, "f_2"] & \\
+        X_1 \arrow[r, "j_1"'] \arrow[drr, bend right, "f_1"'] & X_1\cup_{X_0}X_2 \arrow[dr, dashed, "\exists!\,f"] & \\
+        & & Z
+    \end{tikzcd}\]
+    Moreover, any $(X',j_1',j_2')$ with this universal property is homeomorphic to $X_1\cup_{X_0}X_2$ via a unique homeomorphism compatible with the $j$'s.
+\end{proposition}
+\begin{proof}[\proofof{th:uppush}]
+    By Theorem \ref{th:updunion}, $f_1,f_2$ induce a unique continuous $g:X_1\sqcup X_2\to Z$. Since $f_1\circ i_1=f_2\circ i_2$, $g$ is constant on the generating relations $i_1(x)\sim i_2(x)$, hence on equivalence classes, so it descends uniquely to a continuous $f$ on the quotient by Theorem \ref{th:upquot}. Uniqueness of $X'$ -- the induced maps $X\to X'$ and $X'\to X$ compose to maps satisfying the property of $\id$, so by uniqueness they are exactly $\id$.
+\end{proof}
+
+\input{figures/tikz/pushouts}
+
+\newpage
+
+\subsubsection{The Homeomorphism Problem}
+
+Although the problem of classifying homeomorphic spaces is undecidable, there remain strategies to prove that two given spaces are homeomorphic (or not). We could follow the definition of homeomorphism, explicitly constructing continuous maps $X\to Y,Y\to X$ which are mutual inverses. However, in the often case that $X$ and $Y$ are universal constructions we can typically obtain such a continuous map in one of these directions. It then remains to show that this map is a homeomorphism -- the compact-Hausdorff trick (Corollary \ref{cor:cht}) proves useful.
+
+\begin{example}{The Circle}{}
+    Let $C\coloneq [0,1]/(0\sim 1)$ (endowed with the quotient topology of the standard topology on $[0,1]$). We prove that $C\iso_{\Top}S^1$: \begin{itemize}
+        \item $C$ is a quotient space so by the universal property of quotient spaces we construct \[
+        f:[0,1]\to S^1 \qquad t\mapsto (\cos(2\pi t),\sin(2\pi t))
+        \]
+        and this is a well-defined continuous map. Also $f(0)=f(1)$ so $f$ induces a well-defined map $\overline{f}:C\to S_1$, and because $f$ is continuous then so is $\overline{f}$ by the universal property.
+        \item $\overline{f}$ is obviously bijective.
+        \item $C$ is compact as a continuous image of the compact $[0,1]$, and $S^1$ is Hausdorff as a subspace of the Hausdorff $\R^2$.
+        \item Thus by Corollary \ref{cor:cht}, $\overline{f}$ is a homeomorphism.
+    \end{itemize}
+\end{example}
+
+A similar technique shows that the torus can be obtained by glueing along both pairs of edges in a square.
+
+% Torus via glueing: [0,1]^2 with opposite edges identified  (cf. Loh Fig. 1.6)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    a1/.style={decoration={markings, mark=at position 0.55 with {\arrow{Stealth[length=6pt]}}}, postaction={decorate}},
+    a2/.style={decoration={markings, mark=at position 0.47 with {\arrow{Stealth[length=6pt]}},
+                                     mark=at position 0.6 with {\arrow{Stealth[length=6pt]}}}, postaction={decorate}}]
+  % ---------- square ----------
+  \fill[diagC!8!paper] (0,0) rectangle (2.2,2.2);
+  \draw[diagA, very thick, a1] (0,0) -- (2.2,0);
+  \draw[diagA, very thick, a1] (0,2.2) -- (2.2,2.2);
+  \draw[diagB, very thick, dashed, a2] (0,0) -- (0,2.2);
+  \draw[diagB, very thick, dashed, a2] (2.2,0) -- (2.2,2.2);
+  \foreach \p in {(0,0),(2.2,0),(0,2.2),(2.2,2.2)} \fill[ink] \p circle (1.8pt);
+  \node[lab, text=diagA, anchor=north] at (1.1,-0.08) {$a$};
+  \node[lab, text=diagA, anchor=south] at (1.1,2.28) {$a$};
+  \node[lab, text=diagB, anchor=east] at (-0.1,1.1) {$b$};
+  \node[lab, text=diagB, anchor=west] at (2.3,1.1) {$b$};
+  % ---------- arrow ----------
+  \node[ink!70!paper, scale=1.6] at (3.7,1.1) {$\rightsquigarrow$};
+  % ---------- torus ----------
+  \begin{scope}[xshift=7.0cm, yshift=1.1cm, scale=1.25]
+    \draw[ink, thick, fill=diagC!8!paper] (0,0) ellipse (1.75 and 1.0);
+    \draw[ink, thick] (-0.75,0.08) .. controls (-0.35,-0.25) and (0.35,-0.25) .. (0.75,0.08);
+    \draw[ink, thick] (-0.6,-0.04) .. controls (-0.3,0.18) and (0.3,0.18) .. (0.6,-0.04);
+    % image of a: longitude
+    \draw[diagA, very thick] (0,-0.05) ellipse (1.27 and 0.62);
+    % image of b: meridian (front solid, back dashed)
+    \draw[diagB, very thick] (0,-0.18) arc (90:270:0.2 and 0.41);
+    \draw[diagB, very thick, dashed] (0,-1.0) arc (-90:90:0.2 and 0.41);
+    \fill[ink] (0,-0.67) circle (1.8pt);
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The torus via glueing: $[0,1]^2/{\sim}$ with $(s,0)\sim(s,1)$ and $(0,t)\sim(1,t)$. The edge pair $a$ becomes the orange longitude, the pair $b$ the blue meridian, and all four corners become the single point where they cross; the result is homeomorphic to $T^2=S^1\times S^1$.}\label{fig:torusglue}
+
+We may also want to know \textbf{when two spaces are not homeomorphic}. Since it is obviously infeasible to determine and check all continuous maps $X\to Y,Y\to X$, we instead are interested in considering \textbf{homeomorphism invariants} which have different values in $X$ and $Y$ to form a contradiction.
+
+Basic point-set properties are the first examples: \textbf{path-connectedness}, \textbf{connectedness}, \textbf{Hausdorffness} and \textbf{compactness} are all homeomorphism invariant. For instance, $[0,1]\not\iso_{\Top}\R$ (compactness), and $\R\not\iso_{\Top}\R^2$, since removing a point disconnects $\R$ but not $\R^2$. However these invariants are not sufficient for a numerous number of examples. Algebraic topology instead attaches \emph{algebraic} invariants (groups, homomorphisms) to spaces and maps.
+
+\newpage

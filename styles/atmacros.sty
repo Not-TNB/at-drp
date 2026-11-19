@@ -1,0 +1,50 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{styles/atmacros}[2026/11/19 DRP notes: algebraic-topology macros]
+
+% --- Operators ---
+\DeclareMathOperator{\Homeo}{Homeo}
+\DeclareMathOperator{\Sing}{Sing}
+\DeclareMathOperator{\Cone}{Cone}
+\DeclareMathOperator{\Cyl}{Cyl}
+\DeclareMathOperator{\sd}{sd}              % barycentric subdivision
+\DeclareMathOperator{\supp}{supp}
+
+% --- Categories ---
+\newcommand{\Toppt}{\cat{Top}_*}                    % pointed spaces
+\newcommand{\Toppair}{\cat{Top}^{2}}                % pairs of spaces
+\newcommand{\hTop}{\cat{hTop}}
+\newcommand{\CW}{\cat{CW}}
+\newcommand{\hcl}[2]{[#1,#2]}                       % homotopy classes [X,Y]
+\newcommand{\hclp}[2]{[#1,#2]_*}                    % pointed homotopy classes
+
+% --- Spaces ---
+\newcommand{\Sph}[1]{S^{#1}}                        % sphere
+\newcommand{\Disk}[1]{D^{#1}}                       % disc
+\newcommand{\Ball}[1]{B^{#1}}                       % open ball
+\newcommand{\Simp}[1]{\Delta^{#1}}                  % standard simplex
+\newcommand{\RP}[1]{\mathbb{RP}^{#1}}
+\newcommand{\CP}[1]{\mathbb{CP}^{#1}}
+\newcommand{\Torus}{T^2}
+\newcommand{\sk}[2]{#2^{(#1)}}                      % n-skeleton  \sk{n}{X}
+\newcommand{\pt}{\mathrm{pt}}
+\newcommand{\Sus}{\Sigma}                           % suspension
+\newcommand{\Loops}{\Omega}                         % loop space
+\newcommand{\wdg}{\vee}                             % wedge sum
+\newcommand{\smsh}{\wedge}                          % smash product
+
+% --- Homotopy & homology ---
+\newcommand{\htpy}{\simeq}
+\newcommand{\pig}[2]{\pi_{#1}(#2)}                  % \pig{1}{X,x_0}
+\newcommand{\Hn}[2]{H_{#1}(#2)}                     % \Hn{n}{X}
+\newcommand{\rHn}[2]{\tilde{H}_{#1}(#2)}            % reduced
+\newcommand{\Hp}[3]{H_{#1}(#2,#3)}                  % relative: \Hp{n}{X}{A}
+\newcommand{\Hg}[3]{H_{#1}(#2;#3)}                  % coefficients: \Hg{n}{X}{G}
+\newcommand{\Hcoh}[2]{H^{#1}(#2)}                   % cohomology
+\newcommand{\Hstar}[1]{H_{*}(#1)}
+\newcommand{\Cn}[2]{C_{#1}(#2)}                     % chains
+\newcommand{\Zn}[2]{Z_{#1}(#2)}                     % cycles
+\newcommand{\Bn}[2]{B_{#1}(#2)}                     % boundaries
+\newcommand{\bdry}{\partial}                        % boundary map
+\newcommand{\chiX}[1]{\chi(#1)}                     % Euler characteristic
+
+\endinput
