@@ -1203,7 +1203,7 @@ A similar technique shows that the torus can be obtained by glueing along both p
 
 We may also want to know \textbf{when two spaces are not homeomorphic}. Since it is obviously infeasible to determine and check all continuous maps $X\to Y,Y\to X$, we instead are interested in considering \textbf{homeomorphism invariants} which have different values in $X$ and $Y$ to form a contradiction.
 
-Basic point-set properties are the first examples: \textbf{path-connectedness}, \textbf{connectedness}, \textbf{Hausdorffness} and \textbf{compactness} are all homeomorphism invariant. For instance, $[0,1]\not\iso_{\Top}\R$ (compactness), and $\R\not\iso_{\Top}\R^2$, since removing a point disconnects $\R$ but not $\R^2$. However these invariants are not sufficient for a numerous number of examples. Algeraic topology instead attaches \emph{algebraic} invariants (groups, homomorphisms) to spaces and maps.
+Basic point-set properties are the first examples: \textbf{path-connectedness}, \textbf{connectedness}, \textbf{Hausdorffness} and \textbf{compactness} are all homeomorphism invariant. For instance, $[0,1]\not\iso_{\Top}\R$ (compactness), and $\R\not\iso_{\Top}\R^2$, since removing a point disconnects $\R$ but not $\R^2$. However these invariants are not sufficient for a numerous number of examples. Algebraic topology instead attaches \emph{algebraic} invariants (groups, homomorphisms) to spaces and maps.
 
 \newpage
 
@@ -1304,6 +1304,65 @@ Counit $\abs{\Sing X}\to X$ of $\abs{\cdot}\dashv\Sing$ & $\Top\to\Top$ \\
 \begin{remark}{Homotopy Invariance, Preview}{}
     A functor $F:\Top\to\cat{D}$ is \textbf{homotopy invariant} if homotopic maps $f\htpy g$ satisfy $F(f)=F(g)$; equivalently, $F$ factors through the quotient $\Top\to\hTop$. Then homotopy equivalent spaces have isomorphic invariants, which is what makes $\pi_1$ and $H_*$ computable.
 \end{remark}
+
+\newpage
+
+\subsubsection{Abelian Categories}
+
+These will prove to be vital to algebraic topology and homological algebra due to their well-behavedness.
+
+\begin{definition}{Zero Morphism}{zeromor}
+    A \textbf{zero object} $0\in\cat{C}$ is both initial and terminal. For $X,Y\in\cat{C}$, the \textbf{zero morphism} $0_{X,Y}:X\to Y$ is the composite $X\to0\to Y$. Composing with a zero morphism on either side gives a zero morphism.
+\end{definition}
+
+\begin{definition}{Kernel and Cokernel}{kercoker}
+    Let $\cat{C}$ have a zero object and let $f:X\to Y$.
+    \begin{itemize}
+        \item A \textbf{kernel} of $f$ is a morphism $k:K\to X$ with $f\circ k=0$, such that every $g:T\to X$ with $f\circ g=0$ factors as $g=k\circ u$ for a unique $u:T\to K$.
+        \item A \textbf{cokernel} of $f$ is a morphism $c:Y\to C$ with $c\circ f=0$, such that every $g:Y\to T$ with $g\circ f=0$ factors as $g=u\circ c$ for a unique $u:C\to T$.
+    \end{itemize}
+    \[
+    \begin{tikzcd}
+    T \arrow[dr,"g"] \arrow[d,dashed,"\exists!\,u"'] & & \\
+    K \arrow[r,"k"'] & X \arrow[r,"f"'] & Y
+    \end{tikzcd}
+    \qquad
+    \begin{tikzcd}
+    X \arrow[r,"f"] & Y \arrow[r,"c"] \arrow[dr,"g"'] & C \arrow[d,dashed,"\exists!\,u"] \\
+    & & T
+    \end{tikzcd}
+    \]
+    Being universal, they are unique up to unique isomorphism, so we write $\ker f$ and $\coker f$. Kernels are monomorphisms and cokernels are epimorphisms.
+\end{definition}
+
+\begin{example}{Kernels and Cokernels}{kerex}
+    In $\Ab$ (and $\Mod_R$): $\ker f=\{x:f(x)=0\}\inj X$ and $\coker f=Y/\Ima f$ with the quotient map $Y\surj Y/\Ima f$. In $\Grp$ kernels are inclusions of \emph{normal} subgroups, so an injective homomorphism with non-normal image is a mono which is not a kernel.
+\end{example}
+
+\begin{remark}{Kernels and Cokernels as (Co)limits}{kerlim}
+    $\ker f$ is the limit of the diagram $X\rightrightarrows Y$ given by $f$ and $0_{X,Y}$, i.e.\ the equalizer of $f$ and $0$; equivalently, the pullback $X\times_Y0$ of $f$ along $0\to Y$. Dually, $\coker f$ is the coequalizer of $f$ and $0$, i.e.\ the pushout $Y\sqcup_X0$. In an additive category the equalizer of $f,g$ is $\ker(f-g)$ (and likewise for coequalizers), so an additive category with all kernels and cokernels has all finite limits and colimits.
+\end{remark}
+
+\begin{definition}{Normal and Conormal Morphisms}{normal}
+    A monomorphism is \textbf{normal} if it is the kernel of some morphism. An epimorphism is \textbf{conormal} if it is the cokernel of some morphism.
+\end{definition}
+
+\begin{remark}{Normal Morphisms in $\Grp$}{}
+    In $\Grp$ the normal monomorphisms are exactly the inclusions of normal subgroups, and every epimorphism is conormal (surjective homomorphisms are quotients by their kernels). So $\Grp$ fails only the condition on monomorphisms.
+\end{remark}
+
+\begin{definition}{Abelian Category}{abcat}
+    A category $\cat{A}$ is \textbf{abelian} if
+    \begin{itemize}
+        \item it is \textbf{additive}: each $\mor{\cat{A}}{X}{Y}$ is an abelian group, composition is bilinear, and $\cat{A}$ has a zero object and $\cat{A}$ has all finite biproducts;
+        \item every morphism has a kernel and a cokernel;
+        \item every monomorphism is normal and every epimorphism is conormal; equivalently, the canonical map $\coker(\ker f)\to\ker(\coker f)$ is an isomorphism for every $f$.
+    \end{itemize}
+\end{definition}
+
+\begin{example}{Abelian and Non-Abelian Categories}{abex}
+    $\Ab$, $\Mod_R$ and $\Vect_K$ are abelian, and if $\cat{A}$ is abelian then so is $\Ch(\cat{A})$, with kernels and cokernels computed degreewise. $\Grp$, $\Top$ and $\Set$ are not (hom-sets carry no natural group structure, and $\Grp$ has non-normal subgroups).
+\end{example}
 
 \newpage
 
