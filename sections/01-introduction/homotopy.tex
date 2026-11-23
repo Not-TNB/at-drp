@@ -1,0 +1,546 @@
+\newpage
+
+\subsection{Homotopy \& Homotopy Invariance}
+
+% ======================================================================
+%  1.3 Homotopy and Homotopy Invariance  (Loh 26/27, pp. 28--46)
+% ======================================================================
+
+\subsubsection{Homotopy}
+
+Homotopy equivalence is a weaker notion of isomorphism than homeomorphism.
+
+\begin{definition}{Homotopy, Homotopic, Homotopy Equivalence, Null-homotopic, Contractible}{}
+  Let $X,Y\in\Top$ and $f,g:X\to Y$ be continuous maps.
+  \begin{itemize}
+    \item A \textbf{homotopy} from $f$ to $g$ is a continuous map $h:X\times[0,1]\to Y$ with \[h(\cdot,0)=f \land h(\cdot,1)=g\]
+    \item If there exists a homotopy from $f$ to $g$ then $f$ is \textbf{homotopic} to $g$ and we write $f\simeq g$.
+    \item Maps homotopic to constant maps are \textbf{null-homotopic}.
+    \item $X$ and $Y$ are homotopy equivalent ($X\simeq Y$) if $\exists f:X\rightleftarrows Y:g$ continuous where \[
+    g\circ f\simeq \id_X \land f\circ g\simeq \id_Y
+    \]
+    and such a map is called a \textbf{homotopy equivalence}.
+    \item Topological spaces which are homotopy equivalent to the point are \textbf{contractible}.
+  \end{itemize}
+\end{definition}
+
+% Homotopic maps: slices X x {t} of the cylinder are sent to a family of curves deforming f into g  (cf. Loh Fig. 1.9)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt}]
+  % ---------- X x [0,1] (X an interval) ----------
+  \fill[ink!6!paper] (0,0) rectangle (2.4,2.4);
+  \draw[ink!35!paper] (0,0) rectangle (2.4,2.4);
+  \foreach \k in {0,...,5}{
+    \pgfmathtruncatemacro{\pc}{100-20*\k}
+    \pgfmathsetmacro{\y}{2.4*\k/5}
+    \pgfmathsetmacro{\lw}{(\k==0 || \k==5) ? 1.4 : 0.7}
+    \draw[diagA!\pc!diagB, line width=\lw pt] (0,\y) -- (2.4,\y);
+  }
+  \node[lab, text=diagA, anchor=north] at (1.2,-0.08) {$X\times\{0\}$};
+  \node[lab, text=diagB, anchor=south] at (1.2,2.48) {$X\times\{1\}$};
+  \node[tick, anchor=east] at (-0.08,0) {$0$};
+  \node[tick, anchor=east] at (-0.08,2.4) {$1$};
+  \draw[ink!45!paper, -{Stealth[length=4pt]}] (-0.45,0.5) -- node[tick, left] {$t$} (-0.45,1.9);
+  % ---------- h ----------
+  \draw[-{Stealth[length=6pt]}, ink!70!paper, thick] (2.9,1.2) -- node[lab, above] {$h$} (4.1,1.2);
+  % ---------- Y ----------
+  \begin{scope}[xshift=4.7cm, yshift=-0.35cm]
+    \draw[ink!45!paper, fill=ink!6!paper] plot[smooth cycle, tension=0.8]
+      coordinates {(0,0.3) (1.6,-0.1) (3.5,0.15) (4.4,1.4) (3.9,2.9) (2.0,3.3) (0.4,2.95) (-0.25,1.6)};
+    \node[lab, text=ink!70!paper] at (4.15,2.95) {$Y$};
+    \foreach \k in {0,...,5}{
+      \pgfmathtruncatemacro{\pc}{100-20*\k}
+      \pgfmathsetmacro{\t}{\k/5}
+      \pgfmathsetmacro{\lw}{(\k==0 || \k==5) ? 1.4 : 0.7}
+      \draw[diagA!\pc!diagB, line width=\lw pt] plot[domain=0:3, samples=50, smooth]
+        ({0.4+\x}, {0.8 + 1.6*\t + (0.35 - 0.65*\t)*sin(120*\x)});
+    }
+    \node[lab, text=diagA, anchor=west] at (3.45,0.8) {$f$};
+    \node[lab, text=diagB, anchor=west] at (3.45,2.4) {$g$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{A homotopy $h:X\times[0,1]\to Y$ from $f$ to $g$ (here $X$ is an interval). The slice $X\times\{t\}$ is sent to the image of $h(\cdot,t)$, so as $t$ runs from $0$ to $1$ the map $f=h(\cdot,0)$ is continuously deformed into $g=h(\cdot,1)$.}\label{fig:homotopy}
+
+% Homotopy equivalent spaces: thick circle ~ S^1 (deformation retraction), disc ~ point  (cf. Loh Fig. 1.8)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    hp/.style={diagA, -{Stealth[length=4pt]}}]
+  % ---------- S^1 ----------
+  \draw[diagB, very thick] (0,0) circle (0.8);
+  \node[lab, text=diagB] at (0,-1.95) {$S^1$};
+  % ---------- i, r ----------
+  \draw[-{Stealth[length=6pt]}, thick, ink!70!paper] (1.15,0.3) to[bend left=20] node[lab, above] {$i$} (2.45,0.3);
+  \draw[-{Stealth[length=6pt]}, thick, ink!70!paper] (2.45,-0.3) to[bend left=20] node[lab, below] {$r$} (1.15,-0.3);
+  % ---------- thick circle A ----------
+  \begin{scope}[xshift=4.3cm]
+    \fill[diagC!10!paper, even odd rule] (0,0) circle (1.6) (0,0) circle (0.8);
+    \draw[ink!45!paper] (0,0) circle (1.6);
+    \foreach \a in {0,30,...,330} \draw[hp] (\a:1.52) -- (\a:0.9);
+    \draw[diagB, very thick] (0,0) circle (0.8);
+    \node[lab] at (0,-1.95) {$A$};
+  \end{scope}
+  % ---------- separator ----------
+  \draw[ink!20!paper] (6.55,-1.8) -- (6.55,1.8);
+  % ---------- contractible disc ----------
+  \begin{scope}[xshift=8.6cm]
+    \fill[diagC!10!paper] (0,0) circle (1.4);
+    \draw[ink!45!paper] (0,0) circle (1.4);
+    \foreach \a in {0,45,...,315} \draw[hp] (\a:1.32) -- (\a:0.16);
+    \fill[diagB] (0,0) circle (2.2pt);
+    \node[lab] at (0,-1.95) {$D^2\simeq\{0\}$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Homotopy equivalent spaces. Left: the annulus $A\coloneqq\{x\in\R^2\mid 1\leq\norm{x}\leq2\}$ and $S^1$, via the inclusion $i$ and $r(x)\coloneqq x/\norm{x}$. Here $r\circ i=\id_{S^1}$, and $h(x,t)\coloneqq(1-t)\,x+t\,x/\norm{x}$ is a homotopy $\id_A\simeq i\circ r$ (orange arrows). Right: $D^2$ is contractible via $h(x,t)\coloneqq(1-t)\,x$. In both cases the spaces are not homeomorphic.}\label{fig:htpyequiv}
+
+\newpage
+
+\begin{remark}{Deformation vs Paths}{defvspath}
+  Intuitively, a homotopy $h$ from $f$ to $g$ is a \emph{path of maps} $t\mapsto h(\cdot,t)$ running from $f$ to $g$. To make this precise we topologise the set of maps.
+  \begin{itemize}
+    \item The \textbf{compact-open topology} on $\operatorname{map}(X,Y)\coloneqq\Top(X,Y)$ is the topology generated by the sets \[
+    \{f\in\operatorname{map}(X,Y)\mid f(K)\subset U\}\qquad K\subset X \text{ compact},\ U\subset_{\text{op}}Y.
+    \]
+    \item $X$ is \textbf{locally compact} if for every $x\in X$ and every open neighbourhood $U$ of $x$ there is a compact neighbourhood $K$ of $x$ with $K\subset U$ (e.g.\ $\R^n$, $\Disk{n}$, $\Sph{n}$, and open or closed subsets of $\R^n$).
+    \item \textbf{Exponential law.} If $X$ is locally compact, then for every $Y\in\Top$ the currying map \[
+    \operatorname{map}\big(X\times[0,1],Y\big)\to\operatorname{map}\big([0,1],\operatorname{map}(X,Y)\big)\qquad h\mapsto\big(t\mapsto h(\cdot,t)\big)
+    \]
+    is well-defined and bijective.
+  \end{itemize}
+  So for locally compact $X$, homotopies from $f$ to $g$ are exactly paths from $f$ to $g$ in $\operatorname{map}(X,Y)$. In particular $f\simeq g$ iff $f$ and $g$ lie in the same path component, i.e.\ $[X,Y]=\pi_0\big(\operatorname{map}(X,Y)\big)$ (Definition \ref{def:pi0}).
+
+  We can also curry in the other variable. Since $[0,1]$ is compact Hausdorff, for \emph{every} $X$ a homotopy is the same as a continuous map $X\to\operatorname{map}([0,1],Y)$, $x\mapsto h(x,\cdot)$, i.e.\ each point $x$ traces out a path in $Y$ from $f(x)$ to $g(x)$. These are the orange arrows in Figure \ref{fig:htpyequiv}.
+\end{remark}
+
+\begin{example}{Thick Spheres}{thicksph}
+  Let $n\in\N$. Then $\Sph{n}\simeq\R^{n+1}\setminus\{0\}$, so we may view the punctured space $\R^{n+1}\setminus\{0\}$ as a ``thick sphere''. Consider \[
+  f:\Sph{n}\to\R^{n+1}\setminus\{0\}\quad x\mapsto x,\qquad\qquad g:\R^{n+1}\setminus\{0\}\to\Sph{n}\quad x\mapsto\frac{x}{\norm{x}}.
+  \]
+  Both are continuous: $f$ is an inclusion, and $g$ is a quotient of continuous maps with $\norm{x}\neq0$.
+  \begin{itemize}
+    \item $g\circ f=\id_{\Sph{n}}$, since $\norm{x}=1$ on $\Sph{n}$. In particular $g\circ f\simeq\id_{\Sph{n}}$.
+    \item $\id\simeq f\circ g$ via \[
+    h:\big(\R^{n+1}\setminus\{0\}\big)\times[0,1]\to\R^{n+1}\setminus\{0\}\qquad (x,t)\mapsto\frac{(1-t)\norm{x}+t}{\norm{x}}\cdot x.
+    \]
+    \begin{itemize}
+      \item \emph{Well-defined:} $(1-t)\norm{x}+t$ is a convex combination of $\norm{x}>0$ and $1>0$, so it is $>0$ and $h(x,t)\neq0$.
+      \item \emph{Continuous:} trivially.
+      \item \emph{Endpoints:} $h(x,0)=x$ and $h(x,1)=x/\norm{x}=f(g(x))$.
+    \end{itemize}
+  \end{itemize}
+  However $\Sph{n}\not\iso_{\Top}\R^{n+1}\setminus\{0\}$: $\Sph{n}$ is compact, while $\R^{n+1}\setminus\{0\}$ is not bounded, so it is not compact by Heine--Borel.
+\end{example}
+
+% Thick spheres: R^{n+1} \ {0} deformation retracts radially onto S^n  (cf. Loh Fig. 1.10)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    hp/.style={diagA, -{Stealth[length=4pt]}},
+    hpx/.style={diagC, very thick, -{Stealth[length=5pt]}},
+    punct/.style={ink!65!paper, fill=paper, line width=0.6pt}]
+  % ---------- n = 1:  R^2 \ {0} ----------
+  \fill[ink!6!paper] (-2,-2) rectangle (2,2);
+  \draw[ink!35!paper, dashed] (-2,-2) rectangle (2,2);
+  \foreach \a in {0,30,...,330} \draw[hp] (\a:1.88) -- (\a:1.17);
+  \foreach \a in {30,90,150,270,330} \draw[hp] (\a:0.32) -- (\a:1.0);
+  \draw[diagB, very thick] (0,0) circle (1.1);
+  % highlighted points
+  \draw[hpx] (45:1.82) -- (45:1.17);
+  \fill[diagC] (45:1.82) circle (1.8pt);
+  \node[lab, text=diagC, anchor=south west] at (45:1.82) {$x$};
+  \draw[hpx] (210:0.38) -- (210:1.02);
+  \fill[diagC] (210:0.38) circle (1.6pt);
+  \node[lab, text=diagC, anchor=north west] at (210:0.38) {$y$};
+  \filldraw[punct] (0,0) circle (2.2pt);
+  \node[lab, text=diagB] at (255:1.42) {$S^1$};
+  \node[lab] at (0,-2.4) {$\R^2\setminus\{0\}\simeq S^1$};
+  % ---------- n = 2:  R^3 \ {0} ----------
+  \begin{scope}[xshift=6.2cm]
+    \fill[ink!6!paper] (-2,-2) rectangle (2,2);
+    \draw[ink!35!paper, dashed] (-2,-2) rectangle (2,2);
+    \fill[diagB!10!paper] (0,0) circle (1.1);
+    \draw[diagB!60!paper, dashed] (1.1,0) arc (0:180:1.1 and 0.32);
+    \draw[diagB!80!paper] (-1.1,0) arc (180:360:1.1 and 0.32);
+    \draw[diagB, very thick] (0,0) circle (1.1);
+    \foreach \a in {15,45,...,345} \draw[hp] (\a:1.88) -- (\a:1.16);
+    \filldraw[punct] (0,0) circle (2.2pt);
+    \node[lab, text=ink!65!paper, anchor=west] at (0.08,0) {$0$};
+    \node[lab, text=diagB] at (270:1.42) {$S^2$};
+    \node[lab] at (0,-2.4) {$\R^3\setminus\{0\}\simeq S^2$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Thick spheres. Each arrow is the path $t\mapsto h(x,t)$ of Example \ref{ex:thicksph}: the direction is kept and the norm moves linearly to $1$. So $x$ outside the sphere slides in, $y$ inside slides out, and the puncture $0$ (hollow) is never hit. Unlike the annulus in Figure \ref{fig:htpyequiv}, the space is unbounded (dashed frame), so points are pushed onto $S^n$ from both sides.}\label{fig:thicksph}
+
+\newpage
+
+We can also introduce a hootopy notion for pairs of spaces and pointed spaces.
+
+\begin{definition}{Homotopy Equivalence in $\Top^2$}{}
+  Let $(X,A),(Y,B)$ be pairs of spaces. \begin{itemize}
+    \item Abbrieviate $(X,A)\times[0,1]\coloneq(X\times[0,1],A\times[0,1])\in\Top^2$
+    \item Let $f,g:(X,A)\to(Y,B)$ be continuous maps of pairs i.e. $f,g\in\Top^2((X,A),(Y,B))$. Then $f$ is homotopic to $g$ wrt. the subspace $A$ and $B$ if there is a homotopy of pairs from $f$ to $g$ i.e. a continuous map $h:(X,A)\times[0,1]\to(Y,B)$ with \[
+      h(\cdot,0)=f \land h(\cdot,1)=g
+    \]
+    and we write $f\simeq_{A,B}g$.
+    \item $(X,A)\simeq(Y,B)$ if $\exists f:(X,A)\rightleftarrows(Y,B):g$ continuous such that \[
+      g\circ f \simeq_{A,A} \id_{(X,A)} \land f\circ g \simeq_{B,B} \id_{Y,B}
+    \]
+    and such maps are called homotopy equivalences of pairs.
+  \end{itemize}
+\end{definition}
+
+For pairs of spaces there also exists a notion of \textbf{relative homotopy}, where the homotopy is required to fix each point in the subspace.
+
+In many situations it is convenient to have a distinguished basepoint, which leads to pointed spaces.
+
+\begin{definition}{Category of Pointed Spaces}{}
+  The category $\Toppt$ of pointed spaces is the full subcategory of $\Top^2$ with: 
+  \begin{align*}
+    \Ob\Toppt &= \{(X,x_0) \mid X\in\Top, x_0\in X\}\\
+    \Toppt((X,x_0),(Y,y_0)) &= \{ f\in \Top(X,Y) \mid f(x_0)=y_0 \} \tag{$\forall (X,x_0),(Y,y_0)\in\Toppt$}
+  \end{align*}
+  and composition is as in ordinary $\Top$.
+\end{definition}
+
+\begin{definition}{Homotopy Equivalence in $\Toppt$}{}
+  Let $(X,x_0),(Y,y_0)\in\Toppt$. \begin{itemize}
+    \item Abbrieviate $(X,x_0)\times[0,1]=(X\times [0,1], \{x_0\}\times [0,1])\in\Top^2$
+    \item Let $f,g:(X,x_0)\to(Y,y_0)$ be continuous pointed maps. Then $f$ is \textbf{pointedly homotopic} to $g$ if there exists a pointed homotopy from $f$ to $g$ i.e. a continuous map $h:(X,x_0)\times[0,1]\to(Y,y_0)$ with \[
+      h(\cdot,0)=f\land h(\cdot,1)=g
+    \]
+    And we write $f\simeq_*g$. A pointed homotopy fixes the basepoint i.e. $\forall_{t\in[0,1]} \ h(x_0,t)=y_0$.
+    \item Pointed maps homotopic to the constant pointed map are \textbf{pointedly null-homotopic}.
+    \item $(X,x_0)\simeq_* (Y,y_0)$ if $\exists f:(X,x_0)\rightleftarrows(Y,y_0):g$ pointed continuous such that \[
+      g\circ f\simeq_* \id_{(X,x_0)} \land f\circ g\simeq_* \id_{(Y,y_0)}
+    \]
+    and suc maps are called pointed homotopy equivalences.
+    \item Pointed spaces pointedly homotopy equivalent to a pointed singleton space are \textbf{pointedly contractible}.
+  \end{itemize}
+\end{definition}
+
+\begin{example}{Disks and Euclidean Spaces are (Pointedly) Contractible}{}
+  We can show that $\forall_{n\in\N} \ (D^n,0),(\R^n,0)$ pointedly contractible. 
+\end{example}
+
+\newpage
+
+In general, absolute homotopy equivalences do not lead to corresponding relative or pointed homotopy equivalences.
+
+\begin{example}{Equivalent Spaces, Inequivalent Pairs}{pairsnoteq}
+  We have $\Disk{1}\simeq\R$ (both contractible) and $\Sph{0}\simeq\R\setminus\{0\}$, but \[
+    (\Disk{1},\Sph{0})\not\simeq(\R,\R\setminus\{0\})
+  \]
+  as pairs of spaces. This is due to $\overline{\R\setminus\{0\}}=\R$ while $\Sph{0}=\{-1,1\}$ is disconnected.
+\end{example}
+
+\begin{proof}
+  Suppose for a contradiction that $f:(\R,\R\setminus\{0\})\rightleftarrows(\Disk{1},\Sph{0}):g$ are mutually inverse homotopy equivalences of pairs. In particular there is a homotopy of pairs $h:(\Disk{1},\Sph{0})\times[0,1]\to(\Disk{1},\Sph{0})$ with \[
+    h(\cdot,0)=f\circ g\land h(\cdot,1)=\id_{(\Disk{1},\Sph{0})}.
+  \]
+  \begin{itemize}
+    \item \emph{$f$ lands in $\Sph{0}$:} $f$ is continuous, so $f(\overline{A})\subset\overline{f(A)}$ for all $A\subset\R$, hence \[
+      f(\R)=f\big(\overline{\R\setminus\{0\}}\big)\subset\overline{f(\R\setminus\{0\})}\subset\overline{\Sph{0}}=\Sph{0}.
+    \]
+    \item \emph{$h$ sends a U-shape into $\Sph{0}$:} let \[
+      U\coloneqq\{-1\}\times[0,1]\;\cup\;\Disk{1}\times\{0\}\;\cup\;\{1\}\times[0,1]\subset\Disk{1}\times[0,1].
+    \]
+    Then $h(U)\subset\Sph{0}$: on $\{\pm1\}\times[0,1]=\Sph{0}\times[0,1]$ because $h$ is a map of pairs, and on $\Disk{1}\times\{0\}$ because $h(x,0)=f(g(x))\in f(\R)\subset\Sph{0}$.
+    \item \emph{Contradiction:} $U$ is path-connected, so $h(U)$ is a path-connected subset of the discrete space $\Sph{0}$ (Theorem \ref{th:pathimg}), i.e.\ a single point. But $(-1,1),(1,1)\in U$ and \[
+      -1=h(-1,1)=h(1,1)=1.
+    \]
+  \end{itemize}
+  So no such homotopy of pairs exists.
+\end{proof}
+
+\begin{example}{The Bushy Sea Urchin}{seaurchin}
+  If $\pted{X}{x_0}\in\Toppt$ and $X$ is contractible in $\Top$, then $\pted{X}{x_0}$ need not be pointedly contractible. Consider the \textbf{bushy sea urchin} \[
+    X\coloneqq\big\{s\cdot(\cos t,\sin t)\mid s\in[0,1],\ t\in\Q\cap[0,2\pi]\big\}\subset\R^2
+  \]
+  with the subspace topology and basepoint $x_0\coloneqq(1,0)$ (Figure \ref{fig:seaurchin}). It consists of one spike $[0,1]\cdot(\cos t,\sin t)$ for each rational angle $t$, all joined at the origin.
+  \begin{itemize}
+    \item \emph{$X$ is contractible:} $X$ is star-shaped about $0$ (if $x\in X$ and $\lambda\in[0,1]$ then $\lambda x\in X$), so $h(x,t)\coloneqq(1-t)\,x$ is a homotopy in $X$ from $\id_X$ to the constant map at $0$. This even shows $\pted{X}{0}$ is pointedly contractible.
+    \item \emph{$\pted{X}{x_0}$ is not pointedly contractible:} points on spikes close to $x_0$ can only reach $x_0$ by passing through $0$, but a pointed homotopy must keep them close to $x_0$ the whole time.
+  \end{itemize}
+  So pointed contractibility depends on the basepoint.
+\end{example}
+
+\begin{proof}
+  Contractibility of $X$ was shown above, so it remains to show $\pted{X}{x_0}$ is not pointedly contractible. Suppose it were. Then there is a pointed homotopy $h$ from $\id_X$ to the constant map $c_{x_0}$. Let $B\coloneqq\{x\in X\mid\norm{x-x_0}<\tfrac12\}$.
+  \begin{enumerate}
+    \item Since $h(x_0,t)=x_0$ for all $t$ and $[0,1]$ is compact, we have an open $V\ni x_0$ with $h(V\times[0,1])\subset B$.
+    \item Rational angles are dense, so $V$ contains a point $p\coloneqq(\cos t,\sin t)$ with $t\in\Q\cap(0,2\pi)$, on a different spike from $x_0$. Then $h(p,\cdot)$ is a path from $p$ to $x_0$ inside $B$.
+    \item But a path $\sigma$ in $X\setminus\{0\}$ stays on one spike: the coordinates of $\sigma/\norm{\sigma}$ are continuous with countable image, hence constant by the IVT. So $h(p,\cdot)$ passes through $0\notin B$, a contradiction.
+  \end{enumerate}
+\end{proof}
+
+% Bushy sea urchin: spikes at rational angles. Left: a pointed contraction would drag p to x_0 through 0, leaving B. Right: with basepoint 0 the radial contraction is pointed.  (cf. Loh Fig. 1.11)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    spike/.style={ink!40!paper, line width=0.3pt},
+    hp/.style={diagA, -{Stealth[length=4pt]}},
+    pth/.style={diagA, thick, dashed, -{Stealth[length=5pt]}}]
+  % ---------- (X, x_0) ----------
+  \fill[diagB!8!paper] (2.4,0) circle (1.2);
+  \foreach \a in {0,2,...,358} \draw[spike] (0,0) -- (\a:2.4);
+  \draw[diagB!70!paper, dashed] (2.4,0) circle (1.2);
+  \node[lab, text=diagB] at ($(2.4,0)+(-55:1.42)$) {$B$};
+  % highlighted spikes
+  \draw[diagB, very thick] (0,0) -- (2.4,0);
+  \draw[diagC, very thick] (0,0) -- (12:2.4);
+  % the forced path p -> 0 -> x_0
+  \draw[pth] ($(12:2.2)+(102:0.16)$) -- ($(12:0.3)+(102:0.16)$);
+  \draw[pth] ($(0:0.3)+(-90:0.16)$) -- ($(0:2.2)+(-90:0.16)$);
+  % points
+  \fill[diagB] (2.4,0) circle (2pt);
+  \node[lab, text=diagB, anchor=west] at (2.45,-0.1) {$x_0$};
+  \fill[diagC] (12:2.4) circle (2pt);
+  \node[lab, text=diagC, anchor=south west] at (12:2.4) {$p$};
+  \fill[ink] (0,0) circle (1.6pt);
+  \node[lab, anchor=east] at (-0.1,-0.2) {$0$};
+  \node[lab, text=ink!70!paper] at (135:2.75) {$X$};
+  \node[lab] at (0.6,-3.0) {$\pted{X}{x_0}$: not pointedly contractible};
+  % ---------- separator ----------
+  \draw[ink!20!paper] (4.6,-2.8) -- (4.6,2.6);
+  % ---------- (X, 0) ----------
+  \begin{scope}[xshift=7.6cm]
+    \foreach \a in {0,2,...,358} \draw[spike] (0,0) -- (\a:2.4);
+    \foreach \a in {0,30,...,330} \draw[hp] (\a+4:2.3) -- (\a+4:0.35);
+    \fill[diagB] (0,0) circle (2.2pt);
+    \node[lab, text=diagB, anchor=north west] at (0.05,-0.05) {$0$};
+    \node[lab] at (0,-3.0) {$\pted{X}{0}$: pointedly contractible};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The bushy sea urchin $X$ of Example \ref{ex:seaurchin}, with one spike for each rational angle (only finitely many are drawn). Left: a pointed homotopy $\id_X\simeq_*c_{x_0}$ keeps points near $x_0$ inside $B$ at all times, but the point $p$ on a nearby spike (purple) can only reach $x_0$ by travelling down to $0$ and back out (dashed), which leaves $B$. Right: with basepoint $0$, the radial contraction $h(x,t)=(1-t)\,x$ (orange arrows) fixes the basepoint, so $\pted{X}{0}$ is pointedly contractible.}\label{fig:seaurchin}
+
+In order to define a homotopy and homotopy equivalence, we need a suitably robust product definition and an analogue of the unit interval e.g. chain homotopies on chain complexes, or $\mathbb{A}^1$ as the ``unit interval'' in $\mathbb{A}^1$-homotopy.
+
+Because one recovers homotopies in $\Top$ and $\Toppt$ from those in $\Top^2$ it suffices to study homotopies in $\Top^2$:
+
+\begin{theorem}{Elementary Properties of Homotopy (in $\Top^2$)}{htpyprops}
+  \begin{enumerate}
+    \item Let $(X,A),(Y,B)\in\Toppair$. Then $\simeq_{A,B}$ is an equivalence relation on $\mor{\Toppair}{(X,A)}{(Y,B)}$.
+    \item Let $(X,A),(Y,B),(Z,C)\in\Toppair$, let $f,f':(X,A)\to(Y,B)$ with $f\simeq_{A,B}f'$, and let $g,g':(Y,B)\to(Z,C)$ with $g\simeq_{B,C}g'$. Then \[
+      g\circ f\simeq_{A,C}g'\circ f'.
+    \]
+    \item Let $X,Y\in\Top$ with $X$ contractible. Then every continuous map $X\to Y$ or $Y\to X$ is null-homotopic.
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}[\proofof{th:htpyprops}]
+  \begin{enumerate}
+    \item Let $f,g,k:(X,A)\to(Y,B)$. \emph{Reflexive:} $(x,t)\mapsto f(x)$. \emph{Symmetric:} if $h:f\simeq_{A,B}g$ then $(x,t)\mapsto h(x,1-t)$ is a homotopy $g\simeq_{A,B}f$. \emph{Transitive:} if $h:f\simeq_{A,B}g$ and $h':g\simeq_{A,B}k$ then \[
+      (x,t)\mapsto\begin{cases}h(x,2t)&t\leq\tfrac12\\h'(x,2t-1)&t\geq\tfrac12\end{cases}
+    \]
+    is continuous by Theorem \ref{th:glue} (both pieces equal $g(x)$ at $t=\frac12$), so $f\simeq_{A,B}k$. Each of these sends $A\times[0,1]$ into $B$.
+    \item If $h:f\simeq_{A,B}f'$ and $k:g\simeq_{B,C}g'$ then $(x,t)\mapsto k\big(h(x,t),t\big)$ is continuous, runs from $g\circ f$ to $g'\circ f'$, and sends $A\times[0,1]$ into $C$ since $h(A\times[0,1])\subset B$.
+    \item Since $X\simeq\{\ast\}$, $\id_X\simeq c$ for some constant map $c:X\to X$. By (2) (with empty subspaces), any $f:X\to Y$ satisfies $f=f\circ\id_X\simeq f\circ c$, and any $f:Y\to X$ satisfies $f=\id_X\circ f\simeq c\circ f$. Both right-hand sides are constant.
+  \end{enumerate}
+\end{proof}
+
+\newpage
+
+\subsubsection{Homotopy Categories}
+
+A central goal is the \textbf{homotopy equivalence problem}: classify spaces up to homotopy equivalence. We turn it into an isomorphism problem by identifying homotopic maps and not objects.
+
+\begin{definition}{Homotopy Categories}{htpycat}
+  The \textbf{homotopy category} $\hTop$ has
+  \begin{itemize}
+    \item objects $\Ob\hTop\coloneqq\Ob\Top$,
+    \item morphisms $\mor{\hTop}{X}{Y}\coloneqq\hcl{X}{Y}\coloneqq\mor{\Top}{X}{Y}/{\simeq}$, the homotopy classes $[f]$ of maps $f:X\to Y$,
+    \item composition $[g]\circ[f]\coloneqq[g\circ f]$.
+  \end{itemize}
+  Likewise $\hToppair$ has objects $\Ob\Toppair$ and morphisms $\mor{\Toppair}{(X,A)}{(Y,B)}/{\simeq_{A,B}}$ (classes $[f]_{A,B}$), and $\hToppt$ has objects $\Ob\Toppt$ and morphisms $\hclp{\pted{X}{x_0}}{\pted{Y}{y_0}}\coloneqq\mor{\Toppt}{\pted{X}{x_0}}{\pted{Y}{y_0}}/{\simeq_*}$ (classes $[f]_*$).
+\end{definition}
+
+Composition is well-defined by Theorem \ref{th:htpyprops}(2), and associativity and the identities $[\id_X]$ are inherited from $\Top$.
+
+\begin{proposition}{Homotopy Equivalences as Isomorphisms}{htpyiso}
+  Let $\cat{T}\in\{\Top,\Toppair,\Toppt\}$ with homotopy category $h\cat{T}$, and let $H:\cat{T}\to h\cat{T}$ be the identity on objects and $f\mapsto[f]$ on morphisms. Then $H$ is a functor, and
+  \begin{itemize}
+    \item $f$ is a homotopy equivalence in $\cat{T}$ iff $H(f)=[f]$ is an isomorphism in $h\cat{T}$,
+    \item $X\simeq Y$ in $\cat{T}$ iff $X\iso Y$ in $h\cat{T}$.
+  \end{itemize}
+  We call $H$ the homotopy class functor.
+\end{proposition}
+
+\begin{proof}[\proofof{th:htpyiso}]
+  $H$ is a functor since $[g\circ f]=[g]\circ[f]$ and $[\id_X]=\id_{H(X)}$ by definition. For $f:X\to Y$ and $g:Y\to X$, \[
+    g\circ f\simeq\id_X\land f\circ g\simeq\id_Y\iff[g]\circ[f]=[\id_X]\land[f]\circ[g]=[\id_Y],
+  \]
+  so $g$ is a homotopy inverse of $f$ iff $[g]$ is an inverse of $[f]$. Every morphism of $h\cat{T}$ is of the form $[f]$, so the second point follows from the first.
+\end{proof}
+
+So to study spaces up to homotopy equivalence via functors, we can either study functors out of $\hTop$, $\hToppair$, $\hToppt$, or functors on $\Top$, $\Toppair$, $\Toppt$ that send homotopic maps to equal morphisms.
+
+\subsubsection{Homotopy Invariance}\label{sec:htpyinv}
+
+\begin{definition}{Homotopy Invariant Functor}{}
+  Let $\cat{T}\in\{\Top,\Toppair,\Toppt\}$ and $C\in\cat{CAT}$. A functor $F:\cat{T}\to C$ is \textbf{homotopy invariant} if \[
+    \forall (f,g:X\to Y)\in \cat{T}: f\simeq_{\cat{T}} g \implies F(f)=F(g)
+  \]
+\end{definition}
+
+Note that this is equivalent to $F$ factoring over the homotopy class factor $H:\cat{T}\to h\cat{T}$:
+\[
+\begin{tikzcd}
+  \cat{T} \ar[r, "F"] \ar[d, "H"'] & C \\
+  h\cat{T} \ar[ur, dashed, "\exists!\,\overline{F}"']
+\end{tikzcd}
+\]
+
+\begin{theorem}{Homotopy Invariant Functors yield Homotopy Invariants}{hifyhi}
+  Let $F:\cat{T}\to C$ be a homotopy invariant functor and $X,Y\in\cat{T}$. Then \begin{enumerate}
+    \item $X\simeq_{\cat{T}}Y\implies F(X)\iso_CF(Y)$
+    \item via contrapositive, $F(X)\not\iso_CF(Y)\implies X\not\simeq_{\cat{T}}Y$
+  \end{enumerate}
+\end{theorem}
+\begin{proof}[\proofof{th:hifyhi}]
+  Since $F$ is homotopy invariant, by factorisation $\exists! \bar{F}:h\cat{T}\to C: F=\bar{F}\circ H$. Functors preserve isomorphism, and $X\simeq_{\cat{T}} Y$ is equivalent to $H(X)\iso_{h\cat{T}}H(Y)$, and applying $\bar{F}$ yields the result.
+\end{proof}
+
+\begin{theorem}{Homotopy Invariants yield Homotopy Invariant Functors}{hiyhif}
+  Let $F:\cat{T}\to C$ be a functor mapping homotopy equivalences in $\cat{T}$ to isomorphisms in $C$.\\
+  Then $F$ is homotopy invariant.
+\end{theorem}
+\begin{proof}[\proofof{th:hiyhif}]
+  We reduce the problem to the universal case i.e. the case with $f=i_0,g=i_1$.
+
+  \begin{itemize}
+    \item \textbf{The Universal Case.} Let $X\in\cat{T}$ and let $i_0,i_1:X\to X\times [0,1]$ be the inclusions at times $0$ and $1$. We show that $F(i_0)=F(i_1)$. Indeed, the projection $\pi:X\times [0,1]\to X$ is a homotopy equivalence and $\pi\circ i_0=\id_X=\pi\circ i_1$. Thus $F(\pi):F(X\times[0,1])\to F(X)$ preserves the isomorphism. so \begin{align*}
+      F(i_0) &= F(\pi)\inv \circ F(\pi) \circ F(i_0) = F(\pi)\inv \circ F(\pi\circ i_0)\\
+      &= F(\pi)\inv \circ F(\id_X) = F(\pi)\inv \circ F(\pi \circ i_1)=F(i_1)
+    \end{align*}
+    \item \textbf{General Homotopy Invariance.} Let $(f,g:X\to Y)\in\cat{T}$. By definition of homotopy equivalence there is a homotopy $(h:X\times[0,1]\to Y)\in\cat{T}$ with \[ h\circ i_0=f\land h\circ i_1=g \] Applyinng $F$ and the universal case: \[
+      F(f)=F(h\circ i_0)=F(h)\circ F(i_0) = F(h)\circ F(i_1) = F(h\circ i_1) = F(g)
+    \]
+  \end{itemize}
+\end{proof}
+
+\begin{theorem}{The Homotopy Category as Localisation}{htpyloc}
+  Let $H:\cat{T}\to h\cat{T}$ be the homotopy class functor and $W$ the class of homotopy equivalences in $\cat{T}$. Then $H$ is the \textbf{localisation} of $\cat{T}$ at $W$, i.e.
+  \begin{enumerate}
+    \item $\forall f\in W$: $H(f)$ is an isomorphism in $h\cat{T}$.
+    \item For every $C\in\cat{CAT}$ and every functor $F:\cat{T}\to C$ sending all $f\in W$ to isomorphisms, there is a unique functor $\overline{F}:h\cat{T}\to C$ with $F=\overline{F}\circ H$.
+  \end{enumerate}
+\end{theorem}
+\begin{proof}[\proofof{th:htpyloc}]
+  (1) is Theorem \ref{th:htpyiso}. For (2), $F$ is homotopy invariant by Theorem \ref{th:hiyhif}, and the result follows.
+\end{proof}
+
+So $h\cat{T}$ is obtained from $\cat{T}$ by formally inverting the homotopy equivalences, and functors out of $h\cat{T}$, homotopy invariant functors on $\cat{T}$, and functors on $\cat{T}$ inverting homotopy equivalences all amount to the same thing. Compare with the localisation $R\to S^{-1}R$ of a ring, the universal ring map making every $s\in S$ a unit.
+
+\newpage
+
+\subsubsection{Using Homotopy Invariant Functors}
+
+The aim of the course becomes an exploration for ``good'' homotopy invariant functors. In particular, there is a sequence $(F_n:\Top\to\Ab)_{n\in\N}$ of homotopy invariant functors such that
+\begin{itemize}
+  \item $F_m(\Sph{n})\iso\Z$ if $m=n$, and $F_m(\Sph{n})\iso0$ if $m\neq n$;
+  \item for all $n\in\N$ and $j\in\{1,\dots,n+1\}$, the reflection $r_j^{(n)}:\Sph{n}\to\Sph{n}$, $x\mapsto(x_1,\dots,-x_j,\dots,x_{n+1})$, satisfies $F_n(r_j^{(n)})\neq\id_{F_n(\Sph{n})}$.
+\end{itemize}
+These are the reduced homology functors $F_n=\rHn{n}{\cdot}$ (reduced, since $\Hn{0}{\Sph{n}}\iso\Z\neq0$).
+
+\begin{corollary}{Invariance of Dimension}{invdim}
+  Let $n,m\in\N$. Then
+  \begin{enumerate}
+    \item $\Sph{n}$ is not contractible,
+    \item $\Sph{n}\simeq\Sph{m}\iff n=m$,
+    \item $\Sph{n}\iso_{\Top}\Sph{m}\iff n=m$,
+    \item $\R^n\iso_{\Top}\R^m\iff n=m$.
+  \end{enumerate}
+\end{corollary}
+\begin{proof}[\proofof{cor:invdim}]
+  \begin{enumerate}
+    \item Contractible spaces are path-connected: if $h:\id_X\simeq c_{x_0}$ then $t\mapsto h(x,t)$ is a path from $x$ to $x_0$. So $\Sph{0}$ is not contractible. For $n\geq1$, if $\Sph{n}$ were contractible then all self-maps of $\Sph{n}$ would be null-homotopic (Theorem \ref{th:htpyprops}), and all constant maps are homotopic as $\Sph{n}$ is path-connected. So $\id_{\Sph{n}}\simeq r_1^{(n)}$, giving $\id_{F_n(\Sph{n})}=F_n(r_1^{(n)})$, a contradiction.
+    \item If $\Sph{n}\simeq\Sph{m}$ then $\Z\iso F_n(\Sph{n})\iso F_n(\Sph{m})$ (Theorem \ref{th:hifyhi}), so $m=n$.
+    \item Homeomorphisms are homotopy equivalences, so this follows from (2).
+    \item If $n=0$ or $m=0$ this is Example \ref{ex:dimlow}. Otherwise a homeomorphism $f:\R^n\to\R^m$ restricts to a homeomorphism $\R^n\setminus\{0\}\to\R^m\setminus\{f(0)\}$, so by Example \ref{ex:thicksph} \[
+      \Sph{n-1}\simeq\R^n\setminus\{0\}\iso_{\Top}\R^m\setminus\{f(0)\}\iso_{\Top}\R^m\setminus\{0\}\simeq\Sph{m-1},
+    \]
+    and $n=m$ by (2).
+  \end{enumerate}
+\end{proof}
+
+\begin{corollary}{Brouwer Fixed Point Theorem}{brouwer}
+  Let $n\in\N$. Then every continuous map $f:\Disk{n}\to\Disk{n}$ has a fixed point.
+\end{corollary}
+\begin{proof}[\proofof{cor:brouwer}]
+  $\Disk{0}$ is a point, so let $n\geq1$ and suppose $f(x)\neq x$ for all $x\in\Disk{n}$. We build a retraction $g:\Disk{n}\to\Sph{n-1}$ and show that it makes $\Sph{n-1}$ contractible.
+  \begin{itemize}
+    \item \emph{Construction.} Let $g(x)$ be the point where the ray from $f(x)$ through $x$ meets $\Sph{n-1}$ (Figure \ref{fig:brouwer}). Explicitly, with $u\coloneqq x-f(x)\neq0$, \[
+      g(x)\coloneqq x+t(x)\,u,\qquad t(x)\coloneqq\frac{-\gen{x,u}+\sqrt{\gen{x,u}^2+\norm{u}^2(1-\norm{x}^2)}}{\norm{u}^2},
+    \]
+    the non-negative root of $\norm{x+tu}^2=1$. It exists as $\norm{x}\leq1$, and $g$ is continuous as $u\neq0$ (the only use of $f$ having no fixed points).
+    \item \emph{$g$ is a retraction.} If $x\in\Sph{n-1}$ then $\gen{x,u}=1-\gen{x,f(x)}\geq0$ by Cauchy--Schwarz, so $t(x)=0$ and $g(x)=x$. Hence $g\circ i=\id_{\Sph{n-1}}$, where $i:\Sph{n-1}\inj\Disk{n}$.
+    \item \emph{Contradiction.} $\Disk{n}$ is convex, so $(x,s)\mapsto(1-s)\,i(g(x))+s\,x$ is a homotopy $i\circ g\simeq\id_{\Disk{n}}$. Thus $\Sph{n-1}\simeq\Disk{n}\simeq\{0\}$, contradicting Corollary \ref{cor:invdim}(1).
+  \end{itemize}
+\end{proof}
+
+% Brouwer: the ray from f(x) through x hits the boundary sphere at g(x)  (cf. Loh Fig. 1.13)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    pt/.style={circle, fill, inner sep=0pt, minimum size=4pt}]
+  \fill[ink!6!paper] (0,0) circle (1.8);
+  \draw[diagB, very thick] (0,0) circle (1.8);
+  \node[lab, text=diagB] at (-115:2.25) {$S^{n-1}$};
+  \node[lab, text=ink!65!paper] at (-60:1.2) {$D^n$};
+  % ray f(x) -> x -> g(x)
+  \draw[diagA, thick, -{Stealth[length=5pt]}] (-0.7,-0.6) -- (1.391,1.143);
+  \node[pt, ink!70!paper] at (-0.7,-0.6) {};
+  \node[lab, anchor=north east] at (-0.7,-0.6) {$f(x)$};
+  \node[pt, diagC] at (0.2,0.15) {};
+  \node[lab, text=diagC, anchor=north west] at (0.22,0.12) {$x$};
+  \node[pt, diagA] at (1.391,1.143) {};
+  \node[lab, text=diagA, anchor=south west] at (1.391,1.143) {$g(x)$};
+  % a boundary point is fixed by g
+  \node[pt, diagB] at (160:1.8) {};
+  \node[lab, text=diagB, anchor=east] at (160:1.85) {$y=g(y)$};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The retraction $g:\Disk{n}\to\Sph{n-1}$ in the proof of Corollary \ref{cor:brouwer}. Since $f(x)\neq x$, there is a unique ray from $f(x)$ through $x$, and $g(x)$ is where it leaves the disc. Points $y$ on the boundary are fixed by $g$.}\label{fig:brouwer}
+
+To study self-maps of spheres, we extract a single integer from $F_n$.
+
+\begin{proposition}{Mapping Degrees of Self-Maps}{mapdeg}
+  Let $C$ be a category, $F:C\to\Ab$ a functor and $X\in C$ with $F(X)\iso\Z$. The \textbf{degree} with respect to $F$ is \[
+    \deg_F:\mor{C}{X}{X}\to\Z,\qquad f\mapsto d\ \text{ where }F(f)=d\cdot\id_{F(X)}.
+  \]
+  Then
+  \begin{enumerate}
+    \item $\deg_F$ is well-defined,
+    \item $\deg_F(g\circ f)=\deg_F(g)\cdot\deg_F(f)$ for all $f,g\in\mor{C}{X}{X}$,
+    \item $\deg_F(\id_X)=1$, and $\deg_F(f)\in\{\pm1\}$ for every isomorphism $f$.
+  \end{enumerate}
+\end{proposition}
+\begin{proof}[\proofof{th:mapdeg}]
+  \begin{enumerate}
+    \item Every endomorphism of a group $\iso\Z$ is multiplication by a unique $d\in\Z$ (the image of a generator).
+    \item $\deg_F(g\circ f)\cdot\id=F(g)\circ F(f)=(\deg_F(g)\cdot\id)\circ(\deg_F(f)\cdot\id)=\deg_F(g)\deg_F(f)\cdot\id$.
+    \item $F(\id_X)=\id_{F(X)}=1\cdot\id$. If $f$ has inverse $f\inv$ then $\deg_F(f)\deg_F(f\inv)=\deg_F(\id_X)=1$ by (2), and the only units of $\Z$ are $\pm1$.
+  \end{enumerate}
+\end{proof}
+
+\begin{remark}{Vector Fields on Spheres}{vecfield}
+  For $n\geq1$, a \textbf{continuous vector field} on $\Sph{n}$ is a continuous map $v:\Sph{n}\to\R^{n+1}$ with $\gen{x,v(x)}=0$ for all $x\in\Sph{n}$, i.e.\ $v(x)$ is tangent to $\Sph{n}$ at $x$. It is \textbf{nowhere vanishing} if $v(x)\neq0$ for all $x$. (In general: a section of the tangent bundle $TM\to M$.)
+\end{remark}
+
+\begin{theorem}{Hairy Ball Theorem}{hedgehog}
+  Let $n\geq1$. Then there is a continuous nowhere vanishing vector field on $\Sph{n}$ iff $n$ is odd.
+\end{theorem}
+\begin{proof}[\proofof{th:hedgehog}]
+  \emph{($\Leftarrow$)} For $n=2k+1$, the map $v(x)\coloneqq(-x_2,x_1,-x_4,x_3,\dots,-x_{2k+2},x_{2k+1})$ satisfies $\gen{x,v(x)}=0$ and $\norm{v(x)}=\norm{x}=1$.
+
+  \emph{($\Rightarrow$)} Let $v$ be a nowhere vanishing vector field on $\Sph{n}$. Then $h(x,t)\coloneqq\cos(\pi t)\,x+\sin(\pi t)\,v(x)/\norm{v(x)}$ is continuous, and lands in $\Sph{n}$ since $x\perp v(x)/\norm{v(x)}$ are unit vectors. So $h:\id_{\Sph{n}}\simeq-\id_{\Sph{n}}$. Each reflection $r_j^{(n)}$ is its own inverse with $F_n(r_j^{(n)})\neq\id$, so $\deg_{F_n}(r_j^{(n)})=-1$ by Proposition \ref{th:mapdeg}(3). Since $F_n$ is homotopy invariant and $-\id_{\Sph{n}}=r_{n+1}^{(n)}\circ\dots\circ r_1^{(n)}$, \[
+    1=\deg_{F_n}(\id_{\Sph{n}})=\deg_{F_n}(-\id_{\Sph{n}})=\deg_{F_n}(r_{n+1}^{(n)})\cdots\deg_{F_n}(r_1^{(n)})=(-1)^{n+1},
+  \]
+  so $n$ is odd.
+\end{proof}

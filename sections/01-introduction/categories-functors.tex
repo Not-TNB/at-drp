@@ -15,7 +15,12 @@ We assume the basic language of category theory (categories, functors, natural t
         \item $\Toppair$: \textbf{pairs of spaces} $(X,A)$ with $A\subset X$; morphisms $(X,A)\to(Y,B)$ are continuous $f:X\to Y$ with $f(A)\subset B$. This is the home of relative homology. We regard $\Top\subset\Toppair$ via $X\mapsto(X,\emptyset)$.
         \item $\hTop$: spaces and \emph{homotopy classes} of maps $[X,Y]$.
     \end{itemize}
+    $\Toppt$ is essentially the special case of $\Toppair$ in which the subspace is a single point.
 \end{example}
+
+\begin{remark}{Eliminating Quotients}{elimquot}
+    Pairs of spaces let us study the difference between $X$ and $A\subset X$ without forming $X/A$, whose quotient topology tends to behave badly. As a rule of thumb (also beyond topology), it is better to replace quotients by relative constructions, or at least to postpone taking quotients to the latest possible step.
+\end{remark}
 
 \begin{definition}{Simplex Category}{simpcat}
     The \textbf{simplex category} $\Delta$ has objects $[n]\coloneqq\{0,1,\dots,n\}$ for $n\in\N$, and morphisms $[n]\to[m]$ the monotone (order-preserving) maps. Distinguished morphisms are the
@@ -47,9 +52,12 @@ We assume the basic language of category theory (categories, functors, natural t
     $F(X)\iso F(Y)$ says nothing about $X$ and $Y$: the forgetful functor $U:\Top\to\Set$ gives $U(\R)\iso_{\Set}U(\R^2)$, yet $\R\not\iso_{\Top}\R^2$ (below). A good invariant is fine enough to distinguish the spaces we care about, yet computable.
 \end{remark}
 
+\newpage
+
 \begin{example}{Basic Functors}{basicfun}
     \begin{itemize}
         \item The \textbf{forgetful functor} $U:\Top\to\Set$; it is represented by the point, $U\iso\Top(\pt,-)$.
+        \item The \textbf{free abelian group functor} $\Z[-]:\Set\to\Ab$, $S\mapsto\bigoplus_{S}\Z$, sending a map $f:S\to T$ to the unique homomorphism extending $f$ on the basis $S$. It is left adjoint to the forgetful functor $\Ab\to\Set$; analogously for $\Set\to\Vect_K$ and $\Set\to\Mod_R$. Singular chains will be built this way: $C_n(X)=\Z[\Top(\Simp{n},X)]$.
         \item The \textbf{standard simplices} assemble to a functor $\Delta^\bullet:\Delta\to\Top$, $[n]\mapsto\Simp{n}$, sending monotone $f:[n]\to[m]$ to the affine map \[
         \Simp{n}\to\Simp{m},\qquad \textstyle\sum_{i}t_ie_i\mapsto\sum_i t_ie_{f(i)}.
         \]
@@ -65,7 +73,7 @@ We assume the basic language of category theory (categories, functors, natural t
     For all $n\geq2$ we have $\R\not\iso_{\Top}\R^n$.
 \end{proposition}
 \begin{proof}[\proofof{th:rrn}]
-    Suppose $h:\R\to\R^n$ is a homeomorphism. Then $h$ restricts to a homeomorphism $\R\setminus\{0\}\to\R^n\setminus\{h(0)\}$ (with inverse the restriction of $h\inv$; restrictions of continuous maps are continuous). By Proposition \ref{th:funciso}, $\pi_0$ yields a bijection between
+    This is the point-removal trick of Example \ref{ex:dimlow}. Suppose $h:\R\to\R^n$ is a homeomorphism. Then $h$ restricts to a homeomorphism $\R\setminus\{0\}\to\R^n\setminus\{h(0)\}$ (with inverse the restriction of $h\inv$; restrictions of continuous maps are continuous). By Proposition \ref{th:funciso}, $\pi_0$ yields a bijection between
     \begin{itemize}
         \item $\pi_0(\R\setminus\{0\})$, which has \textbf{two} elements: $(-\infty,0)$ and $(0,\infty)$ are path-connected, and no path joins $-1$ to $1$ in $\R\setminus\{0\}$ by the IVT;
         \item $\pi_0(\R^n\setminus\{p\})$, which has \textbf{one} element: any two points can be joined by a straight line, or, if that line passes through $p$, by two straight lines via a point off it (possible as $n\geq2$).
@@ -139,7 +147,7 @@ These will prove to be vital to algebraic topology and homological algebra due t
 \end{definition}
 
 \begin{remark}{Normal Morphisms in $\Grp$}{}
-    In $\Grp$ the normal monomorphisms are exactly the inclusions of normal subgroups, and every epimorphism is conormal (surjective homomorphisms are quotients by their kernels). So $\Grp$ fails only the condition on monomorphisms.
+    In $\Grp$ the normal monomorphisms are exactly the inclusions of normal subgroups, and every epimorphism is conormal (surjective homomorphisms are quotients by their kernels). So of the (co)normality conditions, $\Grp$ fails only the one on monomorphisms; it also fails to be additive (Example \ref{ex:abex}).
 \end{remark}
 
 \begin{definition}{Abelian Category}{abcat}

@@ -12,7 +12,7 @@
 *.dep
 *.dpth
 *.md5
-main.pdf
+*.pdf
 
 # TikZ externalisation cache
 figures/cache/*
