@@ -6,4 +6,553 @@
 
 \subsubsection{The Group Structure on the Fundamental Group}
 
-\subsubsection{Changing the Basepoint}
+\begin{definition}{Fundamental Group Functor}{}
+  Define the functor \[
+  \pi_1\coloneq [(S^1,e_1),\cdot]_*:\hToppt \to \Set
+  \]
+\end{definition}
+
+We aim to understand this functor geometrically. Take $(X,x_0)\in\Toppt$. Then \[
+\pi_1(X,x_0)=[(S^1,e_1),(X,x_0)]_* = \Toppt((S^1,e_1),(X,x_0))/\simeq_*
+\]
+is precisely the set of pointed homotopy classes of pointed loops in $(X,x_0)$.
+
+% pi_1 intuitively: loop 1 contracts to x_0, loop 2 winds around the hole  (cf. Loh Fig. 2.1)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    num/.style={circle, draw, font=\sffamily\scriptsize, inner sep=1pt, minimum size=11pt},
+    arr/.style={postaction={decorate}, decoration={markings, mark=at position 0.3 with {\arrow{Stealth[length=5pt]}}}}]
+  % ---------- the space X ----------
+  \draw[ink!45!paper, fill=ink!6!paper] plot[smooth cycle, tension=0.7]
+    coordinates {(-3,0) (-2.4,1.3) (-1,1.4) (0,0.9) (1,1.4) (2.4,1.3) (3,0) (2.4,-1.3) (1,-1.4) (0,-0.9) (-1,-1.4) (-2.4,-1.3)};
+  \filldraw[ink!45!paper, fill=paper] (1.6,0) circle (0.55);
+  \node[lab, text=ink!70!paper] at (2.75,1.35) {$X$};
+  % ---------- loop 1: shrinking copies (null-homotopy) ----------
+  \foreach \s/\o in {0.66/60, 0.33/35}{
+    \begin{scope}[scale=\s]
+      \draw[diagB!\o!paper, dashed] (0,0) .. controls (-0.8,0.9) and (-2.4,1.0) .. (-2.4,0)
+        .. controls (-2.4,-1.0) and (-0.8,-0.9) .. (0,0);
+    \end{scope}
+  }
+  \draw[diagB, thick, arr] (0,0) .. controls (-0.8,0.9) and (-2.4,1.0) .. (-2.4,0)
+    .. controls (-2.4,-1.0) and (-0.8,-0.9) .. (0,0);
+  \node[num, diagB] at (-2.0,0.95) {1};
+  % ---------- loop 2: around the hole ----------
+  \draw[diagA, thick, arr] (0,0) .. controls (0.5,0.8) and (1.2,1.05) .. (1.7,1.0)
+    .. controls (2.55,0.95) and (2.55,-0.95) .. (1.7,-1.0)
+    .. controls (1.2,-1.05) and (0.5,-0.8) .. (0,0);
+  \node[num, diagA] at (2.35,-0.95) {2};
+  % ---------- basepoint ----------
+  \fill[ink] (0,0) circle (2pt);
+  \node[lab, anchor=south] at (0,0.45) {$x_0$};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The loop \textcircled{\scriptsize 1} (blue) can be shrunk to $x_0$ while keeping $x_0$ fixed (dashed), so it is pointedly null-homotopic. The loop \textcircled{\scriptsize 2} (orange) winds around the hole of $X$; it is not pointedly null-homotopic and detects the hole.}\label{fig:pi1}
+
+\begin{remark}{Parametrisation of $S^1$}{}
+  We frequently use the homeomorphism $[0,1]/(0\sim 1)\to S^1, [t]\mapsto e^{2\pi i t}$ allowing us to parametrise points on $S^1$ by elements of $[0,1]$.
+\end{remark}
+
+We can concatenate loops at the same basepoint to form a new loop, and this constitutes the group structure on $\pi_1$.
+
+% Concatenation gamma * eta: [0,1/2] runs gamma at double speed, [1/2,1] runs eta  (cf. Loh Fig. 2.2)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    conn/.style={ink!25!paper, dashed, -{Stealth[length=3pt]}},
+    arr/.style={postaction={decorate}, decoration={markings, mark=at position 0.3 with {\arrow{Stealth[length=5pt]}}}}]
+  % ---------- faded timeline [0,1] ----------
+  \draw[diagB!45!paper, line width=2.2pt] (-3,2.7) -- (0,2.7);
+  \draw[diagA!45!paper, line width=2.2pt] (0,2.7) -- (3,2.7);
+  \foreach \x/\t in {-3/0, 0/\tfrac12, 3/1}{
+    \draw[ink!40!paper] (\x,2.58) -- (\x,2.82);
+    \node[tick, anchor=south] at (\x,2.85) {$\t$};
+  }
+  \foreach \x in {-1.5,1.5} \draw[ink!30!paper] (\x,2.62) -- (\x,2.78);
+  \node[lab, text=diagB!80!paper, anchor=south] at (-1.5,2.8) {$\gamma(2t)$};
+  \node[lab, text=diagA!80!paper, anchor=south] at (1.5,2.8) {$\eta(2t-1)$};
+  \node[tick, anchor=east] at (-3.15,2.7) {$t$};
+  % ---------- the space X ----------
+  \draw[ink!45!paper, fill=ink!6!paper] plot[smooth cycle, tension=0.7]
+    coordinates {(-3,0) (-2.4,1.3) (-1,1.4) (0,0.9) (1,1.4) (2.4,1.3) (3,0) (2.4,-1.3) (1,-1.4) (0,-0.9) (-1,-1.4) (-2.4,-1.3)};
+  \filldraw[ink!45!paper, fill=paper] (1.6,0) circle (0.55);
+  \node[lab, text=ink!70!paper] at (2.75,1.35) {$X$};
+  % ---------- where the times land ----------
+  \foreach \x in {-3,0,3} \draw[conn] (\x,2.55) -- (0,0.12);
+  \draw[conn] (-1.5,2.6) -- (-2.37,0.08);
+  \draw[conn] (1.5,2.6) -- (2.3,0.1);
+  % ---------- gamma then eta ----------
+  \draw[diagB, thick, arr] (0,0) .. controls (-0.8,0.9) and (-2.4,1.0) .. (-2.4,0)
+    .. controls (-2.4,-1.0) and (-0.8,-0.9) .. (0,0);
+  \draw[diagA, thick, arr] (0,0) .. controls (0.5,0.8) and (1.2,1.05) .. (1.7,1.0)
+    .. controls (2.55,0.95) and (2.55,-0.95) .. (1.7,-1.0)
+    .. controls (1.2,-1.05) and (0.5,-0.8) .. (0,0);
+  \fill[diagB] (-2.4,0) circle (1.6pt);
+  \node[tick, anchor=east] at (-2.45,0) {$\tfrac14$};
+  \fill[diagA] (2.34,0) circle (1.6pt);
+  \node[tick, anchor=west] at (2.4,0) {$\tfrac34$};
+  \node[lab, text=diagB] at (-1.35,0) {$\gamma$};
+  \node[lab, text=diagA] at (0.78,0) {$\eta$};
+  % ---------- basepoint ----------
+  \fill[ink] (0,0) circle (2pt);
+  \node[lab, anchor=north] at (0,-0.45) {$x_0$};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The concatenation $\gamma\ast\eta$. On the timeline $[0,1]$, the first half runs through $\gamma$ at double speed and the second half through $\eta$. The times $t=0,\tfrac12,1$ all land on $x_0$, which is why the two halves fit together continuously, and $t=\tfrac14,\tfrac34$ are the halfway points of $\gamma$ and $\eta$. So $[\gamma\ast\eta]_*=[\gamma]_*\cdot[\eta]_*$.}\label{fig:concat}
+
+\begin{theorem}{$\pi_1(X,x_0)\in\Grp$, the Fundamental Group}{fgg}
+  Let $(X,x_0)\in\Toppt$. \begin{enumerate}
+    \item The following composition map is well-defined \begin{align*}
+      \circ : \pi_1(X,x_0)\times\pi_1(X,x_0)&\to \pi_1(X,x_0)\\
+      ([\gamma]_*,[\eta]_*) &\mapsto \left[
+        \gamma\ast\eta \coloneq [t]\mapsto \begin{cases}
+          \gamma([2t]) & t\in[0,0.5]\\
+          \eta([2t-1]) & t\in[0.5,1]
+        \end{cases}
+      \right]
+    \end{align*}
+    \item $\pi_1(X,x_0)$ forms a group with this concatenation. This is the \textbf{fundamental group} of $(X,x_0)$.
+    \item Let $(f:(X,x_0)\to(Y,y_0))\in\Toppt$. Then $\pi_1(f)$ as defined below is a group homomorphism. \begin{align*}
+           \pi_1(f)=\Toppt((S^1,1),f):\pi_1(X,x_0)&\to \pi_1(Y,y_0) \\
+           [\gamma]_*&\mapsto[f\circ\gamma]_*
+    \end{align*}
+  \end{enumerate}
+\end{theorem}
+
+% pi_1(f): a loop gamma in X is pushed forward to the (distorted) loop f o gamma in a different space Y  (cf. Loh Fig. 2.3)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    arr/.style={postaction={decorate}, decoration={markings, mark=at position 0.3 with {\arrow{Stealth[length=5pt]}}}}]
+  % ---------- (X, x_0) ----------
+  \draw[ink!45!paper, fill=ink!6!paper] plot[smooth cycle, tension=0.75]
+    coordinates {(-1.8,0) (-1.2,1.2) (0.3,1.3) (1.6,0.9) (1.9,-0.3) (1.0,-1.2) (-0.6,-1.2)};
+  \filldraw[ink!45!paper, fill=paper] (0.5,0) circle (0.42);
+  \node[lab, text=ink!70!paper] at (-1.2,0.7) {$X$};
+  \draw[diagA, thick, arr] (-0.6,0) .. controls (-0.2,0.75) and (0.3,0.85) .. (0.7,0.8)
+    .. controls (1.45,0.75) and (1.45,-0.75) .. (0.7,-0.8)
+    .. controls (0.3,-0.85) and (-0.2,-0.75) .. (-0.6,0);
+  \node[lab, text=diagA] at (1.5,-0.75) {$\gamma$};
+  \fill[ink] (-0.6,0) circle (2pt);
+  \node[lab, anchor=east] at (-0.65,0) {$x_0$};
+  \fill[diagC] (0.7,0.8) circle (1.8pt);
+  % ---------- f ----------
+  \draw[-{Stealth[length=6pt]}, thick, ink!70!paper] (2.3,0) -- node[lab, above] {$f$} (3.5,0);
+  % ---------- (Y, y_0): a different space ----------
+  \begin{scope}[xshift=6.3cm]
+    \draw[diagB!55!paper, fill=diagB!8!paper] plot[smooth cycle, tension=0.6]
+      coordinates {(-2.3,0.3) (-1.7,1.2) (-0.5,0.85) (0.6,1.45) (1.9,1.1) (2.4,-0.1) (1.7,-1.25) (0.2,-0.95) (-1.0,-1.45) (-2.1,-0.85)};
+    \filldraw[diagB!55!paper, fill=paper] (1.15,0.15) circle (0.32);
+    \filldraw[diagB!55!paper, fill=paper] (-1.3,-0.3) circle (0.3);
+    \node[lab, text=diagB] at (-1.75,0.85) {$Y$};
+    \draw[diagA, thick, arr] (0.1,0.05) .. controls (0.3,0.9) and (1.0,0.8) .. (1.3,0.75)
+      .. controls (2.0,0.7) and (1.95,-0.3) .. (1.65,-0.55)
+      .. controls (1.3,-0.85) and (1.0,-0.45) .. (0.65,-0.65)
+      .. controls (0.35,-0.8) and (-0.05,-0.45) .. (0.1,0.05);
+    \node[lab, text=diagA] at (2.05,-0.8) {$f\circ\gamma$};
+    \fill[ink] (0.1,0.05) circle (2pt);
+    \node[lab, anchor=east] at (0.05,0.1) {$y_0$};
+    \fill[diagC] (1.3,0.75) circle (1.8pt);
+  \end{scope}
+  % ---------- one point and its image ----------
+  \draw[diagC!60!paper, dashed, -{Stealth[length=4pt]}] (0.75,0.9) to[bend left=25]
+    node[tick, text=diagC, above] {$\gamma(t)\mapsto f(\gamma(t))$} (7.55,0.85);
+  % ---------- on pi_1 ----------
+  \node[lab] (a) at (0,-1.75) {$[\gamma]_*\in\pi_1(X,x_0)$};
+  \node[lab] (b) at (6.3,-1.75) {$\pi_1(f)[\gamma]_*=[f\circ\gamma]_*\in\pi_1(Y,y_0)$};
+  \draw[|-{Stealth[length=5pt]}, ink!60!paper] (a) -- (b);
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The induced homomorphism $\pi_1(f)$. A pointed map $f:(X,x_0)\to(Y,y_0)$ sends each point $\gamma(t)$ of a loop in $X$ to $f(\gamma(t))$, so $\gamma$ is pushed forward to the loop $f\circ\gamma$ in $Y$ based at $y_0=f(x_0)$. The space $Y$ and the loop $f\circ\gamma$ can look quite different from $X$ and $\gamma$; $\pi_1(f)$ only records the resulting pointed homotopy class.}\label{fig:pi1f}
+
+\begin{proof}[\proofof{th:fgg}]
+  \paragraph{Composition is Well Defined.} Obviously if $\gamma,\eta\in\Toppt((S^1,e_1),(X,x_0))$ then $\gamma\ast\eta$ is a well-defined continuous loop based at $x_0$. Next, if $\gamma\simeq_* \gamma'$ (via $h$) and $\eta\simeq_* \eta'$ (via $k$) then we can define \begin{align*}
+    (S^1,e_1)\times [0,1] &\to (X,x_0) \\
+    ([s],t) &\mapsto \begin{cases}
+      h([2s],t) & s\in[0,0.5]\\
+      k([2s-1],t) & s\in[0.5,1]
+    \end{cases}
+  \end{align*}
+  and see that this is a pointed homotopy equivalence, so $\gamma\ast\eta\simeq_*\gamma'\ast\eta'$.\\
+
+  \paragraph{Satisfies Group Axioms.} \begin{itemize}
+    \item \textbf{Neutral Element.} This is the constant loop $c:(S^1,e_1)\to(X,x_0)$. Indeed, $[c]_*\in \pi_1(X,x_0)$ is neutral wrt. $\circ$. Explicitly, for every $\gamma\in\Toppt((S^1,e_1),(X,x_0))$ we construct the pointed homotopy equivalence \begin{align*}
+      (S^1,e_1)\times[0,1] &\to (X,x_0) \\
+      ([s],t) &\mapsto \begin{cases}
+        \gamma([2s(1+t)\inv]) & s\in[0,0.5(1+t)] \\
+        x_0 & s\in[0.5(1+t),t]
+      \end{cases}
+    \end{align*}
+    to show that $c\ast \gamma\simeq_* \gamma$. A similar argument shows that $\gamma\ast c\simeq_* \gamma$.
+    \item \textbf{Inverse Elements.} Let $\gamma\in\Toppt((S^1,e_1),(X,x_0))$. We walk the loop backwards: \begin{align*}
+      \overline{\gamma} : (S^1,e_1) &\to (X,x_0) \\
+      [s] &\mapsto \gamma([1-s])
+    \end{align*}
+    and we obtain $\gamma\ast\overline{\gamma}\simeq_*c$ through the following pointed homotopy equivalence: \begin{align*}
+      (S^1,e_1)\times[0,1] &\to (X,x_0)\\
+      ([s],t)&\mapsto \begin{cases}
+        x_0 & s\in[0,0.5t]\cup[1-0.5t,1]\\
+        \gamma([2s-t]) & s\in[0.5t,0.5]\\
+        \overline{\gamma}([2s-1+t]) & s\in[0.5,1-0.5t]
+      \end{cases}
+    \end{align*}
+    And similarly $\overline{\gamma}\ast\gamma\simeq_* c$. So $[\overline{\gamma}]_*$ is the two-sided inverse of $[\gamma]_*$.
+    \item Let $\alpha,\beta,\gamma\in\Toppt((S^1,e_1),(X,x_0))$. We can form a homotopy as in Figure \ref{fig:grpaxioms}(c) to show that \[(\alpha\ast\beta)\ast\gamma \simeq_* \alpha\ast(\beta\ast\gamma)\]
+  \end{itemize}
+
+  \paragraph{Pointed Homotopies go to Homomorphisms} Let $\gamma,\eta\in\Toppt((S^1,e_1),(X,x_0))$. By definition we can see that $f\circ(\gamma\ast\eta)=(f\circ\gamma)\ast(f\circ\eta)$. In particular we have \[
+    \pi_1([f]_*)([\gamma]_* \cdot [\eta]_*) =  \pi_1([f]_*)([\gamma]_*) \cdot  \pi_1([f]_*)([\eta]_*)
+  \]
+\end{proof}
+
+% Group axioms for pi_1 as pointed homotopies on the square [0,1]_s x [0,1]_t  (cf. Loh Fig. 2.4)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    eq/.style={font=\sffamily\scriptsize, text=ink!60!paper, inner sep=1.5pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    base/.style={fill=ink!12!paper},
+    edge/.style={line width=1.6pt},
+    sw/.style={ink!60!paper, thin},
+    slice/.style={ink!22!paper, dashed, very thin},
+    side/.style={ink, semithick}]
+  % ================= (a) neutral element =================
+  \begin{scope}[x=2.6cm, y=2.6cm]
+    \fill[diagB!14!paper] (0,0) -- (0.5,0) -- (1,1) -- (0,1) -- cycle;
+    \fill[base] (0.5,0) -- (1,0) -- (1,1) -- cycle;
+    \foreach \t in {0.333,0.667} \draw[slice] (0,\t) -- (1,\t);
+    \draw[sw] (0.5,0) -- (1,1);
+    \draw[edge, diagB] (0,0) -- (0.5,0);  \draw[edge, ink!40!paper] (0.5,0) -- (1,0);
+    \draw[edge, diagB] (0,1) -- (1,1);
+    \draw[side] (0,0) -- (0,1);  \draw[side] (1,0) -- (1,1);
+    \node[lab, text=diagB] at (0.32,0.55) {$\gamma$};
+    \node[lab, text=ink!60!paper] at (0.86,0.28) {$x_0$};
+    \node[eq, rotate=63.43, above] at (0.75,0.5) {$s=\tfrac{1+t}{2}$};
+    \foreach \x/\l in {0/0, 0.5/\tfrac12, 1/1} \node[tick, anchor=north] at (\x,-0.03) {$\l$};
+    \node[tick, anchor=west] at (1.03,-0.06) {$s$};
+    \draw[ink!45!paper, -{Stealth[length=4pt]}] (-0.13,0.2) -- node[tick, left] {$t$} (-0.13,0.8);
+    \node[lab, anchor=north] at (0.5,-0.2) {$\gamma\ast c$};
+    \node[lab, anchor=south] at (0.5,1.2) {$\gamma$};
+    \node[ttl] at (0.5,1.56) {(a) Neutral element};
+  \end{scope}
+  % ================= (b) inverses =================
+  \begin{scope}[xshift=4.1cm, x=2.6cm, y=2.6cm]
+    \fill[base] (0,0) -- (0.5,1) -- (0,1) -- cycle;
+    \fill[base] (1,0) -- (1,1) -- (0.5,1) -- cycle;
+    \fill[diagB!14!paper] (0,0) -- (0.5,0) -- (0.5,1) -- cycle;
+    \fill[diagB!6!paper] (0.5,0) -- (1,0) -- (0.5,1) -- cycle;
+    \foreach \t in {0.333,0.667} \draw[slice] (0,\t) -- (1,\t);
+    \draw[sw] (0,0) -- (0.5,1) -- (1,0);
+    \draw[sw, dashed] (0.5,0) -- (0.5,1);
+    \draw[edge, diagB] (0,0) -- (0.5,0);  \draw[edge, diagB!55!paper] (0.5,0) -- (1,0);
+    \draw[edge, ink!40!paper] (0,1) -- (1,1);
+    \draw[side] (0,0) -- (0,1);  \draw[side] (1,0) -- (1,1);
+    \node[lab, text=diagB] at (0.36,0.24) {$\gamma$};
+    \node[lab, text=diagB!70!paper] at (0.64,0.24) {$\overline{\gamma}$};
+    \node[lab, text=ink!60!paper] at (0.11,0.88) {$x_0$};
+    \node[lab, text=ink!60!paper] at (0.89,0.88) {$x_0$};
+    \node[eq, rotate=63.43, above] at (0.25,0.5) {$s=\tfrac t2$};
+    \node[eq, rotate=-63.43, above] at (0.75,0.5) {$s=1-\tfrac t2$};
+    \foreach \x/\l in {0/0, 0.5/\tfrac12, 1/1} \node[tick, anchor=north] at (\x,-0.03) {$\l$};
+    \node[tick, anchor=west] at (1.03,-0.06) {$s$};
+    \node[lab, anchor=north] at (0.5,-0.2) {$\gamma\ast\overline{\gamma}$};
+    \node[lab, anchor=south] at (0.5,1.2) {$c$};
+    \node[ttl] at (0.5,1.56) {(b) Inverses};
+  \end{scope}
+  % ================= (c) associativity =================
+  \begin{scope}[xshift=8.2cm, x=2.6cm, y=2.6cm]
+    \fill[diagB!14!paper] (0,0) -- (0.25,0) -- (0.5,1) -- (0,1) -- cycle;
+    \fill[diagA!14!paper] (0.25,0) -- (0.5,0) -- (0.75,1) -- (0.5,1) -- cycle;
+    \fill[diagC!14!paper] (0.5,0) -- (1,0) -- (1,1) -- (0.75,1) -- cycle;
+    \foreach \t in {0.333,0.667} \draw[slice] (0,\t) -- (1,\t);
+    \draw[sw] (0.25,0) -- (0.5,1);  \draw[sw] (0.5,0) -- (0.75,1);
+    \draw[edge, diagB] (0,0) -- (0.25,0);  \draw[edge, diagA] (0.25,0) -- (0.5,0);  \draw[edge, diagC] (0.5,0) -- (1,0);
+    \draw[edge, diagB] (0,1) -- (0.5,1);   \draw[edge, diagA] (0.5,1) -- (0.75,1);  \draw[edge, diagC] (0.75,1) -- (1,1);
+    \draw[side] (0,0) -- (0,1);  \draw[side] (1,0) -- (1,1);
+    \node[lab, text=diagB] at (0.15,0.78) {$\alpha$};
+    \node[lab, text=diagA] at (0.5,0.5) {$\beta$};
+    \node[lab, text=diagC] at (0.86,0.25) {$\gamma$};
+    \node[eq, rotate=75.96, above] at (0.34,0.35) {$s=\tfrac{1+t}{4}$};
+    \node[eq, rotate=75.96, below] at (0.66,0.65) {$s=\tfrac{2+t}{4}$};
+    \foreach \x/\l in {0/0, 0.25/\tfrac14, 0.5/\tfrac12, 1/1} \node[tick, anchor=north] at (\x,-0.03) {$\l$};
+    \foreach \x/\l in {0.5/\tfrac12, 0.75/\tfrac34} \node[tick, anchor=south] at (\x,1.02) {$\l$};
+    \node[tick, anchor=west] at (1.03,-0.06) {$s$};
+    \node[lab, anchor=north] at (0.5,-0.2) {$(\alpha\ast\beta)\ast\gamma$};
+    \node[lab, anchor=south] at (0.5,1.2) {$\alpha\ast(\beta\ast\gamma)$};
+    \node[ttl] at (0.5,1.56) {(c) Associativity};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Pointed homotopies verifying the group axioms for $\pi_1(X,x_0)$. In each square, $s$ (horizontal) is the loop parameter and $t$ (vertical) is the homotopy time: the bottom edge is the loop at $t=0$, the top edge the loop at $t=1$, and each horizontal slice (dashed) is an intermediate loop. Coloured regions run through the indicated loop, reparametrised; grey regions sit at $x_0$. The dark side edges $s=0,1$ map to $x_0$, so the homotopies are pointed. The slanted lines are where the piecewise formulas switch cases.}\label{fig:grpaxioms}
+
+
+\begin{remark}{$\pi_1$ as a Group-Valued Functor}{pi1grp}
+  The group structure is compatible with the maps $\pi_1(f)$ and with identities, so $\pi_1$ lifts along the forgetful functor $\Grp\to\Set$: \[
+  \begin{tikzcd}
+    & \Grp \ar[d, "\text{forget}"] \\
+    \hToppt \ar[ur, dashed, "\pi_1"] \ar[r, "\pi_1"'] & \Set
+  \end{tikzcd}
+  \]
+  We also write $\pi_1$ for the lift $\hToppt\to\Grp$ and for its composite with $\Toppt\to\hToppt$.
+\end{remark}
+
+The proof of Theorem \ref{th:fgg} only used structure on the pointed circle: $(S^1,e_1)$ is a \emph{cogroup object} in $\hToppt$, which is what makes $[(S^1,e_1),\cdot]_*$ group-valued. The unpointed circle has no such structure in $\hTop$, so $[S^1,\cdot]:\hTop\to\Set$ does not lift to $\Grp$; basepoints are essential, not an artefact of the construction.\\
+
+The same idea works in higher dimensions. For $n\geq 2$, identify $S^n$ with $[0,1]^n/\partial[0,1]^n$, so that elements of $\pi_n(X,x_0)\coloneq[(S^n,e_1),(X,x_0)]_*$ are represented by maps $[0,1]^n\to X$ sending $\partial[0,1]^n$ to $x_0$. Concatenating in the $j$-th coordinate (running $\gamma$ for $t_j\in[0,\tfrac12]$ and $\eta$ for $t_j\in[\tfrac12,1]$, rescaled) gives a group structure $+_j$ on $\pi_n(X,x_0)$ by the same arguments as for $\pi_1$. Since there is now a second coordinate in which to slide $\gamma$ and $\eta$ past each other, all the $+_j$ coincide and are commutative (Eckmann--Hilton): the \emph{higher homotopy groups} $\pi_n(X,x_0)$ are abelian.
+
+\begin{example}{Trivial Fundamental Groups}{pi1triv}
+  \begin{itemize}
+    \item If $(X,x_0)$ is pointedly contractible, then $\pi_1(X,x_0)$ is trivial, since $(X,x_0)\cong(\pt,\pt)$ in $\hToppt$ and $\pi_1$ is a functor. Merely contractible spaces also have trivial $\pi_1$, but this needs care: a free null-homotopy of a loop $\gamma$ may drag the basepoint along a path $\eta$ (Figure \ref{fig:pi1triv}(a)), and one must still show $\gamma\simeq_*\eta\ast\bar\eta\simeq_* c$ (Exercise; cf.\ change of basepoint).
+    \item If $n\geq 2$, then $\pi_1(S^n,e_1)$ is trivial. The tempting argument is that $\gamma$ misses some point $p$, and $S^n\setminus\{p\}\cong\R^n$ is contractible. But a loop may be \emph{surjective} onto $S^n$ (Figure \ref{fig:pi1triv}(b)). The fix: by uniform continuity, subdivide $[0,1]$ so that each piece of $\gamma$ lies in an open hemisphere, and straighten each piece to a great-circle arc via the normalised straight-line homotopy, fixing its endpoints. The result is pointedly homotopic to $\gamma$, consists of finitely many arcs, and so misses some $p$ (Figure \ref{fig:pi1triv}(c)). Alternatively, use Seifert--van Kampen.
+  \end{itemize}
+\end{example}
+
+% the two subtle points of Example pi1triv: moving basepoint; surjective loops on S^n
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    arr/.style={postaction={decorate}, decoration={markings, mark=at position 0.55 with {\arrow{Stealth[length=5pt]}}}},
+    sphere/.pic={
+      \fill[ink!5!paper] (0,0) circle (1.15);
+      \draw[ink!25!paper, dashed] (1.15,0) arc (0:180:1.15 and 0.32);
+      \draw[ink!40!paper] (-1.15,0) arc (180:360:1.15 and 0.32);
+      \draw[ink!45!paper] (0,0) circle (1.15);
+    }]
+  % ===================== (a) moving basepoint =====================
+  \begin{scope}[shift={(-4.6,0)}]
+    \draw[ink!45!paper, fill=ink!6!paper] plot[smooth cycle, tension=0.75]
+      coordinates {(-1.75,-0.2) (-1.3,0.95) (0,1.25) (1.4,1.0) (1.8,0.1) (1.3,-1.0) (0,-1.15) (-1.2,-0.95)};
+    \node[lab, text=ink!70!paper] at (1.55,-0.95) {$X$};
+    \coordinate (x0) at (-0.95,-0.55);
+    \coordinate (p)  at (1.05,-0.05);
+    \path (x0) .. controls (-0.2,-1.0) and (0.6,-0.6) .. (p)
+      coordinate[pos=0.36] (m1) coordinate[pos=0.7] (m2);
+    % shrinking loops, basepoint riding along eta
+    \foreach \c/\s/\o in {x0/1/100, m1/0.62/70, m2/0.3/50}{
+      \begin{scope}[shift={(\c)}, scale=\s]
+        \draw[diagB!\o!paper, \ifnum\o<100 dashed\else thick\fi]
+          (0,0) .. controls (-0.55,0.75) and (0.35,1.45) .. (0.95,1.05)
+          .. controls (1.35,0.75) and (0.75,0.15) .. (0,0);
+      \end{scope}
+      \fill[diagA] (\c) circle (1.3pt);
+    }
+    \draw[diagA, thick, arr] (x0) .. controls (-0.2,-1.0) and (0.6,-0.6) .. (p);
+    \fill[ink] (x0) circle (1.8pt);
+    \fill[diagA] (p) circle (1.8pt);
+    \node[lab, anchor=north east] at (x0) {$x_0$};
+    \node[lab, anchor=west] at (p) {$p$};
+    \node[lab, text=diagB] at (-0.95,0.75) {$\gamma$};
+    \node[lab, text=diagA, anchor=north] at (0.2,-0.82) {$\eta$};
+    \node[ttl] at (0,1.65) {(a) The basepoint moves};
+  \end{scope}
+  % ===================== (b) a surjective loop =====================
+  \begin{scope}
+    \pic {sphere};
+    % Lissajous curve pushed from the square onto the disc: fills the visible sphere
+    \draw[diagB, line width=0.35pt, opacity=0.85, smooth, samples=500, domain=0:360, variable=\t]
+      plot ({1.1*sin(5*\t)*sqrt(1-0.5*sin(6*\t)^2)}, {1.1*sin(6*\t)*sqrt(1-0.5*sin(5*\t)^2)});
+    \fill[ink] (0,0) circle (1.6pt);
+    \node[lab, fill=paper, fill opacity=0.85, text opacity=1, anchor=south west] at (0.03,0.03) {$e_1$};
+    \node[lab, text=diagB] at (1.15,-1.05) {$\gamma$};
+    \node[ttl] at (0,1.65) {(b) $\gamma$ can fill $S^n$};
+  \end{scope}
+  % ===================== (c) straightened loop =====================
+  \begin{scope}[shift={(4.6,0)}]
+    \pic {sphere};
+    \draw[diagB!18!paper, line width=0.3pt, smooth, samples=500, domain=0:360, variable=\t]
+      plot ({1.1*sin(5*\t)*sqrt(1-0.5*sin(6*\t)^2)}, {1.1*sin(6*\t)*sqrt(1-0.5*sin(5*\t)^2)});
+    \draw[diagB, thick, line join=round]
+      (0,0) to[bend left=8] (0.55,0.6) to[bend left=10] (-0.1,0.95) to[bend right=8] (-0.75,0.35)
+      to[bend right=10] (-0.6,-0.55) to[bend right=8] (0.25,-0.8) to[bend left=6] (0,0);
+    \foreach \q in {(0.55,0.6),(-0.1,0.95),(-0.75,0.35),(-0.6,-0.55),(0.25,-0.8)} \fill[diagB] \q circle (1.1pt);
+    \fill[ink] (0,0) circle (1.6pt);
+    \node[lab, anchor=south east] at (-0.02,0.02) {$e_1$};
+    \draw[diagC, thick] (0.62,-0.18) ++(-0.08,-0.08) -- ++(0.16,0.16) ++(-0.16,0) -- ++(0.16,-0.16);
+    \node[lab, text=diagC, anchor=west] at (0.7,-0.18) {$p$};
+    \node[ttl] at (0,1.65) {(c) Straightened: misses $p$};
+  \end{scope}
+  \draw[ink!40!paper, -{Stealth[length=5pt]}] (1.45,0.2) -- node[above, font=\sffamily\scriptsize, text=ink!60!paper] {$\simeq_*$} (3.15,0.2);
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{(a) A free null-homotopy (dashed) of a loop $\gamma$ in a contractible space need not fix $x_0$: its basepoint travels along $\eta$ to $p$. (b) A loop in $S^n$ ($n\geq2$) can be surjective, so there need not be a point to puncture. (c) Straightening $\gamma$ piecewise (faint) to great-circle arcs gives a pointedly homotopic loop that misses a point $p$; it then contracts in $S^n\setminus\{p\}\cong\R^n$.}\label{fig:pi1triv}
+
+\subsubsection{Changing the Basepoint \& the Fundamental Groupoid}
+
+$\pi_1(X,x_0)$ sees only the path-connected component where $x_0$ lies. It is easy to see that basepoints in the same path-connected component lead to isomorphic fundamental groups. However, no \textbf{canonical} isomorphism generally exists.
+
+\begin{theorem}{Change of Basepoint in Fundamental Groups}{pi1cob}
+  Let $X\in\Top$ and $x,y\in X$. Let $\eta,\eta':[0,1]\to X$ be paths in $X$ from $x$ to $y$. Then \begin{enumerate}
+    \item The following is a well-defined group isomorphism: \begin{align*}
+      \phi_\eta:\pi_1(X,y)&\to\pi_1(X,x) \\
+                [\gamma]_*&\mapsto[(\eta\ast\gamma)\ast\overline{\eta}]_*
+    \end{align*}
+    \item We have $c_h\circ\phi_\eta=\phi_{\eta'}$ where \begin{align*}
+      c_h:\pi_1(X,x)&\to\pi_1(X,x)\\ g&\mapsto hgh\inv
+    \end{align*}
+    is conjugation by $h=[\eta'\ast\overline{\eta}]_*\in\pi_1(X,x)$.
+  \end{enumerate}
+\end{theorem}
+
+% change of basepoint: (a) transport a loop at y to x along eta; (b) two paths differ by the loop h around the hole
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    arr/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=5pt]}}}},
+    arr/.default=0.5,
+    space/.pic={
+      \draw[ink!45!paper, fill=ink!6!paper] plot[smooth cycle, tension=0.75]
+        coordinates {(-2.2,0) (-1.8,1.1) (0,1.3) (1.6,1.15) (2.35,0.2) (1.9,-1.05) (0,-1.3) (-1.8,-1.05)};
+      \filldraw[ink!45!paper, fill=paper] (-0.25,0) circle (0.3);
+      \node[lab, text=ink!70!paper] at (-1.55,0.75) {$X$};
+    },
+    loopy/.style={insert path={(0.95,0) .. controls (1.45,0.75) and (2.15,0.45) .. (2.1,0) .. controls (2.05,-0.45) and (1.45,-0.75) .. (0.95,0)}}]
+  % ===================== (a) transport along eta =====================
+  \begin{scope}[shift={(-2.6,0)}]
+    \pic {space};
+    \draw[diagB, thick, arr=0.3] [loopy];
+    \draw[diagA, thick, arr=0.55] (-1.5,0) .. controls (-1.0,-0.75) and (0.4,-0.75) .. (0.95,0);
+    \draw[diagA, thick, dashed, arr=0.5] (0.95,0) .. controls (0.45,-1.2) and (-1.05,-1.2) .. (-1.5,0);
+    \path (-1.5,0) .. controls (-1.0,-0.75) and (0.4,-0.75) .. (0.95,0) node[pos=0.8, lab, text=diagA, anchor=south east] {$\eta$};
+    \node[lab, text=diagA, anchor=north] at (0.35,-0.88) {$\overline{\eta}$};
+    \node[lab, text=diagB] at (1.85,0.55) {$\gamma$};
+    \fill[ink] (-1.5,0) circle (1.8pt) node[lab, anchor=east] {$x$};
+    \fill[ink] (0.95,0) circle (1.8pt) node[lab, anchor=south, yshift=2pt] {$y$};
+    \node[ttl] at (0,1.7) {(a) Transport along $\eta$};
+    \node[lab, anchor=north] at (0,-1.45) {$\phi_\eta[\gamma]_*=[(\eta\ast\gamma)\ast\overline{\eta}]_*$};
+  \end{scope}
+  % ===================== (b) a second path eta' =====================
+  \begin{scope}[shift={(2.6,0)}]
+    \pic {space};
+    \draw[diagB!30!paper, thick] [loopy];
+    \draw[diagA, thick, arr=0.55] (-1.5,0) .. controls (-1.0,-0.75) and (0.4,-0.75) .. (0.95,0);
+    \draw[diagC, thick, arr=0.55] (-1.5,0) .. controls (-1.0,0.75) and (0.4,0.75) .. (0.95,0);
+    % h = eta' * bar(eta): out along the top, back along the bottom, i.e. once (clockwise) round the hole
+    \draw[ink!65!paper, -{Stealth[length=4pt]}] (-0.25,0) ++(150:0.44) arc[start angle=150, end angle=-150, radius=0.44];
+    \node[lab, text=ink!80!paper] at (-0.25,0) {$h$};
+    \path (-1.5,0) .. controls (-1.0,-0.75) and (0.4,-0.75) .. (0.95,0) node[pos=0.75, lab, text=diagA, anchor=north west] {$\eta$};
+    \path (-1.5,0) .. controls (-1.0,0.75) and (0.4,0.75) .. (0.95,0) node[pos=0.75, lab, text=diagC, anchor=south west] {$\eta'$};
+    \fill[ink] (-1.5,0) circle (1.8pt) node[lab, anchor=east] {$x$};
+    \fill[ink] (0.95,0) circle (1.8pt) node[lab, anchor=south, yshift=2pt] {$y$};
+    \node[ttl] at (0,1.7) {(b) A second path $\eta'$};
+    \node[lab, anchor=north] at (0,-1.45) {$h=[\eta'\ast\overline{\eta}]_*,\quad \phi_{\eta'}=c_h\circ\phi_\eta$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{(a) A loop $\gamma$ at $y$ becomes a loop at $x$ by running out along $\eta$, around $\gamma$, and back along $\overline{\eta}$ (dashed). (b) A second path $\eta'$ gives $\phi_{\eta'}$, which differs from $\phi_\eta$ by conjugation with the loop $h=[\eta'\ast\overline{\eta}]_*$ at $x$. If $\eta$ and $\eta'$ pass on different sides of a hole, $h$ is nontrivial, so there is no canonical choice of isomorphism $\pi_1(X,y)\cong\pi_1(X,x)$.}\label{fig:pi1cob}
+
+\begin{proof}[\proofof{th:pi1cob}]
+  \paragraph{Claim 1.} $\phi_\eta$ is easily shown to be well-defined and compatible with the group structures of $\pi_1(X,\cdot)$. We also see that $\phi_{\overline\eta}$ is the inverse of $\phi_\eta$, so $\phi_\eta$ is a group isomorphism.
+  \paragraph{Claim 2.} By construction $\eta'\ast\overline\eta$ is a loop based at $x$. Thus $h=[\eta'\ast\overline\eta]_*$ is indeed an element of $\pi_1(X,x)$. Moreover for $\gamma\in\Toppt((S^1,e_1),(X,y))$ we compute \begin{align*}
+    \phi_{\eta'}([\gamma]_*) &= [\eta'\ast\gamma\ast\overline{\eta'}]_*\\
+    &= [\eta'\ast(\overline\eta\ast\eta)\ast\gamma\ast(\overline\eta\ast\eta)\ast\overline{\eta'}]_* \\
+    &= h\cdot[\eta\ast\gamma\ast\overline\eta]_*\cdot h\inv \\
+    &= c_h\circ \phi_\eta([\gamma]_*)
+  \end{align*}
+\end{proof}
+
+Fixing a basepoint can be inconvenient. In such cases we may consider the fundamental groupoid, which keeps all basepoints at once.
+
+\begin{definition}{Fundamental Groupoid}{fgpd}
+  Let $X\in\Top$. For $x,y\in X$ let $P_X(x,y)\coloneq\{\eta\in\Top([0,1],X) : \eta(0)=x,\ \eta(1)=y\}$ be the set of paths from $x$ to $y$, and write $\eta\simeq_\partial\eta'$ if $\eta\simeq\eta'$ \emph{rel $\{0,1\}$}, i.e.\ via a homotopy $h$ with $h(0,t)=x$ and $h(1,t)=y$ for all $t\in[0,1]$. The \textbf{fundamental groupoid} $\Pi_1(X)$ is the category with
+  \begin{itemize}
+    \item objects $\Ob(\Pi_1(X))\coloneq X$, the underlying set;
+    \item morphisms $\Pi_1(X)(x,y)\coloneq P_X(x,y)/\simeq_\partial$;
+    \item composition $[\eta']\circ[\eta]\coloneq[\eta\ast\eta']$ for $[\eta]\in\Pi_1(X)(x,y)$ and $[\eta']\in\Pi_1(X)(y,z)$;
+    \item identities $\id_x\coloneq[c_x]$, the class of the constant path at $x$.
+  \end{itemize}
+\end{definition}
+
+\begin{proposition}{$\Pi_1$ is a Functor $\Top\to\Grpd$}{fgpdfun}
+  \begin{enumerate}
+    \item $\Pi_1(X)$ is a groupoid, with $[\eta]\inv=[\overline\eta]$.
+    \item Every $f\in\Top(X,Y)$ induces a functor $\Pi_1(f):\Pi_1(X)\to\Pi_1(Y)$, $x\mapsto f(x)$, $[\eta]\mapsto[f\circ\eta]$, and this makes $\Pi_1:\Top\to\Grpd$ a functor.
+    \item A homotopy $h:f\simeq g$ induces a natural isomorphism $\Pi_1(f)\Rightarrow\Pi_1(g)$ with components $[h(x,\cdot)]\in\Pi_1(Y)(f(x),g(x))$. In particular, homotopy equivalences induce equivalences of groupoids.
+  \end{enumerate}
+\end{proposition}
+
+\begin{proof}[\proofof{th:fgpdfun}]
+  \paragraph{Claim 1.} The homotopies in the proof of Theorem \ref{th:fgg} (Figure \ref{fig:grpaxioms}) fix $s=0$ and $s=1$ throughout and never use that the endpoints agree, so they are homotopies rel $\{0,1\}$ between paths. Hence composition is well defined, associative and unital, and $[\overline\eta]$ is inverse to $[\eta]$.
+  \paragraph{Claim 2.} $f\circ(\eta\ast\eta')=(f\circ\eta)\ast(f\circ\eta')$, $f\circ c_x=c_{f(x)}$, and $f$ carries homotopies rel $\{0,1\}$ to homotopies rel $\{0,1\}$. Functoriality in $f$ is clear.
+  \paragraph{Claim 3.} Write $h_x\coloneq h(x,\cdot)$. Naturality at $[\eta]\in\Pi_1(X)(x,y)$ asks that $(f\circ\eta)\ast h_y\simeq_\partial h_x\ast(g\circ\eta)$. Both are images under $H:[0,1]^2\to Y$, $(s,t)\mapsto h(\eta(s),t)$, of boundary paths of the square from $(0,0)$ to $(1,1)$, and these are homotopic rel endpoints in the convex set $[0,1]^2$. If $g\circ f\simeq\id_X$ and $f\circ g\simeq\id_Y$, then $\Pi_1(g)\circ\Pi_1(f)\cong\id$ and $\Pi_1(f)\circ\Pi_1(g)\cong\id$, so $\Pi_1(f)$ is an equivalence.
+\end{proof}
+
+\newpage
+
+\begin{remark}{$\Pi_1$ versus $\pi_1$}{fgpdpi1}
+  \begin{itemize}
+    \item \textbf{Automorphisms.} Via $S^1\cong[0,1]/\{0,1\}$, loops at $x$ are paths from $x$ to $x$, so $\Aut_{\Pi_1(X)}(x)=\pi_1(X,x)^{\mathrm{op}}$; the ``op'' is only because $\circ$ is written right-to-left while $\ast$ is left-to-right, and $g\mapsto g\inv$ identifies it with $\pi_1(X,x)$.
+    \item \textbf{Objects.} Isomorphism classes of objects of $\Pi_1(X)$ are exactly the path components of $X$.
+    \item \textbf{Change of basepoint.} A path $\eta$ from $x$ to $y$ is an isomorphism $[\eta]:x\to y$ in $\Pi_1(X)$, and Theorem \ref{th:pi1cob} is conjugation by it. Different choices of $\eta$ differ by an automorphism of $x$, hence the non-canonical isomorphism.
+    \item \textbf{No basepoint needed.} If $X$ is path-connected, the inclusion of the full subcategory on $\{x\}$ is an equivalence of groupoids, so $\Pi_1(X)\simeq\pi_1(X,x)$ (as a one-object groupoid) for \emph{every} $x$; $\Pi_1(X)$ is this group with the choice of basepoint removed.
+    \item \textbf{Homotopy invariance.} By Claim 3, homotopic maps give \emph{naturally isomorphic}, not equal, functors. So $\Pi_1$ does not factor through $\hTop$ to $\Grpd$; it factors to the category of groupoids and isomorphism classes of functors.
+  \end{itemize}
+\end{remark}
+
+% the fundamental groupoid as a category, and its skeleton (one vertex group per path component)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    arr/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=5pt]}}}},
+    arr/.default=0.55]
+  % ===================== (a) Pi_1(X) =====================
+  \begin{scope}[shift={(-3.4,0)}]
+    \filldraw[ink!45!paper, fill=ink!6!paper, even odd rule] (0,0) circle (1.25) (0,0) circle (0.42);
+    \filldraw[ink!45!paper, fill=ink!6!paper] (2.45,0) circle (0.62);
+    \node[lab, text=ink!70!paper, anchor=south east] at (-0.9,0.9) {$X$};
+    % no morphisms between the components
+    \draw[ink!30!paper, dashed, -{Stealth[length=4pt]}] (1.32,0) -- (1.78,0);
+    \draw[diagC!80!paper, thick] (1.55,0) ++(-0.07,-0.07) -- ++(0.14,0.14) ++(-0.14,0) -- ++(0.14,-0.14);
+    % two non-homotopic paths x -> y
+    \draw[diagA, thick, arr] (-0.85,0) .. controls (-0.6,-0.85) and (0.6,-0.85) .. (0.85,0);
+    \draw[diagC, thick, arr] (-0.85,0) .. controls (-0.6,0.85) and (0.6,0.85) .. (0.85,0);
+    \node[lab, text=diagA, anchor=north] at (0,-0.66) {$[\eta]$};
+    \node[lab, text=diagC, anchor=south] at (0,0.66) {$[\eta']$};
+    % identity at w
+    \draw[ink!40!paper, arr=0.6] (2.45,0) .. controls (2.2,0.5) and (2.7,0.5) .. (2.45,0);
+    \node[font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt, anchor=north] at (2.45,-0.05) {$\id_w$};
+    \fill[ink] (-0.85,0) circle (1.8pt) node[lab, anchor=east] {$x$};
+    \fill[ink] (0.85,0) circle (1.8pt) node[lab, anchor=west] {$y$};
+    \fill[ink] (2.45,0) circle (1.8pt) node[lab, anchor=east, xshift=-1pt] {$w$};
+    \node[ttl] at (0.6,1.65) {(a) $\Pi_1(X)$};
+  \end{scope}
+  \draw[ink!40!paper, -{Stealth[length=5pt]}] (0.05,0) -- node[above, font=\sffamily\scriptsize, text=ink!60!paper] {$\simeq$} (0.95,0);
+  % ===================== (b) skeleton =====================
+  \begin{scope}[shift={(2.6,0)}]
+    \draw[diagB, thick, arr=0.5] (-0.6,0) .. controls (-1.35,0.95) and (0.15,0.95) .. (-0.6,0);
+    \node[lab, text=diagB, anchor=west] at (-0.3,0.6) {$[\eta'\ast\overline\eta]$};
+    \fill[ink] (-0.6,0) circle (1.8pt);
+    \node[lab, anchor=north] at (-0.6,-0.1) {$x$};
+    \node[lab, anchor=north, text=ink!70!paper] at (-0.6,-0.5) {$\pi_1(X,x)\cong\Z$};
+    \fill[ink] (1.7,0) circle (1.8pt);
+    \node[lab, anchor=north] at (1.7,-0.1) {$w$};
+    \node[lab, anchor=north, text=ink!70!paper] at (1.7,-0.5) {$\pi_1(X,w)=1$};
+    \node[ttl] at (0.55,1.65) {(b) A skeleton};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{(a) The fundamental groupoid of $X=\text{annulus}\sqcup\text{disc}$. Objects are points; $[\eta]$ and $[\eta']$ are distinct morphisms $x\to y$ because they pass on different sides of the hole; there are no morphisms between the two path components. (b) Choosing one object per component (here $x$ and $w$) and a path from it to every other object in its component (e.g.\ $\eta$ for $y$) gives an equivalence $\Pi_1(X)\simeq\pi_1(X,x)\sqcup\pi_1(X,w)$. The generator $[\eta'\ast\overline\eta]$ goes once round the hole; that $\pi_1(X,x)\cong\Z$ is shown in Section 2.2.}\label{fig:fgpd}
+
+The fundamental groupoid makes many statements about $\pi_1$ cleaner at the cost of working with groupoids instead of groups. One can go further: adding homotopies between paths as $2$-morphisms, homotopies between those as $3$-morphisms, and so on, gives the \emph{fundamental $\infty$-groupoid} of $X$. This is the starting point for modern homotopy theory: $\infty$-categories, homotopy type theory (HoTT) and anima.
+
+\bigskip
+We can work with the basepoints to define notions of connectedness.
+
+\begin{definition}{Simply Connected}{}
+  A non-empty $X\in\Top$ is simply connected if it is path-connected and $\exists x_0\in X:\pi_1(X,x_0)\iso\{0\}$.\\
+  Note that if one such $x_0$ works then every basepoint will.
+\end{definition}
+
+\begin{definition}{Higher Connectedness}{}
+  Let $n\in\N$. Then $X\in\Top$ is $n$-connected if \[
+    \forall_{j\in0..n} \ \forall_{x_0\in X} \ \#\pi_n(X,x_0)=1
+  \]
+\end{definition}
+
+In this definition the condition on $\pi_0$ ensures that $X$ is at least path-connected, so $0$-connected means path-connected and $1$-connected means simply connected.

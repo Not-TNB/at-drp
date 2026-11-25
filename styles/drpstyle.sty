@@ -27,7 +27,17 @@
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage{graphicx}
 \RequirePackage{adjustbox}
-\RequirePackage{capt-of}
+\RequirePackage{caption}       % provides \captionof
+% captions: smaller and muted so they don't compete with the body text; the label stays full strength
+\DeclareCaptionFont{muted}{\color{ink!68!paper}}
+\DeclareCaptionFont{inkc}{\color{ink}}
+\captionsetup{font={small,muted}, labelfont={bf,inkc}, hypcap=false}   % hypcap off: \captionof is used outside floats
+% \captionof sits in running text (not a float), so add a gap after it before the next paragraph
+\AtBeginDocument{%   caption defines \captionof late, so wrap it here
+  \NewCommandCopy\drp@captionof\captionof
+  \RenewDocumentCommand\captionof{m o m}{%
+    \IfNoValueTF{#2}{\drp@captionof{#1}{#3}}{\drp@captionof{#1}[#2]{#3}}%
+    \par\addvspace{\medskipamount}}}
 % \RequirePackage{animate}     % homotopy animations (Acrobat / Okular only)
 
 % --- Tables ---
@@ -252,6 +262,7 @@
 \newcommand{\cat}[1]{\bm{\mathsf{#1}}}
 \newcommand{\Set}{\cat{Set}}
 \newcommand{\Grp}{\cat{Grp}}
+\newcommand{\Grpd}{\cat{Grpd}}
 \newcommand{\Ab}{\cat{Ab}}
 \newcommand{\Top}{\cat{Top}}
 \newcommand{\Ch}{\cat{Ch}}

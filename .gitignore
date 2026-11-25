@@ -13,6 +13,8 @@
 *.dpth
 *.md5
 *.pdf
+# ...except the compiled notes
+!main.pdf
 
 # TikZ externalisation cache
 figures/cache/*
