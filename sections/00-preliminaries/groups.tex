@@ -1,0 +1,147 @@
+\newpage
+
+\subsection{Free Constructions of Groups}
+
+% ======================================================================
+%  0.7 Free Constructions of Groups  (Loh lecture_notes, App. A.4; Hatcher §1.2)
+%  Beyond Year 2 Groups & Rings: only what Seifert--van Kampen computations need.
+% ======================================================================
+
+\subsubsection{Free Groups}
+
+\begin{definition}{Free Group}{freegrp}
+  Let $S$ be a set. A \textbf{free group on $S$} is a group $F(S)$ with a map $\iota:S\to F(S)$ such that for every group $H$ and every map $f:S\to H$ there is a unique homomorphism $\bar f:F(S)\to H$ with $\bar f\circ\iota=f$:
+  \[
+  \begin{tikzcd}
+    S \ar[r, "\iota"] \ar[dr, "f"'] & F(S) \ar[d, dashed, "\exists!\,\bar f"] \\
+    & H
+  \end{tikzcd}
+  \]
+  We write $F_n\coloneq F(\{a_1,\dots,a_n\})$, and $F(a,b)$ for $F_2$ with generators $a,b$.
+\end{definition}
+
+\begin{remark}{Existence and Uniqueness}{freegrpmodel}
+  As with any universal property, $F(S)$ is unique up to unique isomorphism. It exists: take \emph{reduced words} in the letters $s^{\pm1}$ ($s\in S$), i.e.\ words containing no $ss^{-1}$ or $s^{-1}s$, multiplied by concatenation followed by cancellation (associativity is the only non-obvious part; Löh A.4.1, Hatcher §1.2). In this model $\iota$ is injective and its image generates $F(S)$; for instance $F_1\iso\Z$.
+\end{remark}
+
+\begin{example}{$F(a,b)$ is Non-Abelian}{f2nonab}
+  The map $a\mapsto(1\,2)$, $b\mapsto(2\,3)$ into $S_3$ extends to a homomorphism $F(a,b)\to S_3$. Since $(1\,2)(2\,3)\neq(2\,3)(1\,2)$, also $ab\neq ba$ in $F(a,b)$. No reduced words are needed.
+\end{example}
+
+\subsubsection{Presentations}
+
+Every group $G$ is a quotient of a free group: the identity $G\to G$, viewed as a map of sets, extends to a surjection $F(G)\to G$. Recording generators and the relations they satisfy gives a compact description of $G$.
+
+\begin{definition}{Presentation}{pres}
+  Let $S$ be a set and $R\subset F(S)$. Write $\nclose{R}$ for the \textbf{normal closure} of $R$, the smallest normal subgroup of $F(S)$ containing $R$, and put
+  \[
+    \pres{S}{R}\coloneq F(S)/\nclose{R}.
+  \]
+  An isomorphism $G\iso\pres{S}{R}$ is a \textbf{presentation} of $G$ with generators $S$ and relations $R$. A relation $u=v$ means $uv^{-1}\in R$.
+\end{definition}
+
+\begin{proposition}{Universal Property of Presentations}{presup}
+  Homomorphisms $\pres{S}{R}\to H$ correspond bijectively to maps $f:S\to H$ with $\bar f(r)=1$ for all $r\in R$, via restriction to the generators.
+\end{proposition}
+
+\begin{proof}[\proofof{th:presup}]
+  By Definition \ref{def:freegrp}, maps $f:S\to H$ correspond to homomorphisms $\bar f:F(S)\to H$. Since $\ker\bar f$ is normal, $\bar f$ kills $R$ iff it kills $\nclose{R}$, i.e.\ iff it factors (uniquely) through $F(S)/\nclose{R}$.
+\end{proof}
+
+\begin{example}{Presentations}{presex}
+  \begin{itemize}
+    \item $\pres{a}{a^n}\iso\Z/n$ and $\pres{a}{\varnothing}\iso\Z$.
+    \item $\pres{a,b}{aba^{-1}b^{-1}}\iso\Z^2$: by Theorem \ref{th:presup}, homomorphisms out of either group into $H$ are pairs of commuting elements of $H$, so the two groups satisfy the same universal property.
+  \end{itemize}
+\end{example}
+
+\subsubsection{Free Products}
+
+\begin{definition}{Free Product}{freeprod}
+  Let $G_1,G_2$ be groups. A \textbf{free product} of $G_1$ and $G_2$ is a group $G_1\ast G_2$ with homomorphisms $j_k:G_k\to G_1\ast G_2$ such that for every group $H$ and homomorphisms $\varphi_k:G_k\to H$ there is a unique homomorphism $\varphi:G_1\ast G_2\to H$ with $\varphi\circ j_k=\varphi_k$ ($k=1,2$). In other words, $G_1\ast G_2$ is the coproduct of $G_1$ and $G_2$ in $\Grp$.
+\end{definition}
+
+\begin{proposition}{Free Products via Presentations}{freeprodpres}
+  If $G_k\iso\pres{S_k}{R_k}$ for $k=1,2$, then $G_1\ast G_2\iso\pres{S_1\sqcup S_2}{R_1\cup R_2}$. In particular free products exist.
+\end{proposition}
+
+\begin{proof}[\proofof{th:freeprodpres}]
+  By Theorem \ref{th:presup}, a homomorphism out of the right-hand side is a map on $S_1\sqcup S_2$ killing $R_1\cup R_2$, i.e.\ a pair of maps on $S_1$, $S_2$ killing $R_1$, $R_2$ respectively, i.e.\ a pair of homomorphisms $\varphi_k:G_k\to H$. This is the universal property of $G_1\ast G_2$.
+\end{proof}
+
+\begin{remark}{Free Products}{freeprodrem}
+  \begin{itemize}
+    \item Concretely, $G_1\ast G_2$ consists of reduced words $g_1g_2\cdots g_n$ of non-trivial elements alternating between $G_1$ and $G_2$ (Löh A.4.2); in particular the $j_k$ are injective.
+    \item $F(S)\ast F(T)\iso F(S\sqcup T)$; for instance $\Z\ast\Z\iso F_2$.
+  \end{itemize}
+\end{remark}
+
+\subsubsection{Amalgamated Free Products}
+
+\begin{definition}{Amalgamated Free Product}{amalg}
+  Let $i_1:G_0\to G_1$ and $i_2:G_0\to G_2$ be homomorphisms. The \textbf{amalgamated free product} is
+  \[
+    G_1\ast_{G_0}G_2\coloneq (G_1\ast G_2)\big/\nclose{\{i_1(g)\,i_2(g)^{-1}\mid g\in G_0\}},
+  \]
+  where we suppress the inclusions $j_k$; we again write $j_k:G_k\to G_1\ast_{G_0}G_2$ for the induced homomorphisms.
+\end{definition}
+
+\begin{proposition}{Amalgamated Free Products are Pushouts}{amalgpush}
+  For every group $H$ and homomorphisms $\varphi_k:G_k\to H$ with $\varphi_1\circ i_1=\varphi_2\circ i_2$ there is a unique homomorphism $\varphi:G_1\ast_{G_0}G_2\to H$ with $\varphi\circ j_k=\varphi_k$. That is, the square
+  \[
+  \begin{tikzcd}
+    G_0 \ar[r, "i_1"] \ar[d, "i_2"'] & G_1 \ar[d, "j_1"] \\
+    G_2 \ar[r, "j_2"'] & G_1\ast_{G_0}G_2
+  \end{tikzcd}
+  \]
+  is a pushout in $\Grp$ (cf.\ the pushout of spaces, Definition \ref{def:pushout}).
+\end{proposition}
+
+\begin{proof}[\proofof{th:amalgpush}]
+  By Definition \ref{def:freeprod} the pair $(\varphi_1,\varphi_2)$ gives a unique $\varphi':G_1\ast G_2\to H$ with $\varphi'\circ j_k=\varphi_k$. It sends $i_1(g)\,i_2(g)^{-1}$ to $\varphi_1(i_1(g))\,\varphi_2(i_2(g))^{-1}=1$, so (its kernel being normal) it kills the normal subgroup we quotient by, and factors uniquely through $G_1\ast_{G_0}G_2$.
+\end{proof}
+
+\begin{corollary}{Amalgamated Free Products via Presentations}{amalgpres}
+  If $G_k\iso\pres{S_k}{R_k}$ for $k=1,2$ and $T$ generates $G_0$, then
+  \[
+    G_1\ast_{G_0}G_2\iso\pres{S_1\sqcup S_2}{R_1\cup R_2\cup\{i_1(t)=i_2(t)\mid t\in T\}},
+  \]
+  where $i_k(t)$ is written as a word in $S_k$.
+\end{corollary}
+
+\begin{proof}[\proofof{cor:amalgpres}]
+  By Theorem \ref{th:freeprodpres} it suffices to see that $i_1(t)\,i_2(t)^{-1}$ for $t\in T$ have the same normal closure $N_T$ as $i_1(g)\,i_2(g)^{-1}$ for $g\in G_0$. Clearly $N_T$ is contained in the latter. Conversely, in $(G_1\ast G_2)/N_T$ the homomorphisms induced by $i_1$ and $i_2$ agree on the generating set $T$, hence on all of $G_0$.
+\end{proof}
+
+\begin{example}{Special Cases}{amalgex}
+  \begin{itemize}
+    \item $G_0=1$: then $G_1\ast_{1}G_2=G_1\ast G_2$. For instance $F(a,b)$ is the pushout of $\Z\leftarrow1\to\Z$ (Löh A.4.3).
+    \item $G_2=1$: then $G_1\ast_{G_0}1\iso G_1/\nclose{i_1(G_0)}$, i.e.\ amalgamating with the trivial group kills the image of $G_0$.
+  \end{itemize}
+\end{example}
+
+\begin{remark}{Injectivity}{amalginj}
+  In group theory the name ``amalgamated free product'' is usually reserved for injective $i_1,i_2$; then the $j_k$ are injective and elements have normal forms (Löh, Caveat A.4.7). We allow arbitrary $i_k$, since the maps $\pi_1(X_0)\to\pi_1(X_k)$ arising in topology are often not injective (as in the case $G_2=1$).
+\end{remark}
+
+\subsubsection{Abelianisation}
+
+\begin{definition}{Abelianisation}{abel}
+  The \textbf{abelianisation} of a group $G$ is $G^{\mathrm{ab}}\coloneq G/[G,G]$.
+\end{definition}
+
+\begin{proposition}{Universal Property of Abelianisation}{abelup}
+  $G^{\mathrm{ab}}$ is abelian, and every homomorphism $G\to A$ into an abelian group factors uniquely through the projection $G\to G^{\mathrm{ab}}$.
+\end{proposition}
+
+\begin{proof}[\proofof{th:abelup}]
+  In the quotient every commutator is trivial. A homomorphism into an abelian group kills every commutator, hence $[G,G]$, and so factors uniquely through the quotient.
+\end{proof}
+
+\begin{example}{Abelianisations}{abelex}
+  \begin{itemize}
+    \item $\pres{S}{R}^{\mathrm{ab}}\iso\pres{S}{R\cup\{\text{all } sts^{-1}t^{-1}\}}$; in particular $F_n^{\mathrm{ab}}\iso\Z^n$, so $F_m\iso F_n$ only if $m=n$.
+    \item $(G_1\ast G_2)^{\mathrm{ab}}\iso G_1^{\mathrm{ab}}\oplus G_2^{\mathrm{ab}}$, by comparing universal properties.
+  \end{itemize}
+  Abelianisation thus turns hard-to-compare non-abelian groups into easily compared abelian ones. It reappears later as $H_1(X)\iso\pi_1(X,x_0)^{\mathrm{ab}}$ (Hurewicz).
+\end{example}

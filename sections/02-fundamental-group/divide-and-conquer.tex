@@ -1,15 +1,989 @@
 \subsection{Divide and Conquer}
 
+In this section we investigate how $\pi_1$ behaves with respect to topological constructions and decompositions. Since $\pi_1=[(S^1,e_1),\cdot]_*$ is a covariant represented functor, we expect $\pi_1$ to be compatible with limits such as products. Compatibility with colimits (e.g.\ glueings) is more subtle, and is the content of the Seifert--van Kampen theorem.
+
 % ======================================================================
 %  2.2 Divide and Conquer  (Loh 26/27, pp. 55--72)
 % ======================================================================
 
-\subsubsection{The Fundamental Example}
+\subsubsection{Prelude -- the Fundamental Group of the Circle}
+It is trivial to observe intuitively that the fundamental group of the circle has the structure of $\Z$. Indeed, wrapping loops around the circle multiple times defines an isomorphism $\Z\iso \pi_1(S^1,e_1)$. This result shows us that $\pi_1$ is able to detect the hole in $S^1$.
+
+\begin{theorem}{Fundamental Group of the Circle}{The Map}
+  The following is a group isomorphism. \begin{align*}
+    \Z &\isoto \pi_1(S^1,e_1) \\
+    d &\mapsto [[t] \mapsto [dt \bmod 1]]_*
+  \end{align*}
+\end{theorem}
+
+% Z -> pi_1(S^1): d |-> loop winding d times, drawn as a helix over a circle in perspective
+% (height = angle travelled; projecting down recovers the loop). Back half-turns are faded.
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    mk/.style={postaction={decorate}, decoration={markings, mark=at position 0.5 with {\arrow{Stealth[length=4.5pt]}}}}]
+  \def\R{0.8}\def\b{0.24}\def\H{0.72}
+  \foreach \d/\x/\col in {-1/0/diagA, 0/2.9/ink, 1/5.8/diagB, 2/8.7/diagB}{
+    \begin{scope}[shift={(\x,0)}]
+      % the circle S^1 in perspective (back half dashed)
+      \draw[ink!35!paper, thick, dashed] (\R,0) arc[start angle=0, end angle=180, x radius=\R, y radius=\b];
+      \draw[ink!45!paper, thick] (-\R,0) arc[start angle=180, end angle=360, x radius=\R, y radius=\b];
+      \ifnum\d=0
+        \fill[diagB!25!paper] (\R,0) circle (3.2pt);
+      \else
+        \pgfmathtruncatemacro{\n}{abs(\d)}
+        \pgfmathtruncatemacro{\sg}{\d/\n}
+        \pgfmathtruncatemacro{\last}{2*\n-1}
+        \foreach \k in {0,...,\last}{
+          \pgfmathtruncatemacro{\back}{ifthenelse(mod(\k,2)==0, \sg>0, \sg<0)}
+          \ifnum\back=1
+            \draw[\col!45!paper, thick, samples=40, domain=180*\k:180*(\k+1), variable=\th]
+              plot ({\R*cos(\sg*\th)}, {\b*sin(\sg*\th)+\sg*\H*\th/360});
+          \else
+            \draw[\col, thick, mk, samples=40, domain=180*\k:180*(\k+1), variable=\th]
+              plot ({\R*cos(\sg*\th)}, {\b*sin(\sg*\th)+\sg*\H*\th/360});
+          \fi
+        }
+        % projecting the endpoint back down to e_1
+        \draw[\col!60!paper, densely dotted] (\R,{\d*\H}) -- (\R,0);
+        \fill[\col] (\R,{\d*\H}) circle (1.1pt);
+      \fi
+      \fill[ink] (\R,0) circle (1.6pt);
+      \node[lab, anchor=north] at (0,-1.15) {$d=\d$};
+    \end{scope}
+  }
+  \node[lab, anchor=west, text=ink!70!paper] at (2.9+\R+0.08,0) {$e_1$};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The isomorphism $\Z\isoto\pi_1(S^1,e_1)$ sends $d$ to the class of the loop $t\mapsto e^{2\pi i dt}$, which winds $d$ times around $S^1$: anticlockwise for $d>0$, clockwise for $d<0$, constant for $d=0$. Each loop is drawn rising (or falling) in proportion to the angle travelled, so the turns separate; projecting straight down (dotted) recovers the loop itself, ending at $e_1$. Addition corresponds to concatenation: stacking $d$ turns on top of $d'$ turns gives $d+d'$ turns.}\label{fig:pi1circle}
+
+This result proves useful in the inductive computation of other fundamental groups.
 
 \subsubsection{Products}
 
-\subsubsection{Glueings}
+Products are a limit so $\pi_1$ is compatible with them. More precisely,
 
-\subsubsection{Computations}
+\begin{lemma}{Products in $\hToppt$}{hprod}
+  Let $(X_i,x_i)_{i\in I}$ be a family of pointed spaces, let $X\coloneq\prod_{i\in I}X_i$ with basepoint $x\coloneq(x_i)_{i\in I}$, and let $p_i:X\to X_i$ be the projections. Then $(X,x)$ is the product of the $(X_i,x_i)$ in $\hToppt$, i.e.\ $\forall (A,a)\in \Toppt$ the map
+  \begin{align*}
+    [(A,a),(X,x)]_* &\to \prod_{i\in I}\,[(A,a),(X_i,x_i)]_* \\
+    [f]_* &\mapsto \big([p_i\circ f]_*\big)_{i\in I}
+  \end{align*}
+  is a bijection:
+  \begin{itemize}
+    \item \textbf{Existence.} Any family of pointed maps $f_i:(A,a)\to(X_i,x_i)$ is, up to pointed homotopy, the family of components of a single pointed map $f:(A,a)\to(X,x)$.
+    \item \textbf{Uniqueness.} If $f,g:(A,a)\to(X,x)$ satisfy $p_i\circ f\simeq_* p_i\circ g$ for all $i\in I$, then $f\simeq_* g$.
+  \end{itemize}
+\end{lemma}
+
+\begin{proof}[\proofof{lem:hprod}]
+  Maps into $X$ are exactly families of maps into the $X_i$ (product topology). For existence take $f\coloneq(f_i)_i$; for uniqueness, assemble pointed homotopies $h_i:p_i\circ f\simeq_* p_i\circ g$ into $h\coloneq(h_i)_i:A\times[0,1]\to X$, a pointed homotopy $f\simeq_* g$.
+\end{proof}
+
+\newpage
+
+A loop in a product is nothing more than a family of loops, one in each factor: $\gamma(t)=(\gamma_i(t))_{i\in I}$. Deforming $\gamma$ means deforming each coordinate, and by Lemma \ref{lem:hprod} the coordinates can be deformed independently of one another. So the factors do not interact, and $\pi_n$ of the product should simply be the product of the $\pi_n$'s, with the group structure (concatenation) computed coordinatewise.
+
+\begin{theorem}{$\pi_n$ of Products}{pinofprods}
+  Let $n\in\N$ and $((X_i,x_i)\in\Toppt)_{i\in I}$ be a family of pointed toplogical spaces. Then the following is a bijection: \begin{align*}
+    \pi_n\left(\prod_{i\in I}X_i,(x_i)_{i\in I}\right) &\longrightarrow \prod_{i\in I}\pi_n(X_i,x_i)\\
+    g&\longmapsto (\pi_n(p_i)(g))_{i\in I}
+  \end{align*}
+  where $p_i:\prod_{j\in I}X_j\to X_i$ are the projections onto the $i$th factor. If $n\neq 0$ then this is a group isomorphism.
+\end{theorem}
+
+\begin{proof}[\proofof{th:pinofprods}]
+  Recall $\pi_n=[(S^n,e_1),\cdot]_*$, so an element $g\in\pi_n(\prod_i X_i,(x_i)_i)$ is a class $g=[\gamma]_*$ with $\gamma:(S^n,e_1)\to(\prod_i X_i,(x_i)_i)$, and $\pi_n(p_i)(g)=[p_i\circ\gamma]_*$. Hence the map in question is
+  \[
+    [(S^n,e_1),(\textstyle\prod_i X_i,(x_i)_i)]_*\to\prod_{i\in I}\,[(S^n,e_1),(X_i,x_i)]_*,\qquad [\gamma]_*\mapsto\big([p_i\circ\gamma]_*\big)_{i\in I},
+  \]
+  which is exactly the bijection of Lemma \ref{lem:hprod} for $(A,a)=(S^n,e_1)$. For $n\geq1$, each $\pi_n(p_i)$ is a group homomorphism and the group structure on $\prod_i\pi_n(X_i,x_i)$ is componentwise, so the map is a homomorphism, hence an isomorphism.
+\end{proof}
+
+\begin{example}{Fundamental Group of the Torus}{pi1torus}
+  With the above, we find that \[
+    \pi_1(T^2,(e_1,e_1)) \iso_{\Grp} \pi_1(S^1,e_1)\times\pi_1(S^1,e_1) \iso_{\Grp} \Z\times\Z
+  \]
+  In particular the resulting group is completely understood and explicit geometric generators can be constructed.\\
+
+  This also shows that $T^2$ and $S^1$ are not pointedly homotopy equivalent, and neither are $T^2$ and $S^2$. Hence the torus is not homeomorphic to the ordinary sphere.
+\end{example}
+
+% pi_1(T^2) = Z^2: (a) generators on the torus, (b) flat torus and the loop of class (2,1), (c) its lift to R^2 ends at (2,1)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    mk/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=4.5pt]}}}},
+    mk/.default=0.5,
+    s1/.style={postaction={decorate}, decoration={markings, mark=at position 0.55 with {\arrow{Stealth[length=4pt]}}}},
+    s2/.style={postaction={decorate}, decoration={markings, mark=at position 0.5 with {\arrow{Stealth[length=4pt]}}, mark=at position 0.6 with {\arrow{Stealth[length=4pt]}}}}]
+  % ===================== (a) the torus =====================
+  \begin{scope}
+    \fill[ink!6!paper] (0,0) ellipse (1.6 and 0.9);
+    \draw[ink!45!paper] (0,0) ellipse (1.6 and 0.9);
+    \fill[paper] (-0.62,0.06) .. controls (-0.3,-0.2) and (0.3,-0.2) .. (0.62,0.06) .. controls (0.3,0.25) and (-0.3,0.25) .. cycle;
+    \draw[ink!45!paper] (-0.75,0.12) .. controls (-0.35,-0.25) and (0.35,-0.25) .. (0.75,0.12);
+    \draw[ink!45!paper] (-0.62,0.06) .. controls (-0.3,0.25) and (0.3,0.25) .. (0.62,0.06);
+    % a = (1,0): around the hole
+    \draw[diagB, thick, mk=0.3] (0,-0.6) arc[start angle=-90, end angle=270, x radius=1.15, y radius=0.6];
+    % b = (0,1): around the tube (back half dashed)
+    \draw[diagA, thick, dashed] (-0.127,-0.16) arc[start angle=90, end angle=270, x radius=0.13, y radius=0.37];
+    \draw[diagA, thick, mk=0.6] (-0.127,-0.9) arc[start angle=-90, end angle=90, x radius=0.13, y radius=0.37];
+    \fill[ink] (0,-0.6) circle (1.6pt);
+    \node[lab, text=diagB, anchor=south] at (0,0.92) {$a=(1,0)$};
+    \node[lab, text=diagA, anchor=north] at (0.1,-0.92) {$b=(0,1)$};
+    \node[lab, text=ink!70!paper] at (-1.5,-0.85) {$T^2$};
+  \end{scope}
+  % ===================== the (2,1) loop on the torus =====================
+  % torus parametrisation matching the stylised outline: centre radius R, tube radius r,
+  % projected (X,Y) = ((R+r cos phi) cos th, k (R+r cos phi) sin th + c r sin phi).
+  % A piece is drawn solid iff its surface normal faces the viewer (direction (0,-c,k)).
+  \begin{scope}[shift={(11.65,0)}]
+    \fill[ink!6!paper] (0,0) ellipse (1.6 and 0.9);
+    \draw[ink!45!paper] (0,0) ellipse (1.6 and 0.9);
+    \fill[paper] (-0.62,0.06) .. controls (-0.3,-0.2) and (0.3,-0.2) .. (0.62,0.06) .. controls (0.3,0.25) and (-0.3,0.25) .. cycle;
+    \draw[ink!45!paper] (-0.75,0.12) .. controls (-0.35,-0.25) and (0.35,-0.25) .. (0.75,0.12);
+    \draw[ink!45!paper] (-0.62,0.06) .. controls (-0.3,0.25) and (0.3,0.25) .. (0.62,0.06);
+    \def\R{1.15}\def\r{0.38}\def\k{0.52}\def\c{0.62}
+    \foreach \j in {0,...,47}{
+      \pgfmathsetmacro{\ta}{\j/48}
+      \pgfmathsetmacro{\tb}{(\j+1)/48}
+      \pgfmathsetmacro{\tm}{(\j+0.5)/48}
+      \pgfmathsetmacro{\vis}{-\c*cos(90+360*\tm)*sin(-90+720*\tm)+\k*sin(90+360*\tm)}
+      \pgfmathtruncatemacro{\front}{\vis>0}
+      \pgfmathtruncatemacro{\arr}{(\front==1) && (mod(\j,16)==5)}
+      \ifnum\arr=1 \tikzset{seg/.style={mk=0.6}}\else\tikzset{seg/.style={}}\fi
+      \ifnum\front=1
+        \draw[diagC, thick, line cap=round, seg, samples=6, domain=\ta:\tb, variable=\t]
+          plot ({(\R+\r*cos(90+360*\t))*cos(-90+720*\t)}, {\k*(\R+\r*cos(90+360*\t))*sin(-90+720*\t)+\c*\r*sin(90+360*\t)});
+      \else
+        \draw[diagC!40!paper, thick, dashed, samples=6, domain=\ta:\tb, variable=\t]
+          plot ({(\R+\r*cos(90+360*\t))*cos(-90+720*\t)}, {\k*(\R+\r*cos(90+360*\t))*sin(-90+720*\t)+\c*\r*sin(90+360*\t)});
+      \fi
+    }
+    \fill[ink] (0,{-\k*\R+\c*\r}) circle (1.6pt);
+    \node[lab, text=ink!70!paper] at (1.5,-0.85) {$T^2$};
+  \end{scope}
+  % ===================== (b) flat torus =====================
+  \begin{scope}[shift={(2.85,-0.95)}]
+    \def\L{1.9}
+    \fill[ink!6!paper] (0,0) rectangle (\L,\L);
+    \draw[diagB, thick, s1] (0,0) -- (\L,0);
+    \draw[diagB, thick, s1] (0,\L) -- (\L,\L);
+    \draw[diagA, thick, s2] (0,0) -- (0,\L);
+    \draw[diagA, thick, s2] (\L,0) -- (\L,\L);
+    % the loop t |-> (2t, t) mod 1, class (2,1)
+    \draw[diagC, thick, mk=0.55] (0,0) -- (\L,0.5*\L);
+    \draw[diagC, thick, mk=0.55] (0,0.5*\L) -- (\L,\L);
+    \foreach \c in {(0,0),(\L,0),(0,\L),(\L,\L)} \fill[ink] \c circle (1.6pt);
+    \node[lab, text=diagB, anchor=north] at (0.5*\L,-0.05) {$a$};
+    \node[lab, text=diagA, anchor=east] at (-0.05,0.22*\L) {$b$};
+    \node[lab, text=diagC] at (0.75*\L,0.16*\L) {$(2,1)$};
+  \end{scope}
+  \draw[ink!40!paper, -{Stealth[length=5pt]}] (1.75,0) -- (2.6,0);
+  \draw[ink!40!paper, -{Stealth[length=5pt]}] (5.05,0) -- node[above=2.5pt, tick] {unroll} (5.9,0);
+  \draw[ink!40!paper, -{Stealth[length=5pt]}] (9.25,0) -- node[above=2.5pt, tick] {roll up} (9.95,0);
+  % ===================== (c) lift to R^2 =====================
+  \begin{scope}[shift={(6.15,-0.95)}]
+    \def\u{0.95}
+    \draw[ink!20!paper] (0,0) grid[step=\u] (3*\u,2*\u);
+    \foreach \i in {0,...,3} \foreach \j in {0,...,2} \fill[ink!45!paper] (\i*\u,\j*\u) circle (1pt);
+    \draw[diagC, thick, mk=0.6] (0,0) -- (2*\u,1*\u);
+    \fill[ink] (0,0) circle (1.6pt);
+    \fill[diagC] (2*\u,\u) circle (1.8pt);
+    \node[tick, anchor=north] at (0,-0.05) {$(0,0)$};
+    \node[lab, text=diagC, anchor=south west] at (2*\u,\u) {$(2,1)$};
+    \node[tick, anchor=north] at (1.5*\u,-0.32) {$\Z^2\subset\R^2$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The isomorphism $\Z^2\isoto\pi_1(T^2,(e_1,e_1))$ sends $(m,n)$ to the loop $t\mapsto(e^{2\pi imt},e^{2\pi int})$; the generators $a=(1,0)$ and $b=(0,1)$ wind once around each circle factor. Cut open, $T^2$ is a square with opposite sides identified, and the loop $(2,1)$ is two parallel segments; unrolled into the plane it is a straight path ending at $(2,1)\in\Z^2$, just as the helix in Figure \ref{fig:pi1circle} ends at height $d$. On $T^2$ it winds twice around the hole and once around the tube (hidden parts dashed).}\label{fig:pi1torus}
+
+\newpage
+
+\subsubsection{Glueings -- the Seifert van Kampen Theorem}
+
+$\pi_1$ is compatible with certain glueings (i.e.\ special pushouts).
+
+
+\begin{theorem}{Seifert van Kampen Theorem}{svk}
+  Let $(X,x_0)\in\Toppt$ and $X_1,X_2\subset X$ be path-connected subspaces such that \begin{itemize}
+    \item $X_1^\circ \cup X_2^\circ = X$
+    \item $X_0=X_1\cap X_2$ is path-connected
+    \item $x_0\in X_0$
+  \end{itemize}
+  Then the following is a pushout diagram in $\Grp$:
+  \[
+  \begin{tikzcd}[column sep=large, row sep=large]
+    \pi_1(X_0,x_0) \ar[r,"\pi_1(i_1)"] \ar[d,"\pi_1(i_2)"'] & \pi_1(X_1,x_0) \ar[d,"\pi_1(j_1)"'] \ar[ddr, bend left=25, "\varphi_1"] & \\
+    \pi_1(X_2,x_0) \ar[r,"\pi_1(j_2)"] \ar[drr, bend right=20, "\varphi_2"'] & |[diagC]| \pi_1(X,x_0) \ar[dr, dashed, diagC, "\exists!\,\varphi"'] & \\
+    & & G
+  \end{tikzcd}
+  \]
+  where we equip $X_0,X_1,X_2$ with the subspace topology of $X$, and $i_1:X_0\inj X_1, i_2:X_0\inj X_2, j_1: X_1\inj X, j_2:X_2\inj X$ are the inclusion maps.
+\end{theorem}
+
+Suppose $X=X_1\cup X_2$ with overlap $X_0$. Just as a map out of $X$ is a pair of maps out of $X_1$ and $X_2$ agreeing on $X_0$, a homomorphism out of $\pi_1(X,x_0)$ is a pair of homomorphisms out of $\pi_1(X_1,x_0)$ and $\pi_1(X_2,x_0)$ agreeing on $\pi_1(X_0,x_0)$. Geometrically, loops in $X_1$ and $X_2$ \emph{generate} $\pi_1(X,x_0)$ (Figure \ref{fig:svk}), and cutting up homotopies the same way shows that the only \emph{relations} come from loops in $X_0$.
+
+% SvK idea: a loop in X = X1 u X2 is subdivided into pieces in X1 or X2, which are closed up via paths to x0 (cf. Loh Fig. 2.8)
+% X1 has one hole, X2 has two. Bottom row: the closing paths drawn "out and back" (left), and the resulting
+% five loops at x0, colour-coded to match the factors of the formula (right).
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    mk/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=4.5pt]}}}},
+    mk/.default=0.55,
+    mk2/.style={postaction={decorate}, decoration={markings, mark=at position 0.3 with {\arrow{Stealth[length=4.5pt]}}, mark=at position 0.72 with {\arrow{Stealth[length=4.5pt]}}}},
+    space/.pic={
+      \def\outline{plot[smooth cycle, tension=0.65] coordinates {(-2.4,0) (-2.05,0.9) (-1.3,1.12) (-0.45,0.74) (0.3,0.84) (1.2,1.18) (2.2,1.08) (2.78,0.3) (2.62,-0.62) (1.9,-1.12) (0.9,-1.08) (0.05,-0.74) (-0.6,-0.82) (-1.35,-1.12) (-2.05,-0.9)}}
+      \begin{scope}
+        \clip \outline;
+        \fill[diagB!10!paper] (-2.6,-1.3) rectangle (0.25,1.3);
+        \fill[diagA!10!paper] (-0.45,-1.3) rectangle (3,1.3);
+        \fill[diagC!16!paper] (-0.45,-1.3) rectangle (0.25,1.3);
+        \draw[diagC!35!paper, dashed] (-0.45,-1.3) -- (-0.45,1.3) (0.25,-1.3) -- (0.25,1.3);
+      \end{scope}
+      \draw[ink!45!paper] \outline;
+      \filldraw[ink!45!paper, fill=paper] (-1.3,0.25) circle (0.25);
+      \filldraw[ink!45!paper, fill=paper] (1.05,0.42) circle (0.2);
+      \filldraw[ink!45!paper, fill=paper] (1.75,-0.45) circle (0.2);
+    }]
+  % region labels sit just outside the outline so they never meet a curve
+  \def\spacelabels{%
+    \node[lab, text=diagB, anchor=south east] at (-2.12,0.9) {$X_1$};
+    \node[lab, text=diagA, anchor=south west] at (2.62,0.78) {$X_2$};
+    \node[tick, text=diagC!80!paper, anchor=north] at (-0.1,-0.8) {$X_0$};}
+  % the loop gamma, as five pieces between x0 and the cut points p1,...,p4
+  \def\ga{(-0.1,0.2) .. controls (-0.5,0.9) and (-1.75,0.95) .. (-2.0,0)}
+  \def\gb{(-2.0,0) .. controls (-2.0,-0.75) and (-0.7,-0.85) .. (-0.1,-0.4)}
+  \def\gc{(-0.1,-0.4) .. controls (0.8,-0.98) and (2.2,-1.05) .. (2.45,-0.1)}
+  \def\gd{(2.45,-0.1) .. controls (2.55,0.7) and (1.45,0.82) .. (0.72,0.7)}
+  \def\gf{(0.72,0.7) .. controls (0.35,0.66) and (0.0,0.55) .. (-0.1,0.2)}
+  \def\cutpts{\foreach \q in {(-2.0,0),(-0.1,-0.4),(2.45,-0.1),(0.72,0.7)} \fill[ink!80!paper] \q circle (0.95pt);}
+  \def\xo{\fill[ink] (-0.1,0.2) circle (1.25pt);}
+  % ===================== 1. the loop =====================
+  \begin{scope}[shift={(-4.6,0)}, scale=1.45]
+    \pic[transform shape] {space}; \spacelabels
+    \foreach \P in {\ga,\gb,\gc,\gd,\gf} \draw[ink, thick, mk=0.5] \P;
+    \xo
+    \node[lab, anchor=north west, fill=diagC!16!paper, inner sep=1pt] at (-0.06,0.15) {$x_0$};
+    \node[ttl] at (0.2,1.6) {A loop $\gamma$ in $X=X_1\cup X_2$ \ldots};
+  \end{scope}
+  % ===================== 2. subdivided =====================
+  \begin{scope}[shift={(4.6,0)}, scale=1.45]
+    \pic[transform shape] {space}; \spacelabels
+    \foreach \P in {\ga,\gb} \draw[diagB, thick, mk] \P;
+    \foreach \P in {\gc,\gd,\gf} \draw[diagA, thick, mk] \P;
+    \cutpts \xo
+    \node[tick, anchor=east] at (-2.03,0) {$p_1$};
+    \node[tick, anchor=east] at (-0.15,-0.38) {$p_2$};
+    \node[tick, anchor=east] at (2.4,-0.12) {$p_3$};
+    \node[tick, anchor=south] at (0.72,0.74) {$p_4$};
+    \node[ttl] at (0.2,1.6) {\ldots\ cut into pieces in $X_1$ or $X_2$ \ldots};
+  \end{scope}
+  % ===================== 3a. closed up (out and back) =====================
+  \begin{scope}[shift={(-4.6,-4.55)}, scale=1.45]
+    \pic[transform shape] {space}; \spacelabels
+    \foreach \P in {\ga,\gb} \draw[diagB!45!paper, thick] \P;
+    \foreach \P in {\gc,\gd,\gf} \draw[diagA!45!paper, thick] \P;
+    \begin{scope}[diagC, thick]
+      \draw[mk=0.6] (-0.1,0.24) -- (-1.3,-0.07) -- (-1.97,0.04);      % eta_1 out (in X1, below the hole)
+      \draw[mk=0.4] (-1.97,-0.04) -- (-1.3,-0.15) -- (-0.1,0.16);     % eta_1 back
+      \draw[mk=0.6] (-0.14,0.2) -- (-0.14,-0.37);                     % eta_2 out (in X0)
+      \draw[mk=0.6] (-0.06,-0.37) -- (-0.06,0.2);                     % eta_2 back
+      \draw[mk=0.6] (-0.06,0.24) -- (2.42,-0.06);                     % eta_3 out (in X2)
+      \draw[mk=0.6] (2.42,-0.14) -- (-0.06,0.16);                     % eta_3 back
+      \draw[mk=0.6] (-0.13,0.24) -- (0.69,0.74);                      % eta_4 out (in X2)
+      \draw[mk=0.6] (0.75,0.66) -- (-0.05,0.17);                      % eta_4 back
+    \end{scope}
+    \cutpts \xo
+    \node[ttl] at (0.2,1.6) {\ldots\ closed up along paths to $x_0$ \ldots};
+  \end{scope}
+  % ===================== 3b. the five loops, colour-coded =====================
+  % each loop is redrawn as one smooth closed curve through x0 (up to homotopy rel x0), kept apart from the others
+  \begin{scope}[shift={(4.6,-4.55)}, scale=1.45]
+    \pic[transform shape] {space}; \spacelabels
+    \begin{scope}[thick, line join=round]
+      % l1 (blue): once round the hole of X1
+      \draw[diagB, mk2] (-0.1,0.2) .. controls (-0.6,0.8) and (-1.75,0.9) .. (-1.88,0.2)
+        .. controls (-1.95,-0.2) and (-0.75,-0.15) .. (-0.1,0.2);
+      % l2 (green): in X1, encircles no hole
+      \draw[lemmaCol, mk2] (-0.1,0.2) .. controls (-0.6,-0.3) and (-1.7,-0.2) .. (-1.7,-0.55)
+        .. controls (-1.7,-0.85) and (-0.55,-0.85) .. (-0.3,-0.55)
+        .. controls (-0.15,-0.35) and (-0.1,-0.05) .. (-0.1,0.2);
+      % l3 (orange): once round the lower hole of X2
+      \draw[diagA, mk2] (-0.1,0.2) .. controls (-0.05,-0.35) and (0.7,-0.9) .. (1.6,-0.88)
+        .. controls (2.3,-0.86) and (2.62,-0.2) .. (1.95,-0.14)
+        .. controls (1.35,-0.1) and (0.4,0.0) .. (-0.1,0.2);
+      % l4 (purple): once round the upper hole of X2
+      \draw[diagC, mk2] (-0.1,0.2) .. controls (0.4,0.22) and (1.2,0.02) .. (2.0,0.1)
+        .. controls (2.6,0.18) and (2.4,0.92) .. (1.4,0.92)
+        .. controls (0.8,0.92) and (0.15,0.55) .. (-0.1,0.2);
+      % l5 (gold): a small loop in X0, encircles no hole
+      \draw[diagD, mk=0.5] (-0.1,0.2) .. controls (-0.36,0.8) and (0.16,0.8) .. (-0.1,0.2);
+    \end{scope}
+    \xo
+    \node[ttl] at (0.2,1.6) {\ldots\ giving loops in $X_1$ or $X_2$};
+  \end{scope}
+  % the resulting decomposition, colour-coded like the loops above
+  \node[lab, anchor=north] at (0,-6.55) {$\displaystyle
+    \gamma\simeq_*\underbrace{\textcolor{diagB}{(\gamma_1\ast\overline{\eta_1})}\ast\textcolor{lemmaCol}{(\eta_1\ast\gamma_2\ast\overline{\eta_2})}}_{\text{loops in }X_1}
+    \ast\underbrace{\textcolor{diagA}{(\eta_2\ast\gamma_3\ast\overline{\eta_3})}\ast\textcolor{diagC}{(\eta_3\ast\gamma_4\ast\overline{\eta_4})}\ast\textcolor{diagD}{(\eta_4\ast\gamma_5)}}_{\text{loops in }X_2}$};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The idea behind Seifert--van Kampen, with $X_1$ (blue, one hole), $X_2$ (orange, two holes) and $X_0=X_1\cap X_2$ (purple). A loop $\gamma$ at $x_0$ is cut at $p_1,\dots,p_4$ into pieces $\gamma_k$, each in $X_1$ or $X_2$. Paths $\eta_k$ from $x_0$ to $p_k$ (inside $X_0$ when $p_k\in X_0$, which is where path-connectedness of $X_0$ is used) are run out and back; since $\overline{\eta_k}\ast\eta_k\simeq_* c$, $\gamma$ becomes a product of five loops in $X_1$ or $X_2$, coloured as in the formula. The green and ochre loops encircle no hole, so they are trivial.}\label{fig:svk}
+
+\newpage
+
+To make ``small pieces'' precise we use the following lemma.
+
+\begin{lemma}{Lebesgue Lemma}{lebesgue}
+  Let $(X,d)$ be a compact metric space and $(U_i)_{i\in I}$ an open cover of $X$. Then there is an $\varepsilon>0$ such that for every $x\in X$ the ball $B(x,\varepsilon)$ lies in some $U_i$. Such an $\varepsilon$ is a \textbf{Lebesgue number} of the cover.
+\end{lemma}
+
+\begin{proof}[\proofof{lem:lebesgue}]
+  For each $x\in X$ choose $r_x>0$ and $i_x\in I$ with $B(x,r_x)\subset U_{i_x}$. By compactness, finitely many balls $B(y,r_y/2)$, $y\in Y$, cover $X$. Put $\varepsilon\coloneq\frac12\min_{y\in Y}r_y>0$. Given $x\in X$, pick $y\in Y$ with $x\in B(y,r_y/2)$; then $B(x,\varepsilon)\subset B(y,r_y)\subset U_{i_y}$.
+\end{proof}
+
+% shared styles for the diagrams inside the proof of Seifert--van Kampen
+\tikzset{
+  svk lab/.style={font=\sffamily\small, inner sep=1.5pt},
+  svk tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+  svk mk/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=4.5pt]}}}},
+  svk mk/.default=0.55,
+  svk w/.style={diagC, thick, densely dashed},
+}
+
+\begin{proof}[\proofof{th:svk}]
+  \paragraph{Setup.} Since $j_1\circ i_1=j_2\circ i_2$, the square commutes. Fix a group $H$ and homomorphisms $\varphi_k:\pi_1(X_k,x_0)\to H$ with $\varphi_1\circ\pi_1(i_1)=\varphi_2\circ\pi_1(i_2)$; we need a unique $\varphi:\pi_1(X,x_0)\to H$ with $\varphi\circ\pi_1(j_k)=\varphi_k$. We write $[\,\cdot\,]_*^{X_i}$ for classes in $\pi_1(X_i,x_0)$, and fix the following.
+  \begin{itemize}
+    \item A path $\gamma:[a,b]\to X$ is \textbf{small} if $\gamma([a,b])\subset X_1$ or $\gamma([a,b])\subset X_2$.
+    \item For each $x\in X$ a path $w_x$ from $x_0$ to $x$: inside $X_0$ if $x\in X_0$, inside $X_1$ or $X_2$ (whichever contains $x$) otherwise, and constant for $x=x_0$. These exist as $X_0,X_1,X_2$ are path-connected.
+    \item For a small $\gamma:[a,b]\to X$ the loop $c(\gamma)\coloneq w_{\gamma(a)}\ast\gamma\ast\overline{w_{\gamma(b)}}$ at $x_0$ (reparametrising $\gamma$ to $[0,1]$). By the choice of the $w_x$, $c(\gamma)$ lies in every $X_i$ ($i\in\{0,1,2\}$) that contains the image of $\gamma$.
+    \item A \textbf{decomposition} of a loop $\gamma$ at $x_0$ is a partition $0=t_0<\dots<t_n=1$ so each $\gamma_k\coloneq\gamma|_{[t_{k-1},t_k]}$ is small.
+  \end{itemize}
+  \begin{figureBox}
+  \begin{tikzpicture}
+    % left: the loop c(gamma) of a small path
+    \draw[ink!45!paper, fill=diagB!8!paper] plot[smooth cycle, tension=0.8] coordinates {(-1.7,-0.5) (-1.3,0.95) (0.3,1.3) (1.75,0.8) (1.7,-0.75) (0,-1.1)};
+    \node[svk lab, text=diagB, anchor=south west] at (1.6,0.85) {$X_i$};
+    \draw[svk w, svk mk=0.6] (0,-0.6) .. controls (-0.55,-0.45) and (-0.95,0) .. (-0.95,0.4);
+    \draw[diagB, thick, svk mk=0.5] (-0.95,0.4) .. controls (-0.45,1.05) and (0.45,1.05) .. (0.95,0.45);
+    \draw[svk w, svk mk=0.6] (0.95,0.45) .. controls (0.95,0) and (0.55,-0.45) .. (0,-0.6);
+    \foreach \q in {(-0.95,0.4),(0.95,0.45)} \fill[ink!80!paper] \q circle (1.3pt);
+    \fill[ink] (0,-0.6) circle (1.8pt);
+    \node[svk lab, anchor=north] at (0,-0.65) {$x_0$};
+    \node[svk lab, text=diagB, anchor=south] at (0,0.9) {$\gamma$};
+    \node[svk tick, anchor=east] at (-0.98,0.4) {$\gamma(a)$};
+    \node[svk tick, anchor=west] at (0.98,0.45) {$\gamma(b)$};
+    \node[svk lab, text=diagC, anchor=east] at (-0.88,-0.32) {$w_{\gamma(a)}$};
+    \node[svk lab, text=diagC, anchor=west] at (0.88,-0.32) {$\overline{w_{\gamma(b)}}$};
+    \node[svk tick, anchor=north] at (0,-1.2) {the loop $c(\gamma)$};
+    % right: a decomposition, pieces coloured by the X_i they lie in
+    \begin{scope}[shift={(3.4,0)}]
+      \foreach \a/\b/\c/\n in {0/1.0/diagB/1, 1.0/2.2/diagB/2, 2.2/3.3/diagA/3, 3.3/4.5/diagA/4}{
+        \draw[\c, very thick] (\a,0) -- (\b,0);
+        \node[svk lab, text=\c, anchor=south] at ({(\a+\b)/2},0.08) {$\gamma_\n$};
+      }
+      \foreach \x/\l in {0/t_0, 1.0/t_1, 2.2/t_2, 3.3/t_3, 4.5/t_4}{
+        \draw[ink!70!paper] (\x,-0.1) -- (\x,0.1);
+        \node[svk tick, anchor=north] at (\x,-0.12) {$\l$};
+      }
+      \node[svk tick, anchor=north] at (2.25,-0.6) {a decomposition: pieces in $X_1$ (blue) or $X_2$ (orange)};
+    \end{scope}
+  \end{tikzpicture}
+  \end{figureBox}
+  \captionof{figure}{Notation in the proof of Seifert--van Kampen. Left: a small path $\gamma$ in $X_i$ is closed up to the loop $c(\gamma)=w_{\gamma(a)}\ast\gamma\ast\overline{w_{\gamma(b)}}$ at $x_0$. Right: a decomposition of a loop into small pieces, each lying in $X_1$ (blue) or $X_2$ (orange).}\label{fig:svksetup}
+
+  \paragraph{Uniqueness.} Every loop $\gamma$ at $x_0$ has a decomposition: $\gamma^{-1}(X_1^\circ),\gamma^{-1}(X_2^\circ)$ is an open cover of $[0,1]$ (here we use the interiors), so with a Lebesgue number $\delta$ (Lemma \ref{lem:lebesgue}) any partition of mesh $<\delta$ works (Figure \ref{fig:svkchop}). Inserting the null-homotopic $\overline{w_{\gamma(t_k)}}\ast w_{\gamma(t_k)}$ at each cut (Figure \ref{fig:svk}) gives
+  \[
+    \gamma\simeq_* c(\gamma_1)\ast\dots\ast c(\gamma_n),
+  \]
+  and each $c(\gamma_k)$ is a loop in $X_1$ or $X_2$. So $\operatorname{im}\pi_1(j_1)\cup\operatorname{im}\pi_1(j_2)$ generates $\pi_1(X,x_0)$, and any $\varphi$ as required must send $[\gamma]_*$ to $\prod_k\varphi_{i_k}[c(\gamma_k)]_*^{X_{i_k}}$, where $\gamma_k$ lies in $X_{i_k}$.
+  \par\noindent\begin{minipage}{\linewidth}
+  \begin{figureBox}
+  \begin{tikzpicture}[scale=0.78,
+      chopspace/.pic={
+        \fill[diagB!10!paper] (-1.0,0) ellipse (1.7 and 1.1);
+        \fill[diagA!10!paper] (1.0,0) ellipse (1.7 and 1.1);
+        \begin{scope} \clip (-1.0,0) ellipse (1.7 and 1.1); \fill[diagC!16!paper] (1.0,0) ellipse (1.7 and 1.1); \end{scope}
+        \draw[ink!45!paper] (-1.0,0) ellipse (1.7 and 1.1) (1.0,0) ellipse (1.7 and 1.1);
+      }]
+    % the loop t |-> (1.9 sin 2 pi t, 0.75 sin 4 pi t): a figure eight through x0 = (0,0)
+    \def\lp#1#2#3{\draw[#3, thick, line cap=round, samples=30, domain=#1:#2, variable=\t] plot ({1.9*sin(360*\t)}, {0.75*sin(720*\t)});}
+    \def\cut#1{\fill[ink!80!paper] ({1.9*sin(360*#1)}, {0.75*sin(720*#1)}) circle (1.4pt);}
+    \def\labels{\node[svk lab, text=diagB, anchor=south east] at (-2.45,0.62) {$X_1$}; \node[svk lab, text=diagA, anchor=south west] at (2.45,0.62) {$X_2$}; \node[svk tick, text=diagC!80!paper] at (0,-0.72) {$X_0$};}
+    % ===================== too coarse =====================
+    \begin{scope}
+      \pic[transform shape] {chopspace}; \labels
+      \lp{0}{0.25}{diagA} \lp{0.75}{1}{diagB}
+      \lp{0.25}{0.75}{ink, densely dashed}
+      \foreach \t in {0.25,0.75} \cut{\t}
+      \fill[ink] (0,0) circle (1.8pt);
+      \node[svk lab, anchor=south] at (0,0.12) {$x_0$};
+      \node[svk tick, text=ink] at (0,1.45) {too coarse};
+      % its time axis
+      \begin{scope}[shift={(-2,-1.6)}]
+        \draw[diagA, very thick] (0,0) -- (1,0); \draw[ink, very thick, densely dashed] (1,0) -- (3,0); \draw[diagB, very thick] (3,0) -- (4,0);
+        \foreach \x in {0,1,3,4} \draw[ink!70!paper] (\x,-0.1) -- (\x,0.1);
+        \node[svk tick, anchor=north] at (0,-0.12) {$0$}; \node[svk tick, anchor=north] at (4,-0.12) {$1$};
+      \end{scope}
+    \end{scope}
+    % ===================== fine enough =====================
+    \begin{scope}[shift={(7.6,0)}]
+      \pic[transform shape] {chopspace}; \labels
+      \foreach \k in {0,...,3} \lp{\k/8}{(\k+1)/8}{diagA}
+      \foreach \k in {4,...,7} \lp{\k/8}{(\k+1)/8}{diagB}
+      \foreach \k in {1,2,3,5,6,7} \cut{\k/8}
+      \fill[ink] (0,0) circle (1.8pt);
+      \node[svk lab, anchor=south] at (0,0.12) {$x_0$};
+      \node[svk tick, text=ink] at (0,1.45) {mesh $<\delta$};
+      \begin{scope}[shift={(-2,-1.6)}]
+        \foreach \k in {0,...,3} \draw[diagA, very thick] (\k/2,0) -- (\k/2+0.5,0);
+        \foreach \k in {4,...,7} \draw[diagB, very thick] (\k/2,0) -- (\k/2+0.5,0);
+        \foreach \k in {0,...,8} \draw[ink!70!paper] (\k/2,-0.1) -- (\k/2,0.1);
+        \node[svk tick, anchor=north] at (0,-0.12) {$0$}; \node[svk tick, anchor=north] at (4,-0.12) {$1$};
+        \draw[decorate, decoration={brace, amplitude=3pt, mirror}, ink!55!paper] (2.5,-0.18) -- (3.0,-0.18) node[midway, below=3pt, svk tick] {$<\delta$};
+      \end{scope}
+    \end{scope}
+  \end{tikzpicture}
+  \end{figureBox}
+    \captionof{figure}{Chopping a loop (colours record where the pieces lie). Left: too few cuts leave a piece (dashed) in neither $X_1$ nor $X_2$. Right: spacing below a Lebesgue number $\delta$ puts every piece in $X_1$ or $X_2$.}\label{fig:svkchop}
+  \end{minipage}
+
+  \paragraph{Existence: strategy.} Uniqueness forces $\varphi[\gamma]_*=\prod_k\varphi_{i_k}[c(\gamma_k)]_*^{X_{i_k}}$, but the right-hand side depends on choices we made by hand (the paths $w_x$ are fixed once and for all):
+  \begin{enumerate}
+    \item[(1)] for a piece lying in $X_0$, whether we view it in $X_1$ or in $X_2$;
+    \item[(2)] the decomposition $(\gamma_k)_k$ of $\gamma$;
+    \item[(3)] the representative $\gamma$ of the class $[\gamma]_*$.
+  \end{enumerate}
+  We take this formula as the definition of $\varphi$ and show that the result does not depend on any of these choices: (1) in Step A, (2) in Steps B and C, (3) in Step D. Step E then checks that $\varphi$ has the required properties.
+
+  \paragraph{Step A: small paths.} \emph{Goal: choice (1) does not matter.} For small $\gamma$ lying in $X_i$ put $\tilde\varphi(\gamma)\coloneq\varphi_i[c(\gamma)]_*^{X_i}$. If $\gamma$ lies in both, i.e.\ in $X_0$, then $c(\gamma)$ is a loop in $X_0$ and
+  \[
+    \varphi_1[c(\gamma)]_*^{X_1}=\varphi_1\circ\pi_1(i_1)[c(\gamma)]_*^{X_0}=\varphi_2\circ\pi_1(i_2)[c(\gamma)]_*^{X_0}=\varphi_2[c(\gamma)]_*^{X_2},
+  \]
+  so $\tilde\varphi$ is well defined (Figure \ref{fig:svkstepA}). This is the only place the hypothesis on $\varphi_1,\varphi_2$ is used.
+  \begin{figureBox}
+  \begin{tikzpicture}
+    % a small path in X0 and its loop c(gamma), which lies in X0
+    \begin{scope}
+      \fill[diagB!10!paper] (-0.65,0) ellipse (1.25 and 0.95);
+      \fill[diagA!10!paper] (0.65,0) ellipse (1.25 and 0.95);
+      \begin{scope} \clip (-0.65,0) ellipse (1.25 and 0.95); \fill[diagC!18!paper] (0.65,0) ellipse (1.25 and 0.95); \end{scope}
+      \draw[ink!45!paper] (-0.65,0) ellipse (1.25 and 0.95) (0.65,0) ellipse (1.25 and 0.95);
+      \node[svk lab, text=diagB, anchor=east] at (-1.75,0.62) {$X_1$};
+      \node[svk lab, text=diagA, anchor=west] at (1.75,0.62) {$X_2$};
+      \node[svk tick, text=diagC!80!paper] at (0,-0.62) {$X_0$};
+      \draw[svk w] (0,-0.32) .. controls (-0.3,-0.18) and (-0.33,0.1) .. (-0.24,0.28);
+      \draw[ink, thick, svk mk=0.5] (-0.24,0.28) .. controls (-0.12,0.62) and (0.18,0.62) .. (0.24,0.32);
+      \draw[svk w] (0.24,0.32) .. controls (0.3,0.05) and (0.25,-0.2) .. (0,-0.32);
+      \fill[ink] (0,-0.32) circle (1.6pt);
+      \node[svk lab, anchor=west] at (0.26,0.5) {$\gamma$};
+    \end{scope}
+    % the element chase: both routes to H agree
+    \begin{scope}[shift={(2.8,0)}]
+      \node[svk lab] (A) at (0,0) {$[c(\gamma)]_*^{X_0}$};
+      \node[svk lab] (B1) at (2.3,0.75) {$[c(\gamma)]_*^{X_1}$};
+      \node[svk lab] (B2) at (2.3,-0.75) {$[c(\gamma)]_*^{X_2}$};
+      \node[svk lab] (H) at (4.6,0) {$\in H$};
+      \draw[ink!60!paper, |->] (A) -- node[svk tick, above left] {$\pi_1(i_1)$} (B1);
+      \draw[ink!60!paper, |->] (A) -- node[svk tick, below left] {$\pi_1(i_2)$} (B2);
+      \draw[diagB, |->] (B1) -- node[svk tick, text=diagB, above right] {$\varphi_1$} (H);
+      \draw[diagA, |->] (B2) -- node[svk tick, text=diagA, below right] {$\varphi_2$} (H);
+      \node[svk tick, anchor=north] at (2.3,-1.15) {same element, as $\varphi_1\circ\pi_1(i_1)=\varphi_2\circ\pi_1(i_2)$};
+    \end{scope}
+  \end{tikzpicture}
+  \end{figureBox}
+  \captionof{figure}{Step A. If a small path $\gamma$ lies in $X_0$, then so does $c(\gamma)$, and the two candidate values $\varphi_1[c(\gamma)]_*^{X_1}$ and $\varphi_2[c(\gamma)]_*^{X_2}$ agree because $\varphi_1\circ\pi_1(i_1)=\varphi_2\circ\pi_1(i_2)$.}\label{fig:svkstepA}
+
+  \paragraph{Step B: subdividing.} \emph{Goal: cutting a piece further does not change its contribution (a tool for Step C).} If a small $\gamma$ in $X_i$ is split at some $t$ into $\gamma',\gamma''$, then $c(\gamma)\simeq_* c(\gamma')\ast c(\gamma'')$ inside $X_i$ (the inserted $\overline{w_{\gamma(t)}}\ast w_{\gamma(t)}$ cancels; Figure \ref{fig:svkstepB}), so $\tilde\varphi(\gamma)=\tilde\varphi(\gamma')\,\tilde\varphi(\gamma'')$.
+  \begin{figureBox}
+  \begin{tikzpicture}
+    \draw[ink!45!paper, fill=diagB!8!paper] plot[smooth cycle, tension=0.8] coordinates {(-2.3,-0.4) (-1.8,1.05) (0,1.3) (1.8,1.05) (2.3,-0.4) (0,-1.35)};
+    \node[svk lab, text=diagB, anchor=south west] at (2.0,0.85) {$X_i$};
+    \coordinate (x0) at (0,-0.85); \coordinate (a) at (-1.6,0.25); \coordinate (t) at (0,0.75); \coordinate (b) at (1.6,0.25);
+    \draw[svk w, svk mk=0.6] (x0) .. controls (-0.8,-0.75) and (-1.5,-0.3) .. (a);
+    \draw[diagB, thick, svk mk=0.5] (a) .. controls (-1.3,0.7) and (-0.6,0.85) .. (t);
+    \draw[diagB!60!paper, thick, svk mk=0.5] (t) .. controls (0.6,0.85) and (1.3,0.7) .. (b);
+    \draw[svk w, svk mk=0.6] (b) .. controls (1.5,-0.3) and (0.8,-0.75) .. (x0);
+    % the inserted path w_{gamma(t)}, back and out again
+    \draw[svk w, svk mk=0.55] ($(t)+(-0.07,0)$) -- ($(x0)+(-0.07,0)$);
+    \draw[svk w, svk mk=0.55] ($(x0)+(0.07,0)$) -- ($(t)+(0.07,0)$);
+    \foreach \q in {(a),(t),(b)} \fill[ink!80!paper] \q circle (1.3pt);
+    \fill[ink] (x0) circle (1.8pt);
+    \node[svk lab, anchor=north] at (0,-0.9) {$x_0$};
+    \node[svk lab, text=diagB, anchor=south] at (-0.85,0.85) {$\gamma'$};
+    \node[svk lab, text=diagB!70!paper, anchor=south] at (0.85,0.85) {$\gamma''$};
+    \node[svk tick, anchor=south] at (0,0.8) {$\gamma(t)$};
+    \node[svk tick, anchor=west, align=left] at (2.7,0.1) {inserting $\textcolor{diagC}{\overline{w_{\gamma(t)}}\ast w_{\gamma(t)}}\simeq_* c$ at $\gamma(t)$:\\[2pt] $c(\gamma)\simeq_* c(\gamma')\ast c(\gamma'')$ inside $X_i$};
+  \end{tikzpicture}
+  \end{figureBox}
+  \captionof{figure}{Step B. Splitting a small path at $\gamma(t)$ inserts the null-homotopic $\overline{w_{\gamma(t)}}\ast w_{\gamma(t)}$ (purple, back and out), so $c(\gamma)\simeq_* c(\gamma')\ast c(\gamma'')$ inside $X_i$.}\label{fig:svkstepB}
+
+  \paragraph{Step C: loops.} \emph{Goal: choice (2) does not matter.} For a loop $\gamma$ with decomposition $(\gamma_k)_k$ put $\varphi^\circ(\gamma)\coloneq\tilde\varphi(\gamma_1)\cdots\tilde\varphi(\gamma_n)$. This does not depend on the decomposition: any two decompositions have a common refinement (take the union of the partition points; Figure \ref{fig:svkstepC}), and refining does not change the product by Step B. Since $\tilde\varphi$ only sees pieces up to reparametrisation, the same holds for loops parametrised on any interval.
+  \begin{figureBox}
+  \begin{tikzpicture}
+    \def\row#1#2#3{\draw[ink!35!paper] (0,#1) -- (6,#1); \node[svk tick, anchor=east] at (-0.15,#1) {#2}; \foreach \x in {#3} \draw[thick] (\x,#1-0.12) -- (\x,#1+0.12);}
+    \begin{scope}[diagB] \row{0.9}{one decomposition}{0,1.3,2.9,4.2,6} \end{scope}
+    \begin{scope}[diagA] \row{0.2}{another}{0,2.1,3.6,6} \end{scope}
+    \draw[ink!35!paper] (0,-0.6) -- (6,-0.6);
+    \node[svk tick, anchor=east] at (-0.15,-0.6) {common refinement};
+    \foreach \x in {0,1.3,2.9,4.2,6} \draw[diagB, thick] (\x,-0.72) -- (\x,-0.48);
+    \foreach \x in {2.1,3.6} \draw[diagA, thick] (\x,-0.72) -- (\x,-0.48);
+    \node[svk tick, anchor=north] at (0,-0.75) {$0$}; \node[svk tick, anchor=north] at (6,-0.75) {$1$};
+    \node[svk tick, anchor=west] at (6.25,0.15) {\begin{tabular}{@{}l@{}}refining only splits small pieces,\\ which leaves the product fixed (Step B)\end{tabular}};
+  \end{tikzpicture}
+  \end{figureBox}
+  \captionof{figure}{Step C. Two decompositions of the same loop have a common refinement, obtained by taking all cutting points of both; refining only splits small pieces, which does not change $\varphi^\circ$ by Step B.}\label{fig:svkstepC}
+
+  \paragraph{Step D: homotopy invariance.} \emph{Goal: choice (3) does not matter.} Let $h:[0,1]\times[0,1]\to X$ be a pointed homotopy from $\gamma$ to $\gamma'$, so $h(0,t)=h(1,t)=x_0$. The Lebesgue lemma for the cover $h^{-1}(X_1^\circ),h^{-1}(X_2^\circ)$ of $[0,1]^2$ gives $n$ such that $h$ maps every square $Q_{jk}=[\frac jn,\frac{j+1}n]\times[\frac kn,\frac{k+1}n]$ into $X_1$ or $X_2$. It suffices to compare consecutive rows $h(\cdot,\frac kn)$ and $h(\cdot,\frac{k+1}n)$. For $0\le j\le n$ let $\delta_j$ be the loop that runs along row $\frac kn$ up to $s=\frac jn$, up the vertical edge there, and along row $\frac{k+1}n$ to the end (Figure \ref{fig:svkgrid}); all its edges are small. Then $\delta_0$ and $\delta_n$ are the two rows up to a constant piece at $x_0$, which contributes $1$. Moreover $\delta_j$ and $\delta_{j+1}$ only differ in how they go around $Q_{jk}$ (left and top edges versus bottom and right edges). These are paths with the same endpoints in the convex square, hence homotopic relative to their endpoints there, so their images are homotopic rel endpoints inside $h(Q_{jk})\subset X_i$. Thus the corresponding loops $c(\cdot)$ agree in $\pi_1(X_i,x_0)$, and by Steps B and C, $\varphi^\circ(\delta_j)=\varphi^\circ(\delta_{j+1})$. Chaining these equalities over $j$ and then over $k$ gives $\varphi^\circ(\gamma)=\varphi^\circ(\gamma')$.
+  \begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    mk/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=4.5pt]}}}},
+    mk/.default=0.5]
+  \def\L{4.5}\def\u{0.9}   % side length, cell size (n = 5)
+  \fill[ink!4!paper] (0,0) rectangle (\L,\L);
+  \fill[diagC!18!paper] (2*\u,2*\u) rectangle (3*\u,3*\u);
+  \draw[ink!18!paper] (0,0) grid[step=\u] (\L,\L);
+  \draw[ink!45!paper] (0,0) rectangle (\L,\L);
+  \draw[ink!75!paper, very thick] (0,0) -- (0,\L) (\L,0) -- (\L,\L);
+  % delta_j (blue): row k up to s=j/n, up, then row k+1
+  \draw[diagB, thick, mk=0.2, mk=0.85] ($(0,2*\u)+(0,-0.05)$) -- ($(2*\u,2*\u)+(-0.05,-0.05)$) -- ($(2*\u,3*\u)+(-0.05,0.05)$) -- ($(\L,3*\u)+(0,0.05)$);
+  % delta_{j+1} (orange, dashed): one square further along row k
+  \draw[diagA, thick, dashed, mk=0.6] ($(0,2*\u)+(0,-0.12)$) -- ($(3*\u,2*\u)+(0.05,-0.12)$) -- ($(3*\u,3*\u)+(0.05,0.12)$) -- ($(\L,3*\u)+(0,0.12)$);
+  \node[lab, text=diagC] at (2.5*\u,2.5*\u) {$Q_{jk}$};
+  \node[lab, text=diagB, anchor=east] at (1.95*\u,2.6*\u) {$\delta_j$};
+  \node[lab, text=diagA, anchor=west] at (3.1*\u,2.2*\u) {$\delta_{j+1}$};
+  % annotations
+  \node[lab, anchor=north] at (0.5*\L,-0.62) {$\gamma$};
+  \node[lab, anchor=south] at (0.5*\L,\L+0.05) {$\gamma'$};
+  \node[tick, anchor=east] at (-0.08,4.5*\u) {$x_0$};
+  \node[tick, anchor=west] at (\L+0.08,4.5*\u) {$x_0$};
+  \node[tick, anchor=east] at (-0.08,2*\u) {$\tfrac kn$};
+  \node[tick, anchor=east] at (-0.08,3*\u) {$\tfrac{k+1}n$};
+  \node[tick, anchor=north] at (2*\u,-0.12) {$\tfrac jn$};
+  \node[tick, anchor=north] at (3*\u,-0.12) {$\tfrac{j+1}n$};
+  \draw[ink!30!paper] (2*\u,0) -- (2*\u,-0.1) (3*\u,0) -- (3*\u,-0.1);
+  \node[tick, anchor=west] at (\L+0.05,-0.1) {$s$};
+  \node[tick, anchor=south] at (-0.15,\L+0.05) {$t$};
+  % the image
+  \draw[ink!40!paper, -{Stealth[length=5pt]}] (\L+0.9,0.5*\L) -- node[above, tick] {$h$} (\L+2.0,0.5*\L);
+  \begin{scope}[shift={(\L+4.1,0.5*\L)}]
+    \draw[ink!45!paper, fill=diagB!8!paper] plot[smooth cycle, tension=0.8] coordinates {(-1.5,0) (-0.9,1.05) (0.5,1.15) (1.5,0.4) (1.2,-0.9) (-0.2,-1.15) (-1.3,-0.8)};
+    \fill[diagC!18!paper] plot[smooth cycle, tension=0.9] coordinates {(-0.35,-0.25) (0.05,0.3) (0.55,0.15) (0.45,-0.35) (0.0,-0.5)};
+    \node[lab, text=diagC] at (0.1,-0.07) {$h(Q_{jk})$};
+    \node[lab, text=diagB] at (-0.95,0.75) {$X_i$};
+  \end{scope}
+\end{tikzpicture}
+  \end{figureBox}
+  \captionof{figure}{Step D, in the domain $[0,1]^2$ of the pointed homotopy $h$ (sides map to $x_0$). The loops $\delta_j$ (blue) and $\delta_{j+1}$ (orange, dashed) agree except around $Q_{jk}$, whose image lies in a single $X_i$. Sweeping $j$ from $0$ to $n$ moves row $\frac kn$ to row $\frac{k+1}n$; sweeping $k$ moves $\gamma$ to $\gamma'$.}\label{fig:svkgrid}
+
+
+  \paragraph{Step E: conclusion.} \emph{Goal: $\varphi$ is a homomorphism with $\varphi\circ\pi_1(j_i)=\varphi_i$.} By Step D, $\varphi[\gamma]_*\coloneq\varphi^\circ(\gamma)$ is well defined on $\pi_1(X,x_0)$. It is a homomorphism, since decompositions of $\gamma$ and $\eta$ together give one of $\gamma\ast\eta$ (Figure \ref{fig:svkstepE}). Finally, a loop $\gamma$ in $X_i$ is itself small, so using the trivial decomposition and $w_{x_0}=\text{const}$ we get $\varphi(\pi_1(j_i)[\gamma]_*^{X_i})=\tilde\varphi(\gamma)=\varphi_i[\gamma]_*^{X_i}$, i.e.\ $\varphi\circ\pi_1(j_i)=\varphi_i$.
+  \begin{figureBox}
+  \begin{tikzpicture}
+    \begin{scope}[xscale=1.45]
+    \foreach \a/\b/\c in {0/0.9/diagB, 0.9/1.8/diagA, 1.8/2.5/diagB, 2.5/3.4/diagA, 3.4/4.2/diagA, 4.2/5/diagB}{\draw[\c, very thick] (\a,0) -- (\b,0); \draw[ink!70!paper] (\a,-0.1) -- (\a,0.1);}
+    \draw[ink!70!paper] (5,-0.1) -- (5,0.1);
+    \draw[ink, thick] (2.5,-0.18) -- (2.5,0.18);
+    \node[svk tick, anchor=north] at (0,-0.12) {$0$};
+    \node[svk tick, anchor=north] at (2.5,-0.2) {$\tfrac12$};
+    \node[svk tick, anchor=north] at (5,-0.12) {$1$};
+    \draw[decorate, decoration={brace, amplitude=4pt}, ink!55!paper] (0.02,0.2) -- (2.48,0.2) node[midway, above=4pt, svk tick] {decomposition of $\gamma$};
+    \draw[decorate, decoration={brace, amplitude=4pt}, ink!55!paper] (2.52,0.2) -- (4.98,0.2) node[midway, above=4pt, svk tick] {decomposition of $\eta$};
+        \end{scope}
+    \node[svk tick, anchor=west] at (7.55,0) {$\Rightarrow\ \varphi^\circ(\gamma\ast\eta)=\varphi^\circ(\gamma)\,\varphi^\circ(\eta)$};
+  \end{tikzpicture}
+  \end{figureBox}
+  \captionof{figure}{Step E. Decompositions of $\gamma$ and $\eta$, rescaled to $[0,\tfrac12]$ and $[\tfrac12,1]$, together form a decomposition of $\gamma\ast\eta$, so $\varphi^\circ$ is multiplicative.}\label{fig:svkstepE}
+\end{proof}
+
+The analogue of the Seifert van Kampen theorem for higher homotopy groups does not hold in general. For example, $S^2$ is the union of two contractible discs glued along an annulus with $\pi_2=0$, yet $\pi_2(S^2)\cong\Z$, so $\pi_2$ of a glueing is not determined by the pieces. Higher homotopy groups of glueings are instead described, only in a range of degrees, by the Blakers--Massey theorem.
+
+\newpage
+
+\subsubsection{Computating Fundamental Groups}
+
+Theorem \ref{th:svk} describes $\pi_1(X,x_0)$ by a universal property. To compute with it we want an explicit description in terms of generators and relations, and this is how Hatcher states the theorem.
+
+\begin{corollary}{Seifert van Kampen, Hatcher's Form}{svkcomp}
+  In the situation of Theorem \ref{th:svk}, let $
+    \Phi:\pi_1(X_1,x_0)\ast\pi_1(X_2,x_0)\to\pi_1(X,x_0)
+  $
+  be the homomorphism induced by $\pi_1(j_1)$ and $\pi_1(j_2)$. Then $\Phi$ is surjective, and its kernel is the normal subgroup \[
+    N\coloneq\nclose{\{\pi_1(i_1)(\omega)\,\pi_1(i_2)(\omega)^{-1}\mid\omega\in\pi_1(X_0,x_0)\}}.
+  \]
+  Hence $\Phi$ induces an isomorphism $\pi_1(X_1,x_0)\ast_{\pi_1(X_0,x_0)}\pi_1(X_2,x_0)=\big(\pi_1(X_1,x_0)\ast\pi_1(X_2,x_0)\big)/N\isoto\pi_1(X,x_0)$.
+\end{corollary}
+
+\begin{proof}[\proofof{cor:svkcomp}]
+  $\Phi$ kills $N$, since $\pi_1(j_1)\circ\pi_1(i_1)=\pi_1(j_2)\circ\pi_1(i_2)$. So it factors as the quotient map $\pi_1(X_1,x_0)\ast\pi_1(X_2,x_0)\to\pi_1(X_1,x_0)\ast_{\pi_1(X_0,x_0)}\pi_1(X_2,x_0)$ (Definition \ref{def:amalg}) followed by a homomorphism $\bar\Phi$ compatible with the structure maps. By Theorems \ref{th:svk} and \ref{th:amalgpush}, source and target of $\bar\Phi$ are both pushouts of $\pi_1(X_1,x_0)\leftarrow\pi_1(X_0,x_0)\to\pi_1(X_2,x_0)$. Pushouts are unique up to unique isomorphism compatible with the structure maps, so $\bar\Phi$ is an isomorphism. Hence $\Phi$ is surjective with kernel $N$.
+\end{proof}
+
+In particular (Example \ref{ex:amalgex}), if $X_0$ is simply connected then $\pi_1(X,x_0)\iso\pi_1(X_1,x_0)\ast\pi_1(X_2,x_0)$, and if $X_2$ is simply connected then $\pi_1(X,x_0)\iso\pi_1(X_1,x_0)/\nclose{\operatorname{im}\pi_1(i_1)}$.
+
+\begin{example}{Spheres of Dimension at Least Two}{pi1sn}
+  Let $n\geq2$. Then $\pi_1(S^n,e_1)$ is trivial.
+\end{example}
+
+\begin{proof}[\proofof{ex:pi1sn}]
+  Let $N=e_{n+1}$ and $S=-e_{n+1}$ be the poles, and set $X_1\coloneq S^n\setminus\{N\}$ and $X_2\coloneq S^n\setminus\{S\}$. Both are open, so $X_1^\circ\cup X_2^\circ=X_1\cup X_2=S^n$. Stereographic projection from the removed pole is a homeomorphism $X_k\iso\R^n$. Hence $X_k$ is path-connected, and $(X_k,e_1)$ is pointedly contractible (straight-line homotopy to the image of $e_1$), so $\pi_1(X_k,e_1)=1$ by Example \ref{ex:pi1triv}. The overlap
+  \[
+    X_0=S^n\setminus\{N,S\}\iso\R^n\setminus\{0\}\iso S^{n-1}\times\R,\qquad x\mapsto\big(\tfrac{x}{\|x\|},\log\|x\|\big),
+  \]
+  is path-connected because $n-1\geq1$, and it contains $e_1$ (Figure \ref{fig:pi1sn}). So Theorem \ref{th:svk} applies, and gives a pushout square in $\Grp$:
+  \[
+  \begin{tikzcd}[column sep=large]
+    \pi_1(X_0,e_1) \ar[r] \ar[d] & \pi_1(X_1,e_1)\iso\textcolor{diagC}{1} \ar[d] \\
+    \textcolor{diagC}{1}\iso\pi_1(X_2,e_1) \ar[r] & |[diagB]| \pi_1(S^n,e_1)
+  \end{tikzcd}
+  \]
+  By Corollary \ref{cor:svkcomp}, $\pi_1(S^n,e_1)\iso(1\ast1)/N$, which is trivial.
+\end{proof}
+
+% S^n = X1 u X2, punctured at N resp. S, overlap X0 = S^n \ {N,S} (cf. Loh Fig. 2.10);
+% right: for n = 1 the same cover has disconnected overlap
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    ball/.pic={
+      \fill[#1!16!paper] (0,0) circle (1);
+      \draw[#1!30!paper, dashed] (1,0) arc (0:180:1 and 0.28);
+      \draw[#1!60!paper] (-1,0) arc (180:360:1 and 0.28);
+      \draw[#1!75!ink] (0,0) circle (1);
+      \fill[ink] (0,-0.28) circle (1.5pt);
+      \node[tick, anchor=north west, inner sep=0.5pt] at (0.04,-0.31) {$e_1$};
+    },
+    hole/.style={fill=paper, draw=ink!60!paper, line width=0.4pt},
+    hiddenhole/.style={draw=ink!55!paper, line width=0.4pt, dashed, dash pattern=on 1pt off 1pt}]
+  \def\np{(0,0.96)}\def\sp{(0,-0.96)}
+  % X1 = S^n \ {N}
+  \begin{scope}[shift={(-4.2,0)}]
+    \pic {ball=diagB};
+    \path[hole] \np ellipse (0.16 and 0.055);
+    \node[tick, anchor=south] at (0,1.02) {$N$};
+    \node[lab, text=diagB] at (-1.35,0.75) {$X_1$};
+  \end{scope}
+  % X0 = S^n \ {N,S}
+  \begin{scope}[shift={(-1.4,0)}]
+    \pic {ball=diagC};
+    \path[hole] \np ellipse (0.16 and 0.055);
+    \path[hiddenhole] \sp ellipse (0.16 and 0.055);
+    \node[tick, anchor=south] at (0,1.02) {$N$};
+    \node[tick, anchor=north] at (0,-1.02) {$S$};
+    \node[lab, text=diagC] at (0,1.5) {$X_0=X_1\cap X_2$};
+  \end{scope}
+  % X2 = S^n \ {S}
+  \begin{scope}[shift={(1.4,0)}]
+    \pic {ball=diagA};
+    \path[hiddenhole] \sp ellipse (0.16 and 0.055);
+    \node[tick, anchor=north] at (0,-1.02) {$S$};
+    \node[lab, text=diagA] at (1.35,0.75) {$X_2$};
+  \end{scope}
+  % n = 1: overlap is two arcs
+  \draw[ink!20!paper] (3.35,-1.25) -- (3.35,1.25);
+  \begin{scope}[shift={(4.9,0)}]
+    \draw[diagC, line width=1.4pt] (0,0) ++(80:0.9) arc (80:-80:0.9);
+    \draw[diagC, line width=1.4pt] (0,0) ++(100:0.9) arc (100:260:0.9);
+    \foreach \a/\l/\p in {90/N/south, 270/S/north}{
+      \draw[ink!60!paper, fill=paper] (\a:0.9) circle (1.6pt);
+      \node[tick, anchor=\p] at (\a:0.98) {$\l$};
+    }
+    \fill[ink] (0:0.9) circle (1.5pt);
+    \node[tick, anchor=west] at (0:0.95) {$e_1$};
+    \node[ttl] at (0,1.5) {$n=1$};
+    \node[lab, text=diagC, anchor=north] at (0,-1.25) {$X_0$ disconnected};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Seifert--van Kampen for $S^n$, $n\geq2$. Removing the north pole gives $X_1$ (blue) and removing the south pole gives $X_2$ (orange); both are homeomorphic to $\R^n$ and so have trivial $\pi_1$. Their overlap $X_0$ (purple) is $S^n$ with both poles removed (the south pole is on the far side), which is path-connected. Right: for $n=1$ the overlap is two open arcs, so Theorem \ref{th:svk} does not apply.}\label{fig:pi1sn}
+
+\newpage
+
+
+
+\begin{example}{Real Projective Plane}{pi1rp2}
+  For every $x_0\in\RP{2}$ we have $\pi_1(\RP{2},x_0)\iso\Z/2$.
+\end{example}
+
+\begin{proof}[\proofof{ex:pi1rp2}]
+  Write $q:S^2\to\RP{2}$, $x\mapsto[x]$ for the quotient map (Example \ref{ex:rpn}), $N\coloneq e_3$, and $C_c\coloneq\{x\in S^2\mid x_3=c\}$ for the circle of height $c$. Set \[
+    X_1\coloneq\RP{2}\setminus\{[N]\}=q\big(S^2\setminus\{\pm N\}\big),\qquad X_2\coloneq q\big(\{x\in S^2\mid x_3>\tfrac12\}\big).
+  \]
+  Both are open, since their preimages $S^2\setminus\{\pm N\}$ and $\{\lvert x_3\rvert>\frac12\}$ are. The cap $\{x_3>\frac12\}$ contains no pair of antipodal points, and $q$ is open (the preimage of $q(U)$ is $U\cup-U$). So $q$ restricts to a homeomorphism from the cap onto $X_2$, and $X_2$ is an open disc with centre $[N]$. Hence $X_0=X_1\cap X_2$ is that disc with its centre removed (Figure \ref{fig:pi1rp2}). Take the basepoint $x_0=[p]$ with $p\coloneq(\tfrac{\sqrt7}{4},0,\tfrac34)\in C_{3/4}$, and let $\omega$ be the loop $t\mapsto\big[\tfrac{\sqrt7}{4}\cos2\pi t,\tfrac{\sqrt7}{4}\sin2\pi t,\tfrac34\big]$ around $[N]$. We compute the three groups.
+  \begin{itemize}
+    \item $X_2$ is contractible, so $\pi_1(X_2,x_0)=1$ (Example \ref{ex:pi1triv}).
+    \item The punctured disc $X_0$ deformation retracts radially onto the circle $q(C_{3/4})$, fixing that circle pointwise. This is a pointed homotopy equivalence, so $\pi_1(X_0,x_0)\iso\pi_1(S^1,e_1)\iso\Z$, generated by $[\omega]_*$ (Theorem \ref{th:The Map}).
+    \item On $S^2\setminus\{\pm N\}$, flattening towards the equator, \[
+      h(x,t)\coloneq\frac{(x_1,\,x_2,\,(1-t)x_3)}{\norm{(x_1,\,x_2,\,(1-t)x_3)}},
+    \]
+    commutes with $x\mapsto-x$. So it descends to a deformation retraction of $X_1$ onto $E\coloneq q(C_0)$ ($q\times\id_{[0,1]}$ is again a quotient map, as $[0,1]$ is compact Hausdorff). Viewing $C_0$ as the unit circle in $\C$, the map $E\to S^1$, $[z]\mapsto z^2$, is a well-defined continuous bijection from a compact space to a Hausdorff space, hence a homeomorphism. By Proposition \ref{th:fgpdfun} the retraction $r:X_1\to E$ is a homotopy equivalence, so it induces an equivalence of groupoids and in particular an isomorphism $\pi_1(X_1,x_0)\isoto\pi_1(E,r(x_0))\iso\pi_1(S^1,e_1)\iso\Z$. Let $a\in\pi_1(X_1,x_0)$ correspond to the generator $1\in\Z$.
+  \end{itemize}
+  The overlap relation comes from $\omega$. In $X_2$ it is trivial. In $X_1$, pushing $\omega$ down to the equator gives $r\circ\omega:t\mapsto[\cos2\pi t,\sin2\pi t,0]$. Under $[z]\mapsto z^2$ this is $t\mapsto e^{4\pi it}$, which is $2\in\Z$. So $\pi_1(i_1)[\omega]_*=a^2$, and Corollary \ref{cor:svkcomp} gives \[
+    \pi_1(\RP{2},x_0)\iso\pres{a}{a^2}\iso\Z/2.
+  \]
+  Since $\RP{2}=q(S^2)$ is path-connected, the same holds at every basepoint (Theorem \ref{th:pi1cob}).
+\end{proof}
+
+% RP^2 as a disc with antipodal boundary points identified (view of the upper hemisphere from above).
+% (a) the cover X1 = RP^2 \ {[N]}, X2 = small disc, X0 = punctured disc; (b) omega pushed to the boundary is a^2
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    ttl/.style={font=\sffamily\small\bfseries, text=ink!80!paper},
+    mk/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=5pt]}}}},
+    mk/.default=0.55]
+  \def\R{1.35}\def\r{0.8}\def\w{0.5}
+  % ===================== (a) the cover =====================
+  \begin{scope}[shift={(-3.4,0)}]
+    \fill[diagB!16!paper] (0,0) circle (\R);
+    \fill[diagC!20!paper] (0,0) circle (\r);
+    \draw[diagC!60!paper, dashed] (0,0) circle (\r);
+    % boundary: antipodal points identified, both halves read as a
+    \draw[ink!70!paper, thick, mk] (\R,0) arc (0:180:\R);
+    \draw[ink!70!paper, thick, mk] (-\R,0) arc (180:360:\R);
+    \node[lab, anchor=south west] at (45:\R) {$a$};
+    \node[lab, anchor=north east] at (225:\R) {$a$};
+    \foreach \x in {\R,-\R} \fill[ink] (\x,0) circle (1.4pt);
+    % the removed point [N]
+    \draw[diagA, fill=paper, thick] (0,0) circle (2pt);
+    \node[tick, text=diagA, anchor=north] at (0,-0.08) {$[N]$};
+    \node[lab, text=diagB] at (-1.45,1.15) {$X_1$};
+    \node[lab, text=diagC] at (0,0.42) {$X_0$};
+    \node[lab, text=diagA, anchor=west] at (1.05,-1.25) {$X_2=X_0\cup\{[N]\}$};
+    \node[ttl] at (0,1.8) {(a) The cover};
+  \end{scope}
+  % ===================== (b) omega |-> a^2 =====================
+  \begin{scope}[shift={(3.4,0)}]
+    \fill[diagB!8!paper] (0,0) circle (\R);
+    \draw[diagB, thick, mk=0.3, mk=0.8] (0,0) circle (\R);
+    \node[lab, text=diagB, anchor=south west] at (45:\R) {$a$};
+    \node[lab, text=diagB, anchor=north east] at (225:\R) {$a$};
+    \foreach \x in {\R,-\R} \fill[ink] (\x,0) circle (1.4pt);
+    % radial retraction
+    \foreach \a in {30,75,120,165,210,255,300}
+      \draw[ink!40!paper, -{Stealth[length=4pt]}] (\a:\w+0.08) -- (\a:\R-0.08);
+    \draw[diagC, thick, mk] (0,0) circle (\w);
+    \fill[ink] (\w,0) circle (1.5pt);
+    \node[tick, anchor=west] at (\w+0.05,0) {$x_0$};
+    \node[lab, text=diagC] at (0,0) {$\omega$};
+    \node[ttl] at (0,1.8) {(b) $\omega\mapsto a^2$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{$\RP{2}$ seen from above: the closed upper hemisphere maps onto $\RP{2}$, giving a disc whose antipodal boundary points are identified, so both boundary arcs are the same loop $a$. (a) $X_1$ is everything except the centre $[N]$ (an open Möbius band), $X_2$ is a small disc around $[N]$, and $X_0$ is that disc punctured. (b) The deformation retraction of $X_1$ pushes the loop $\omega$ around $[N]$ out to the boundary, which it runs around once, i.e.\ along $a$ twice. Glueing in $X_2$ kills $\omega$, so $a^2=1$.}\label{fig:pi1rp2}
+
+The generator $a$ has a concrete description. Its image in $\pi_1(E)$ is the loop $t\mapsto[\cos\pi t,\sin\pi t,0]$, i.e.\ the image of \emph{half} the equator, running from $e_1$ to its antipode $-e_1$. This closes up to a loop in $\RP{2}$ because $[e_1]=[-e_1]$. Its square is the image of the \emph{whole} equator, which bounds the upper hemisphere and so can be contracted across it. That $a$ itself is nontrivial is what the computation shows. Geometrically, a homotopy of $a$ should lift to a homotopy of paths in $S^2$ whose endpoints stay antipodal, so it can never reach a constant path. Covering theory (§2.3) makes this precise.
+
+\newpage
+
+An interesting case is the wedge product of spaces, which effectively joins them at their basepoints.
+
+\begin{definition}{Wedge}{wedge}
+  For $(X,x_0),(Y,y_0)\in\Toppt$, their wedge product is \[
+    (X,x_0)\lor (Y,y_0) = ((X\sqcup Y) / (x_0\sim y_0),[x_0]=[y_0])
+  \]
+  More generally, for a family $((X_i,x_i)\in\Toppt)_{i\in I}$, their wedge is \[
+    \bigvee_{i\in I}(X_i,x_i) = \left(\bigsqcup_{i\in I}X_i/\sim,z_0\right)
+  \]
+  where $\bigsqcup_{i\in I}X_i/\sim$ is endowed with the quotient topology of the disjoint union topology, $\sim$ is the equivalence relation joining all basepoints ($\forall_{i,j\in I}x_i\sim x_j$) and $z_0$ represents all the basepoints $x_i,i\in I$.
+\end{definition}
+
+The wedge of pointed spaces forms the coproduct in $\hToppt$.
+
+\begin{example}{Wedges of Circles}{pi1wedge}
+  Let $(X,z_0)\coloneq(S^1,e_1)\lor(S^1,e_1)$, and let $a,b\in\pi_1(X,z_0)$ be the classes of the loops running once around the first and the second circle. Then $\pi_1(X,z_0)$ is free on $a$ and $b$, i.e.\ $\pi_1(X,z_0)\iso\pres{a,b}{\ }=F(a,b)$. More generally, for the wedge of $n\geq1$ circles $(B_n,z_0)\coloneq\bigvee_{k=1}^n(S^1,e_1)$, the group $\pi_1(B_n,z_0)$ is free on the $n$ loops around the circles.
+\end{example}
+
+\begin{proof}[\proofof{ex:pi1wedge}]
+  Write $A,B\subset X$ for the two circles. They are not a valid cover for Theorem \ref{th:svk}: every neighbourhood of $z_0$ meets both circles, so $z_0$ lies in neither $A^\circ$ nor $B^\circ$. Instead, let $p_A\in A$ and $p_B\in B$ be the points corresponding to $-e_1$, and set (Figure \ref{fig:pi1wedge}) \[
+    X_1\coloneq X\setminus\{p_B\},\qquad X_2\coloneq X\setminus\{p_A\},\qquad X_0=X_1\cap X_2=X\setminus\{p_A,p_B\}.
+  \]
+  These are open, path-connected, and contain $z_0$.
+  \begin{itemize}
+    \item $X_1$ is $A$ together with the open arc $B\setminus\{p_B\}$. Shrinking that arc onto $z_0$, $e^{i\theta}\mapsto e^{i(1-t)\theta}$ for $\theta\in(-\pi,\pi)$, while fixing $A$, glues (Theorem \ref{th:glue}) to a pointed deformation retraction of $X_1$ onto $A$. So $\pi_1(X_1,z_0)\iso\pi_1(A,z_0)\iso\Z$, generated by $a$ (Theorem \ref{th:The Map}). Symmetrically, $\pi_1(X_2,z_0)\iso\Z$, generated by $b$.
+    \item $X_0$ is two open arcs crossing at $z_0$. Shrinking both arcs at once is a pointed contraction, so $\pi_1(X_0,z_0)=1$.
+  \end{itemize}
+  The overlap is simply connected, so it imposes no relations. By Corollary \ref{cor:svkcomp} and Remark \ref{rem:freeprodrem}, \[
+    \pi_1(X,z_0)\iso\pi_1(X_1,z_0)\ast\pi_1(X_2,z_0)\iso\Z\ast\Z\iso F(a,b).
+  \]
+  For $B_n$ we use induction on $n$, with $B_1=S^1$ as the base case. Write $B_n=B_{n-1}\lor S^1$ and remove one point $\neq z_0$ from the last circle, respectively one from each of the first $n-1$ circles (Figure \ref{fig:pi1bouquet}). The same argument shows $\pi_1(B_n,z_0)\iso\pi_1(B_{n-1},z_0)\ast\Z\iso F_{n-1}\ast\Z\iso F_n$.
+\end{proof}
+
+% S^1 v S^1 = X1 u X2, each missing one point of the other circle; overlap X0 is a contractible cross (cf. Loh Fig. 2.12)
+\begin{figureBox}
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    mk/.style={postaction={decorate}, decoration={markings, mark=at position #1 with {\arrow{Stealth[length=5pt]}}}},
+    mk/.default=0.3,
+    piece/.style={line width=2.4pt, line cap=round},
+    removed/.style={draw=ink!60!paper, fill=paper, line width=0.5pt}]
+  \def\r{0.75}\def\g{13}
+  % one figure eight; #1 colour, #2 = remove p_A (left), #3 = remove p_B (right)
+  \newcommand{\eight}[3]{%
+    \draw[ink!30!paper] (-\r,0) circle (\r) (\r,0) circle (\r);
+    \ifnum#2=1
+      \draw[#1, piece] (0,0) arc (0:180-\g:\r) ++(0,0);
+      \draw[#1, piece] (0,0) arc (0:-180+\g:\r);
+    \else
+      \draw[#1, piece] (-\r,0) circle (\r);
+    \fi
+    \ifnum#3=1
+      \draw[#1, piece] (0,0) arc (180:\g:\r);
+      \draw[#1, piece] (0,0) arc (180:360-\g:\r);
+    \else
+      \draw[#1, piece] (\r,0) circle (\r);
+    \fi
+    \ifnum#2=1 \draw[removed] (-2*\r,0) circle (1.8pt); \node[tick, anchor=east] at (-2*\r-0.08,0) {$p_A$}; \fi
+    \ifnum#3=1 \draw[removed] (2*\r,0) circle (1.8pt); \node[tick, anchor=west] at (2*\r+0.08,0) {$p_B$}; \fi
+    \fill[ink] (0,0) circle (1.6pt);
+    \draw[ink!45!paper, line width=0.3pt] (0,-0.08) -- (0,-1.0);
+    \node[tick, anchor=north] at (0,-1.0) {$z_0$};
+  }
+  \begin{scope}[shift={(-4.9,0)}]
+    \eight{diagB}{0}{1}
+    \draw[ink, mk=0.55] (-\r,0) ++(0:0.45*\r) arc (0:-359:0.45*\r);
+    \node[lab, text=ink] at (-\r,0) {$a$};
+    \node[lab, text=diagB] at (0,1.15) {$X_1\simeq_* A$};
+  \end{scope}
+  \begin{scope}
+    \eight{diagC}{1}{1}
+    \node[lab, text=diagC] at (0,1.15) {$X_0\simeq_*\pt$};
+  \end{scope}
+  \begin{scope}[shift={(4.9,0)}]
+    \eight{diagA}{1}{0}
+    \draw[ink, mk=0.55] (\r,0) ++(180:0.45*\r) arc (180:-179:0.45*\r);
+    \node[lab, text=ink] at (\r,0) {$b$};
+    \node[lab, text=diagA] at (0,1.15) {$X_2\simeq_* B$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{Seifert--van Kampen for $S^1\lor S^1$. Removing the point $p_B$ from the second circle gives $X_1$ (blue), which retracts onto the first circle and so has $\pi_1$ generated by $a$. Symmetrically, $X_2$ (orange) gives $b$. The overlap $X_0$ (purple) is a cross through $z_0$, which is contractible, so $a$ and $b$ satisfy no relations.}\label{fig:pi1wedge}
+
+\newpage
+
+Since $F(a,b)$ is non-abelian (Example \ref{ex:f2nonab}), the loops $a$ and $b$ do not commute: $aba^{-1}b^{-1}$ is a non-trivial loop in $S^1\lor S^1$. On the other hand $\pi_1(T^2)\iso\Z^2$ is abelian (Example \ref{ex:pi1torus}), so the torus is not pointedly homotopy equivalent to $(S^1,e_1)\lor(S^1,e_1)$. Similarly, $F_m^{\mathrm{ab}}\iso\Z^m$ (Example \ref{ex:abelex}) shows that $B_m$ and $B_n$ are not pointedly homotopy equivalent for $m\neq n$.
+
+\begin{figureBox}
+% inductive step B_n = B_{n-1} v S^1: petals are rose-curve loops r = L cos(3(t - phi)); the n-th circle points right
+\begin{tikzpicture}[
+    lab/.style={font=\sffamily\small, inner sep=1.5pt},
+    tick/.style={font=\sffamily\scriptsize, text=ink!55!paper, inner sep=1pt},
+    piece/.style={line width=2.4pt, line cap=round},
+    removed/.style={draw=ink!60!paper, fill=paper, line width=0.5pt}]
+  \def\L{1.3}\def\cut{6}
+  % \petal{colour}{direction}{1 = tip removed}
+  \def\petal#1#2#3{%
+    \draw[ink!30!paper, smooth, samples=40, domain=#2-30:#2+30, variable=\t] plot (\t:{\L*cos(3*(\t-#2))});
+    \ifnum#3=1
+      \draw[#1, piece, smooth, samples=30, domain=#2-30:#2-\cut, variable=\t] plot (\t:{\L*cos(3*(\t-#2))});
+      \draw[#1, piece, smooth, samples=30, domain=#2+\cut:#2+30, variable=\t] plot (\t:{\L*cos(3*(\t-#2))});
+      \draw[removed] (#2:\L) circle (1.8pt);
+    \else
+      \draw[#1, piece, smooth, samples=40, domain=#2-30:#2+30, variable=\t] plot (\t:{\L*cos(3*(\t-#2))});
+    \fi}
+  % one bouquet: #1 colour, #2 = cut the first n-1 petals, #3 = cut the n-th petal
+  \def\bouquet#1#2#3{%
+    \foreach \d in {72,144,288} {\petal{#1}{\d}{#2}}
+    \petal{#1}{0}{#3}
+    \foreach \s in {0.55,0.75,0.95} \fill[ink!45!paper] (216:\s) circle (0.8pt);
+    \fill[ink] (0,0) circle (1.6pt);}
+  \begin{scope}[shift={(-4.9,0)}]
+    \bouquet{diagB}{0}{1}
+    \node[lab, text=diagB] at (0,1.7) {$X_1\simeq_* B_{n-1}$};
+  \end{scope}
+  \begin{scope}
+    \bouquet{diagC}{1}{1}
+    \node[lab, text=diagC] at (0,1.7) {$X_0\simeq_*\pt$};
+  \end{scope}
+  \begin{scope}[shift={(4.9,0)}]
+    \bouquet{diagA}{1}{0}
+    \node[lab, text=diagA] at (0,1.7) {$X_2\simeq_* S^1$};
+  \end{scope}
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The inductive step $B_n=B_{n-1}\lor S^1$ in Example \ref{ex:pi1wedge}, with the last circle pointing right. $X_1$ (blue) misses one point of the last circle and retracts onto $B_{n-1}$. $X_2$ (orange) misses one point of each of the other circles and retracts onto the last circle. The overlap $X_0$ (purple) is a star with $2n$ arms, which is contractible. Hence $\pi_1(B_n,z_0)\iso\pi_1(B_{n-1},z_0)\ast\Z$.}\label{fig:pi1bouquet}
+
+\begin{remark}{Wedges in General}{wedgecaveat}
+  The proof of Example \ref{ex:pi1wedge} used that $z_0$ has an open neighbourhood in each circle (an open arc) that deformation retracts onto $z_0$. Whenever $x_0\in X$ and $y_0\in Y$ have such neighbourhoods $U$ and $V$, the same argument with $X_1=X\lor V$ and $X_2=U\lor Y$ gives \[
+    \pi_1\big((X,x_0)\lor(Y,y_0)\big)\iso\pi_1(X,x_0)\ast\pi_1(Y,y_0).
+  \]
+  Without such neighbourhoods this can fail. Glue two cones on the Hawaiian earring (the union of the circles of radius $\frac1n$ through $0\in\R^2$) at the point $0$. Each cone is contractible, yet the wedge is not simply connected (Griffiths' example).
+\end{remark}
+
+Seifert--van Kampen lets us compute fundamental groups as presentations, but there are limits to what can be done with them. There is no algorithm that decides, given a finite presentation $\pres{S}{R}$, whether the group it presents is trivial (Adian--Rabin). Every finite presentation arises as the fundamental group of a finite simplicial complex, built by glueing discs to a wedge of circles. From this one deduces that there is no algorithm that, given finite simplicial complexes, decides whether one is simply connected, whether two are homotopy equivalent, or whether two are homeomorphic. This remains true even when the inputs are triangulations of closed $4$-manifolds (Markov).
 
 \subsubsection{Ascending Unions}
+
+\begin{theorem}{$\pi_n$ and Ascending Unions}{ascunion}
+  Let $n\in\N$, let $(X,x_0)\in\Toppt$, let $(I,\leq)$ be a directed set (a preorder in which every pair $i,k\in I$ has an upper bound $j$, i.e.\ $i\leq j$ and $k\leq j$), and let $(X_i)_{i\in I}$ be a directed system of subspaces of $X$ ($X_i\subseteq X_j$ whenever $i\leq j$) satisfying \[
+    X = \bigcup_{i\in I}X_i^\circ, \qquad x_0\in\bigcap_{i\in I}X_i.
+  \]
+  Then \begin{enumerate}
+    \item $\pi_n(X,x_0)=\bigcup_{i\in I}\pi_n(X_i\inj X)(\pi_n(X_i,x_0))$.
+    \item If $g\in\pi_n(X_i,x_0)$ and $h\in\pi_n(X_k,x_0)$ have the same image in $\pi_n(X,x_0)$, then there is a $j\in I$ with $i\leq j$, $k\leq j$ and $\pi_n(X_i\inj X_j)(g)=\pi_n(X_k\inj X_j)(h)$.
+  \end{enumerate}
+  In words: every element of $\pi_n(X,x_0)$ already comes from some $X_i$, and two elements become equal in $X$ only if they already agree in some $X_j$. That is, $\pi_n(X,x_0)$ is the colimit (direct limit) of the groups $\pi_n(X_i,x_0)$.
+\end{theorem}
+
+The main case is an increasing chain $X_1\subseteq X_2\subseteq\cdots$ with $I=\N$. The only property of directed sets we use is that \emph{finitely many indices have a common upper bound}, which for a chain is simply the largest of them.
+
+\newpage
+
+\begin{proof}[\proofof{th:ascunion}]
+  $S^n$ and $S^n\times[0,1]$ are compact, so every representative and every homotopy already lives in a single $X_i$.
+
+  \paragraph{Claim 1.} Let $g=[\gamma]_*\in\pi_n(X,x_0)$. The image $\gamma(S^n)$ is compact (Theorem \ref{th:gmp}), and the open sets $X_i^\circ$ cover it. So finitely many of them, say $X_{i_1}^\circ,\dots,X_{i_m}^\circ$, already cover $\gamma(S^n)$. Since $I$ is directed, these indices have a common upper bound $i$, and then $\gamma(S^n)\subseteq X_{i_1}\cup\dots\cup X_{i_m}\subseteq X_i$. Hence $\gamma$ is a pointed map into $X_i$, and $g$ is the image of its class in $\pi_n(X_i,x_0)$.
+
+  \paragraph{Claim 2.} Let $g=[\gamma]_*$ and $h=[\eta]_*$, where $\gamma$ maps into $X_i$ and $\eta$ maps into $X_k$, and let $H:S^n\times[0,1]\to X$ be a pointed homotopy from $\gamma$ to $\eta$ in $X$. As in Claim 1, the compact set $H(S^n\times[0,1])$ lies in some $X_{j'}$. Let $j$ be a common upper bound of $i$, $k$ and $j'$. Then $H$ is a pointed homotopy in $X_j$, so $\gamma$ and $\eta$ already define the same element of $\pi_n(X_j,x_0)$.
+\end{proof}
+
+\begin{example}{Arbitrary Wedges of Circles}{pi1wedgeinf}
+  Let $I\neq\emptyset$ be any set and $(X,z_0)\coloneq\bigvee_{i\in I}(S^1,e_1)$. Then $\pi_1(X,z_0)$ is free on the loops $a_i$ around the circles, i.e.\ $\pi_1(X,z_0)\iso F(I)$.
+\end{example}
+
+\begin{proof}[\proofof{ex:pi1wedgeinf}]
+  The finite sub-wedges themselves do not work, because $z_0$ is not an interior point of them. So we thicken them as in Example \ref{ex:pi1wedge}. For finite $J\subseteq I$, let $X_J$ be the finite sub-wedge $\bigvee_{i\in J}S^1$ together with the open arcs $\{e^{i\theta}\mid\lvert\theta\rvert<\frac\pi2\}$ of all the other circles. Then:
+  \begin{itemize}
+    \item Each $X_J$ is open, because its preimage in every circle is open. The finite subsets of $I$ are directed by inclusion, $J\subseteq J'$ implies $X_J\subseteq X_{J'}$, and $\bigcup_J X_J=X$, since every point of $X$ lies on some circle.
+    \item Shrinking all the extra arcs onto $z_0$ simultaneously is a pointed deformation retraction of $X_J$ onto $\bigvee_{i\in J}S^1$. So $\pi_1(X_J,z_0)\iso F(J)$, free on the $a_i$ with $i\in J$ (Example \ref{ex:pi1wedge}).
+  \end{itemize}
+  By the universal property of $F(I)$, the assignment $a_i\mapsto[a_i]_*$ defines a homomorphism $\Phi:F(I)\to\pi_1(X,z_0)$. By Theorem \ref{th:ascunion}(1), every element of $\pi_1(X,z_0)$ comes from some $\pi_1(X_J,z_0)\iso F(J)$, so $\Phi$ is surjective. For injectivity, let $w\in F(I)$ with $\Phi(w)=1$. The word $w$ involves only finitely many letters, so $w\in F(J)$ for some finite $J$. By Theorem \ref{th:ascunion}(2), $w$ is already trivial in $\pi_1(X_{J'},z_0)\iso F(J')$ for some finite $J'\supseteq J$. But $F(J)\to F(J')$ is injective: the homomorphism $F(J')\to F(J)$ that kills the extra generators is a left inverse. Hence $w=1$.
+\end{proof}
+
+\begin{example}{Telescope}{telescope}
+  Glue cylinders $C_k\coloneq[k,k+1]\times S^1$, $k\geq1$, end to end, identifying $(k+1,z)\in C_k$ with $(k+1,z^{k+1})\in C_{k+1}$. The end circle of each cylinder thus wraps $k+1$ times around the start of the next (Figure \ref{fig:telescope}). Call the result $T$, with basepoint $(1,1)$, and let $T_k\coloneq C_1\cup\dots\cup C_k$. Each $T_k$ deformation retracts onto its last circle, so $\pi_1(T_k)\iso\Z$, generated by that circle. In $T_{k+1}$ this circle is homotopic to $k+1$ times the next one, so $T_k\subseteq T_{k+1}$ induces $\Z\xrightarrow{\cdot(k+1)}\Z$. These maps are injective. Identifying the generator of $\pi_1(T_k)$ with $\frac1{k!}\in\Q$ turns them into inclusions \[
+    \Z\subseteq\tfrac12\Z\subseteq\tfrac16\Z\subseteq\tfrac1{24}\Z\subseteq\cdots.
+  \]
+  The interiors $T_k^\circ\supseteq C_1\cup\dots\cup C_{k-1}$ cover $T$. So Theorem \ref{th:ascunion} gives $\pi_1(T)\iso\bigcup_k\frac1{k!}\Z=\Q$, since $\frac pq\in\frac1{q!}\Z$. In particular, $\pi_1(T)$ is not finitely generated.
+\end{example}
+
+% telescope: cylinders [k,k+1] x S^1, end of one wrapped (k+1) times onto the start of the next
+\begin{figureBox}
+\begin{tikzpicture}[tick/.style={font=\sffamily\scriptsize, text=ink!60!paper, inner sep=1pt}]
+  \def\telH{0.32}\def\telE{0.11}\def\telL{1.3}\def\telG{2.75}
+  \foreach \k [count=\c from 0] in {2,3,4,5}{
+    \begin{scope}[shift={(\c*\telG,0)}]
+      \fill[diagB!12!paper] (0,-\telH) rectangle (\telL,\telH);
+      \draw[diagB] (0,\telH) -- (\telL,\telH) (0,-\telH) -- (\telL,-\telH);
+      \draw[diagB, fill=diagB!20!paper] (0,0) ellipse [x radius=\telE, y radius=\telH];
+      \draw[diagB] (\telL,-\telH) arc [start angle=-90, end angle=90, x radius=\telE, y radius=\telH];
+      \draw[diagB!40!paper, dashed] (\telL,\telH) arc [start angle=90, end angle=270, x radius=\telE, y radius=\telH];
+      \node[tick, text=diagB] at (\telL/2,0) {$C_{\the\numexpr\c+1\relax}$};
+      \draw[ink!45!paper, -{Stealth[length=4pt]}] (\telL+0.22,0) to[bend left=40] node[above, tick] {$z\mapsto z^{\k}$} (\telG-0.2,0);
+    \end{scope}}
+  \node[tick] at (4*\telG+0.1,0) {$\cdots$};
+\end{tikzpicture}
+\end{figureBox}
+\captionof{figure}{The telescope $T$. The end circle of $C_k$ is glued to the start of $C_{k+1}$ by $z\mapsto z^{k+1}$, so $\pi_1(T)$ is built from copies of $\Z$ joined by multiplication by $2,3,4,\dots$, which gives $\Q$.}\label{fig:telescope}

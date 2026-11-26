@@ -220,12 +220,13 @@
 %  FIGURE BOX
 % =====================================================================
 \newenvironment{figureBox}{%
-  \begin{tcolorbox}[breakable,boxrule=1pt,sharp corners,colback=ink!3!paper,colframe=ink,boxsep=0.3em]\centering
+  % unbreakable: a figure is a single picture, so the box moves to the next page whole instead of splitting
+  \begin{tcolorbox}[boxrule=1pt,sharp corners,colback=ink!3!paper,colframe=ink,boxsep=0.3em]\centering
   \begin{adjustbox}{scale=1.1,max width=\linewidth,max totalheight=0.85\textheight}%
 }{%
   \end{adjustbox}%
   \end{tcolorbox}%
-  \vspace{-6pt}%
+  \nopagebreak\vspace{-6pt}\nopagebreak% keep the caption with its figure
 }
 
 % =====================================================================
@@ -263,6 +264,8 @@
 \newcommand{\Set}{\cat{Set}}
 \newcommand{\Grp}{\cat{Grp}}
 \newcommand{\Grpd}{\cat{Grpd}}
+\newcommand{\pres}[2]{\left\langle #1\,\middle|\,#2\right\rangle}   % group presentation <S | R>
+\newcommand{\nclose}[1]{\langle\!\langle #1\rangle\!\rangle}           % normal closure <<R>>
 \newcommand{\Ab}{\cat{Ab}}
 \newcommand{\Top}{\cat{Top}}
 \newcommand{\Ch}{\cat{Ch}}
@@ -278,6 +281,7 @@
 
 % --- Isomorphism & restriction ---
 \newcommand{\iso}{\cong}
+\newcommand{\isoto}{\xrightarrow{\smash{\raisebox{-0.35ex}{$\scriptstyle\sim$}}}}   % isomorphism arrow  X \isoto Y
 \newcommand{\restr}[2]{\mathopen{}\left.#1\right|_{#2}\mathclose{}}
 
 % --- Arrows ---
